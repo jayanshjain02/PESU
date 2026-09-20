@@ -22,13 +22,13 @@ SEM 5/                         Deployable Semester 5 study site
 
 Open `SEM 5/index.html` with a local web server, such as VS Code Live Server. The reader fetches content files, so opening pages directly from the filesystem may prevent notes from loading.
 
-The site currently provides course pages for Artificial Intelligence, Blockchain dApp Development, Cloud Technologies, Digital Marketing, Software Testing & Automation, and Gaming. AI Unit 1 also includes Markdown-backed notes, questions, a cheat sheet, and an interactive MCQ quiz.
+The site currently provides course pages for Artificial Intelligence, Blockchain dApp Development, Cloud Technologies, Digital Marketing, Software Testing & Automation, and Gaming. AI Units 1 and 2 also include Markdown-backed notes, questions, a cheat sheet, and an interactive MCQ quiz.
 
 ### Adding study material
 
 1. Put a unit's reader files in `SEM 5/content/<course>/isa-1/unit-<number>/`.
 2. Keep the filenames `notes.html`, `questions.html`, and `cheat-sheet.html` so course links continue to work.
-3. For AI Unit 1, the matching `.md` files are the source used by the enhanced reader.
+3. For AI Units 1 and 2, the matching `.md` files are the source used by the enhanced reader. To enable another unit, add it to `markdownUnits` in `SEM 5/study.js` (and to the quiz check in `SEM 5/course.js` if it has MCQs).
 4. Put original documents in `SEM 5/pdfs/<COURSE>/` and update the PDF filename in `SEM 5/course.js` if needed.
 
 ## Deployment

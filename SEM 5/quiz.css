@@ -21,3 +21,6 @@
 .quiz-feedback.is-correct { color: #16803c; }
 .quiz-feedback.is-wrong { color: #c53030; }
 .light .quiz-option.is-correct { background: #e9f8ee; }
+
+.quiz-percent { margin: 0 0 8px; color: var(--red) !important; font-size: 2.4rem; font-weight: 850; letter-spacing: -.04em; }
+.quiz-mode .reader-pagination, .quiz-mode .reader-topic-pagination, .quiz-mode .reader-navigation { display: none; }

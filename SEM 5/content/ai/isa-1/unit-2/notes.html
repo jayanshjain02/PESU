@@ -1,3 +1,901 @@
-<p class="note-label">Unit 2 / Notes</p>
-<h4>Notes pending</h4>
-<p>Add the original Unit 2 notes in this file.</p>
+<p class="note-label">Unit 2 Notes</p>
+<p>
+    UNIT 2 — ARTIFICIAL INTELLIGENCE
+
+Machine Learning &amp; Supervised Learning
+
+MODULE 1 — MACHINE LEARNING FUNDAMENTALS
+
+1.1 Artificial Intelligence → Machine Learning
+
+AI aims to create machines capable of:
+
+* Reasoning
+* Learning
+* Problem solving
+* Perception
+* Decision making
+
+Traditional AI can use hard-coded rules, but writing rules for every possible situation becomes difficult as problems become complex.
+
+This led to Machine Learning (ML).
+
+Relationship
+
+Artificial Intelligence
+│
+↓
+Machine Learning
+│
+↓
+Learning from Data
+
+1.2 Definition of Machine Learning
+
+Machine Learning is a branch/subset of AI that enables computers to learn from data and improve performance without being explicitly programmed.
+
+Key idea
+
+Traditional programming:
+
+Rules + Data
+↓
+Program
+↓
+Output
+
+Machine Learning:
+
+Data + Correct Examples
+↓
+Model
+↓
+Prediction
+
+1.3 Why Machine Learning?
+
+ML enables systems to:
+
+1. Learn from data
+2. Adapt automatically
+3. Improve with experience
+4. Handle complex problems
+5. Generalize to unseen data
+
+1.4 Types of Machine Learning
+
+MACHINE LEARNING
+│
+┌───────────┼───────────┐
+↓           ↓           ↓
+Supervised   Unsupervised  Reinforcement
+Learning      Learning      Learning
+│
+┌────┴────┐
+↓         ↓
+Classification Regression
+
+Supervised Learning
+
+* Uses labelled data
+* Input + correct output are provided
+* Learns relationship between them
+* Predicts output for unseen data
+
+Example:
+
+Fruit features → Apple/Mango
+
+Unsupervised Learning
+
+* Uses unlabelled data
+* No predefined output
+* Finds hidden patterns/groups
+
+Reinforcement Learning
+
+* Agent interacts with environment
+* Receives rewards/penalties
+* Learns strategy to maximize total reward
+
+Examples:
+
+* Chess AI
+* Robot navigation
+* Self-driving simulation
+
+1.5 ML Terminology
+
+Term
+Meaning
+Feature (X)
+Input variable
+Label/Target (Y)
+Output to predict
+Training Data
+Used to teach model
+Testing Data
+Used to test unseen data
+Model
+Learned mathematical/algorithmic structure
+Prediction
+Output produced for new data
+
+Example
+
+Weight | Color | Diameter | Fruit
+
+160    | Red   | 8        | Apple
+180    | Yellow| 9        | Mango
+
+Features: Weight, Color, Diameter
+Label: Fruit
+
+MODULE 2 — SUPERVISED LEARNING &amp; CLASSIFICATION
+
+2.1 Supervised Learning
+
+Supervised learning trains a model using:
+
+Input Features (X)
++
+Correct Output (Y)
+↓
+MODEL
+↓
+New X → Prediction
+
+The model learns the relationship between inputs and outputs.
+
+2.2 Classification
+
+Classification is a supervised learning task where the output is a category/class label.
+
+Examples:
+
+Problem
+Output
+Spam detection
+Spam / Not Spam
+Animal classification
+Cat / Dog
+Disease diagnosis
+Positive / Negative
+Student result
+Pass / Fail
+
+Important
+
+Classification → Discrete/Categorical Output
+
+Example:
+
+Student → Pass
+Email → Spam
+Fruit → Apple
+
+2.3 Regression
+
+Regression is supervised learning where output is a continuous numerical value.
+
+Examples:
+
+* House price
+* Temperature
+* Salary
+* Stock price
+* Rainfall
+
+Input → Model → Numerical Output
+
+House Size → Regression → ₹75,00,000
+
+Classification vs Regression
+
+Classification
+Regression
+Category output
+Numerical output
+Discrete
+Continuous
+Spam/Not Spam
+House price
+Pass/Fail
+Salary
+Disease class
+Temperature
+
+2.4 Dataset, Training &amp; Testing
+
+Training Data
+
+Used to teach the model.
+
+Testing Data
+
+Used to determine how well the model performs on unseen data.
+
+Dataset
+│
+├──── Training Data → Learn
+│
+└──── Testing Data → Evaluate
+
+2.5 Overfitting &amp; Underfitting
+
+Overfitting
+
+Model learns the training data too closely, including noise/mistakes.
+
+Training → Excellent
+Testing  → Poor
+
+Underfitting
+
+Model is too simple and fails to learn the underlying pattern.
+
+Training → Poor
+Testing  → Poor
+
+Easy memory
+
+Overfit = memorizes too much
+Underfit = learns too little
+
+MODULE 3 — LINEAR &amp; POLYNOMIAL REGRESSION
+
+3.1 Linear Regression
+
+Linear Regression predicts a continuous numerical value using a linear relationship.
+
+Equation
+
+Y = mX + c
+
+Where:
+
+* X = input
+* Y = predicted output
+* m = slope
+* c = intercept
+
+Meaning
+
+m: change in Y when X increases by 1.
+
+c: predicted Y when X = 0.
+
+3.2 Example — Student Marks
+
+Suppose:
+
+1 hour → 40 marks
+2 hours → 50 marks
+3 hours → 60 marks
+
+Every extra hour increases marks by 10.
+
+Therefore:
+
+m = 10
+
+Using:
+
+Y = mX + c
+
+For X = 1, Y = 40:
+
+40 = 10(1) + c
+
+c = 30
+
+Therefore:
+
+Y = 10X + 30
+
+For 6 hours:
+
+Y = 10(6) + 30
+Y = 90
+
+3.3 Best-Fit Line &amp; Least Squares
+
+Real-world data doesn't perfectly lie on a straight line.
+
+Therefore Linear Regression finds the best-fit line.
+
+It uses the Least Squares Method.
+
+The method selects values of m and c that minimize the Sum of Squared Errors (SSE).
+
+Actual values
+●
+●
+●
+●
+-------------------- Best-fit line
+
+3.4 Polynomial Regression
+
+Linear Regression works for linear/straight-line relationships.
+
+Polynomial Regression is used when the relationship is curved/nonlinear.
+
+General form
+
+For degree 2:
+
+Y = c + mX + aX²
+
+Degrees
+
+Degree
+Shape
+1
+Straight line
+2
+Parabola
+3
+More complex/S-shaped curve
+
+Polynomial Regression also uses Least Squares.
+
+Advantages
+
+* Fits curved relationships
+* More flexible
+
+Disadvantages
+
+* Risk of overfitting
+* Harder to interpret
+
+3.5 Regression Evaluation
+
+Residual
+
+Residual = Actual − Predicted
+
+Also:
+
+y − ŷ
+
+Small residual → prediction close to actual.
+
+MSE
+
+Mean Squared Error
+
+Average of squared residuals.
+
+Smaller MSE → Better model
+
+RMSE
+
+RMSE = √MSE
+
+Lower RMSE → Better prediction
+
+R²
+
+R-Square / Coefficient of Determination
+
+Measures how well the model explains variation in the dependent variable.
+
+R² closer to 1 → better fit.
+
+MODULE 4 — SUPPORT VECTOR MACHINE (SVM)
+
+4.1 Definition
+
+Support Vector Machine (SVM) is a supervised ML algorithm used for:
+
+* Classification
+* Regression
+
+Its main objective is to find the best hyperplane that separates classes while maximizing the margin.
+
+4.2 Hyperplane, Margin &amp; Support Vectors
+
+Hyperplane
+
+The decision boundary separating classes.
+
+Class A       |       Class B
+● ● ●         |         ○ ○ ○
+● ● ●         |         ○ ○ ○
+↑
+Hyperplane
+
+Margin
+
+Distance between the hyperplane and the closest points of each class.
+
+Support Vectors
+
+Data points closest to the hyperplane that influence the boundary.
+
+Support        Hyperplane        Support
+Vector              │              Vector
+●                  │                ○
+&lt;------ Margin -----&gt;&lt;----- Margin ----&gt;
+
+4.3 SVM Algorithm
+
+Steps
+
+1. Plot training data points.
+2. Find possible separating hyperplanes.
+3. Calculate margin for each.
+4. Choose maximum-margin hyperplane.
+5. Identify support vectors.
+6. Store decision boundary as trained model.
+
+4.4 Dimensions
+
+Features
+Boundary
+1 feature
+Point/threshold
+2 features
+Line
+3 features
+Plane
+&gt;3 features
+Hyperplane
+
+Main idea
+
+Maximum Margin
+
+A larger margin generally provides:
+
+* Better separation
+* Less confusion
+* Better generalization
+* Reduced overfitting
+
+4.5 Multi-Class SVM
+
+SVM is fundamentally a binary classifier.
+
+For multiple classes, common approaches include:
+
+One-vs-One
+
+For 3 classes:
+
+Apple vs Mango
+Apple vs Orange
+Mango vs Orange
+
+One-vs-Rest
+
+Example:
+
+Apple vs Rest
+
+The PDF illustrates both approaches.
+
+Advantages
+
+* Good for high-dimensional data
+* Effective with clear separation
+* Good for small/medium datasets
+* Maximum-margin principle improves generalization
+
+Limitations
+
+* Computationally expensive for large datasets
+* Poor with noisy/overlapping data
+* Less interpretable
+* Training time increases with dataset/features
+
+MODULE 5 — K-NEAREST NEIGHBORS (KNN)
+
+5.1 Definition &amp; Principle
+
+K-Nearest Neighbors (KNN) is a supervised ML algorithm used for:
+
+* Classification
+* Regression
+
+It predicts a new point using its K closest training examples.
+
+KNN is called a Lazy Learning Algorithm because it does not construct a model during training.
+
+It stores training data and performs computation when prediction is required.
+
+5.2 Working of KNN
+
+New Point
+│
+↓
+Calculate distance from all training points
+│
+↓
+Sort distances
+│
+↓
+Select K nearest points
+│
+↓
+Majority Vote
+│
+↓
+Prediction
+
+For classification:
+
+Class with highest frequency among K neighbours wins.
+
+5.3 KNN Algorithm
+
+Steps
+
+1. Store training data.
+2. Select value of K.
+3. Calculate distance between new point and every training point.
+4. Sort distances in ascending order.
+5. Select first K points.
+6. Count class occurrences.
+7. Assign most frequent class.
+8. Display prediction.
+
+5.4 Euclidean Distance
+
+Common distance measure:
+
+d = √[(x₁−y₁)² + (x₂−y₂)² + ...]
+
+For two dimensions:
+
+d = √[(x₁−x₂)² + (y₁−y₂)²]
+
+Example
+
+Test point:
+
+(3,4)
+
+Training point:
+
+(0,0)
+
+Distance:
+
+√[(3−0)² + (4−0)²]
+
+= √(9+16)
+
+= √25
+
+= 5
+
+5.5 Choosing K
+
+Small K
+
+Example: K = 1
+
+* Only nearest neighbour
+* Sensitive to noise
+* Can produce incorrect prediction
+
+Moderate K
+
+Example: K = 3 or 5
+
+* Uses multiple neighbours
+* Majority voting
+* Generally more reliable/generalizes better
+
+KNN Pros
+
+* Simple
+* Easy to understand
+* Works for classification + regression
+* Good for small datasets
+* Few parameters
+
+KNN Cons
+
+* Slow for large datasets
+* High memory requirement
+* Sensitive to noisy data
+* Curse of dimensionality
+
+MODULE 6 — DECISION TREES
+
+6.1 Definition
+
+A Decision Tree is a supervised ML algorithm that makes decisions by asking a sequence of questions about input features.
+
+It can perform:
+
+* Classification
+* Regression
+
+It represents decisions in a tree structure.
+
+6.2 Components of Decision Tree
+
+ROOT NODE
+│
+┌──────┴──────┐
+↓             ↓
+Decision Node   Decision Node
+/    \\          /     \\
+↓      ↓        ↓       ↓
+Leaf   Leaf      Leaf    Leaf
+
+Root Node
+
+* Topmost node
+* Represents first/best feature
+* Only one root
+
+Decision/Internal Node
+
+* Contains condition/question
+* Splits data into subsets
+* Multiple decision nodes possible
+
+Leaf Node
+
+* Final prediction
+* Does not split further
+* Contains class/value
+
+6.3 Decision Tree Construction Algorithm
+
+MUST MEMORIZE
+
+1. Start with complete dataset.
+2. Select most informative feature as root.
+3. Create decision question.
+4. Split dataset into subsets.
+5. Check whether each subset contains one class.
+6. If yes → create leaf.
+7. Otherwise → repeat using remaining features.
+8. Continue until leaves are pure or no further splitting is possible.
+
+Flow
+
+Dataset
+↓
+Select best feature
+↓
+Create Root
+↓
+Split Dataset
+↓
+Pure?
+┌─┴─┐
+Yes  No
+↓    ↓
+Leaf  Split again
+
+6.4 Decision Tree Example — Disease Prediction
+
+Features:
+
+* Age
+* Fever
+* Cough
+* Sore throat
+* Contact Risk
+* Oxygen
+
+Target:
+
+COVID = Positive/Negative
+
+Example rule:
+
+Cough = Yes
+↓
+Contact Risk = High
+↓
+COVID = Positive
+
+The PDF's exercise demonstrates recursively splitting the data until branches become pure and then using held-out records for testing.
+
+6.5 Decision Tree Advantages &amp; Limitations
+
+Advantages
+
+* Simple
+* Easy to interpret
+* Tree diagram is easy to understand
+* Works with numerical and categorical data
+* Minimal preprocessing
+* Fast prediction after training
+
+Limitations
+
+* Sensitive to small dataset changes
+* Can overfit
+* Imbalanced data can affect performance
+* Large trees become difficult to interpret
+
+MODULE 7 — MODEL EVALUATION &amp; ML WORKFLOW
+
+7.1 Confusion Matrix
+
+A Confusion Matrix evaluates a classification model by comparing:
+
+Actual values vs Predicted values
+
+Binary Classification
+
+![][image1]
+
+Four terms
+
+TP — True Positive
+
+Model correctly predicts positive.
+
+TN — True Negative
+
+Model correctly predicts negative.
+
+FP — False Positive
+
+Model predicts positive, but actual is negative.
+
+FN — False Negative
+
+Model predicts negative, but actual is positive.
+
+##
+
+##
+
+##
+
+7.2 Classification Metrics
+
+Accuracy
+
+Percentage of all predictions that are correct.
+
+Accuracy = (TP + TN) / (TP + TN + FP + FN)
+
+Precision
+
+Of all predicted positives, how many are actually positive?
+
+Precision = TP / (TP + FP)
+
+Recall
+
+Of all actual positives, how many were correctly identified?
+
+Recall = TP / (TP + FN)
+
+F1-Score
+
+Harmonic mean of Precision and Recall.
+
+F1 = 2 × Precision × Recall / (Precision + Recall)
+
+7.3 Numerical Example
+
+Suppose:
+
+TP = 40
+TN = 50
+FP = 5
+FN = 5
+
+Total:
+
+100
+
+Accuracy
+
+(40 + 50) / 100
+= 90/100
+= 90%
+
+Precision
+
+40/(40+5)
+= 40/45
+≈ 88.89%
+
+Recall
+
+40/(40+5)
+= 40/45
+≈ 88.89%
+
+This is based on the email-spam exercise in the Unit 2 PDF.
+
+7.4 Machine Learning Workflow
+
+MUST MEMORIZE
+
+Data Collection
+↓
+Data Preprocessing
+↓
+Feature Selection
+↓
+Model Selection
+↓
+Model Training
+↓
+Model Testing
+↓
+Prediction
+↓
+Model Evaluation
+↓
+Deployment
+
+Data Preprocessing
+
+Includes:
+
+* Remove duplicates
+* Handle missing values
+* Remove noisy/irrelevant data
+* Correct incorrect values
+* Convert categorical data to numerical
+
+Feature Selection
+
+Choose the most important input features.
+
+Example:
+
+Weight
+Color
+Diameter
+
+##
+
+7.5 Train-Test Split &amp; Tools
+
+Example from the PDF:
+
+test_size = 0.30
+
+means:
+
+70% → Training
+30% → Testing
+
+`random_state=42` ensures the random split remains reproducible.
+
+Important Python libraries
+
+Scikit-learn
+
+Provides:
+
+* Decision Tree
+* KNN
+* SVM
+* Linear Regression
+* Train-test split
+* Accuracy
+* Confusion matrix
+
+Seaborn
+
+Used for visualizations such as:
+
+* Heatmaps
+* Bar charts
+* Histograms
+* Box plots
+* Scatter plots
+
+The PDF specifically uses it for a confusion-matrix heatmap.
+
+[image1]: &lt;data:image/png;base64,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&gt;
+</p>

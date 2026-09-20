@@ -3,6 +3,7 @@ const contentParam = params.get('content') || '';
 const validContentPath = /^content\/[a-z0-9-]+\/isa-1\/unit-[0-9]+\/(notes|questions|cheat-sheet)\.html$/;
 const readerCard = document.querySelector('#reader-card');
 const typeNames = { notes: 'Notes', questions: 'Questions', 'cheat-sheet': 'Cheat Sheet' };
+const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2']);
 const courseNames = { ai: 'Artificial Intelligence', blc: 'Blockchain dApp Development', ct: 'Cloud Technologies', dm: 'Digital Marketing', sta: 'Software Testing & Automation', gaming: 'Gaming' };
 const siteNav = document.querySelector('.nav');
 siteNav.innerHTML = '<a class="icon-button" href="index.html" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></a><button class="icon-button theme-toggle" type="button" aria-pressed="false" aria-label="Use light theme"><span class="theme-symbol" aria-hidden="true">☼</span></button>';
@@ -145,7 +146,7 @@ function parseUnitQuiz(source) {
   });
 }
 
-function addUnitQuiz(source) {
+function addUnitQuiz(source, unitName) {
   const sourceQuestions = parseUnitQuiz(source);
   if (!sourceQuestions.length) return;
   const shuffleQuestions = () => {
@@ -160,10 +161,12 @@ function addUnitQuiz(source) {
   const quiz = document.createElement('section');
   quiz.className = 'quiz-card';
   readerCard.before(quiz);
+  const totalMarks = sourceQuestions.reduce((sum, { marks }) => sum + Number(marks), 0);
   let index = 0;
   let score = 0;
+  let marksEarned = 0;
   const renderStart = () => {
-    quiz.innerHTML = `<p class="note-label">Unit 1 interactive quiz</p><h2>Test your MCQs</h2><p>${questions.length} questions drawn from this unit's 1-mark and 2-mark MCQs. Get immediate feedback after every answer.</p><button class="button button-primary" type="button">Start quiz</button>`;
+    quiz.innerHTML = `<p class="note-label">${unitName} interactive quiz</p><h2>Test your MCQs</h2><p>${questions.length} questions drawn from this unit's 1-mark and 2-mark MCQs. Get immediate feedback after every answer.</p><button class="button button-primary" type="button">Start quiz</button>`;
     quiz.querySelector('button').addEventListener('click', renderQuestion);
   };
   const renderQuestion = () => {
@@ -174,7 +177,7 @@ function addUnitQuiz(source) {
       quiz.dataset.answered = 'true';
       const selected = option.dataset.answer;
       const correct = selected === question.answer;
-      if (correct) score += 1;
+      if (correct) { score += 1; marksEarned += Number(question.marks); }
       quiz.querySelectorAll('.quiz-option').forEach((button) => {
         button.disabled = true;
         if (button.dataset.answer === question.answer) button.classList.add('is-correct');
@@ -191,8 +194,9 @@ function addUnitQuiz(source) {
         quiz.dataset.answered = '';
         index += 1;
         if (index === questions.length) {
-          quiz.innerHTML = `<p class="note-label">Quiz complete</p><h2>${score} / ${questions.length}</h2><p>You answered ${score} question${score === 1 ? '' : 's'} correctly.</p><button class="button button-secondary" type="button">Try again</button>`;
-          quiz.querySelector('button').addEventListener('click', () => { questions = shuffleQuestions(); index = 0; score = 0; renderQuestion(); });
+          const percent = Math.round((marksEarned / totalMarks) * 100);
+          quiz.innerHTML = `<p class="note-label">Quiz complete</p><h2>Total score: ${marksEarned} / ${totalMarks} marks</h2><p class="quiz-percent">${percent}%</p><p>You answered ${score} of ${questions.length} question${questions.length === 1 ? '' : 's'} correctly.</p><button class="button button-secondary" type="button">Try again</button>`;
+          quiz.querySelector('button').addEventListener('click', () => { questions = shuffleQuestions(); index = 0; score = 0; marksEarned = 0; renderQuestion(); });
           return;
         }
         renderQuestion();
@@ -221,7 +225,7 @@ function renderMarkdown(markdown, label) {
   while (index < lines.length) {
     const line = lines[index];
     const trimmed = line.trim();
-    if (!trimmed) { index += 1; continue; }
+    if (!trimmed || /^#{1,6}$/.test(trimmed)) { index += 1; continue; }
     const heading = line.match(/^(#{1,6})\s+(.+)$/);
     if (heading) {
       const level = Math.min(4, heading[1].length + 1);
@@ -336,7 +340,8 @@ async function loadReader() {
   const [, course, unit, type] = contentParam.match(/^content\/([a-z0-9-]+)\/isa-1\/(unit-[0-9]+)\/(notes|questions|cheat-sheet)\.html$/);
   const unitName = unit.replace('-', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
   const title = `${courseNames[course]} — ${unitName}`;
-  const modular = course === 'ai' && unit === 'unit-1' && (type === 'notes' || type === 'questions');
+  const markdownBacked = markdownUnits.has(`${course}/${unit}`);
+  const modular = markdownBacked && (type === 'notes' || type === 'questions');
   const topic = modular ? Math.min(7, Math.max(1, Number.parseInt(params.get('topic'), 10) || 1)) : null;
   document.title = `${typeNames[type]} | ${title}`;
   document.querySelector('#reader-title').textContent = modular ? `Module ${topic} — ${typeNames[type]}` : typeNames[type];
@@ -347,7 +352,7 @@ async function loadReader() {
   renderNavigation(basePath, type, topic, modular);
   let source;
   let markdown = false;
-  if (course === 'ai' && unit === 'unit-1' && ['notes', 'questions', 'cheat-sheet'].includes(type)) {
+  if (markdownBacked) {
     const markdownResponse = await fetch(contentParam.replace(/\.html$/, '.md'));
     if (markdownResponse.ok) {
       source = await markdownResponse.text();
@@ -360,16 +365,17 @@ async function loadReader() {
     source = await response.text();
   }
   const visibleSource = markdown && modular ? extractMarkdownModule(source, topic) : modular ? extractModule(source, topic, typeNames[type]) : source;
-  const quizEnabled = course === 'ai' && unit === 'unit-1' && type === 'questions';
+  const quizEnabled = markdownBacked && type === 'questions';
   const quizMode = quizEnabled && params.get('quiz') === '1';
   const questionSource = markdown && quizEnabled ? markdownToQuestionText(visibleSource) : visibleSource;
   const quizSource = markdown && quizEnabled ? markdownToQuestionText(source) : source;
   readerCard.hidden = quizMode;
   if (quizMode) {
-    document.querySelector('#reader-title').textContent = 'Unit 1 MCQ Quiz';
+    document.body.classList.add('quiz-mode');
+    document.querySelector('#reader-title').textContent = `${unitName} MCQ Quiz`;
     document.querySelector('#reader-status').textContent = 'Interactive quiz';
     readerCard.innerHTML = '';
-    addUnitQuiz(quizSource);
+    addUnitQuiz(quizSource, unitName);
   } else {
     readerCard.innerHTML = quizEnabled ? formatQuestionContent(questionSource) : markdown ? renderMarkdown(visibleSource, `${unitName} ${typeNames[type]}`) : formatStudyContent(visibleSource, typeNames[type]);
   }

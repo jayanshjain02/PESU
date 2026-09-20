@@ -387,7 +387,7 @@ Measures how well the model explains variation in the dependent variable.
 
 ---
 
-**MODULE 4 — SUPPORT VECTOR MACHINE (SVM)**
+# **MODULE 4 — SUPPORT VECTOR MACHINE (SVM)**
 
 ## **4.1 Definition**
 

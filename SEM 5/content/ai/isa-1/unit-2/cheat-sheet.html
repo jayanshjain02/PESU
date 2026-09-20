@@ -1,3 +1,267 @@
-<p class="note-label">Unit 2 / Cheat Sheet</p>
-<h4>Cheat sheet pending</h4>
-<p>Add the Unit 2 cheat sheet in this file.</p>
+<p class="note-label">Unit 2 Cheat Sheet</p>
+<p>
+    ⚡ UNIT 2 — CHEAT REVISION SHEET
+
+1. MACHINE LEARNING
+
+ML = AI technique that learns patterns from data without explicitly programming every rule.
+
+Types
+
+ML
+├── Supervised → Labelled data
+│   ├── Classification
+│   └── Regression
+│
+├── Unsupervised → Unlabelled data
+│
+└── Reinforcement → Reward/Penalty
+
+2. CLASSIFICATION vs REGRESSION
+
+Classification
+Regression
+Categorical output
+Numerical output
+Discrete
+Continuous
+Spam/Not Spam
+Salary
+Pass/Fail
+House Price
+Disease class
+Temperature
+
+Remember
+
+CLASS = Classification
+NUMBER = Regression
+
+3. LINEAR REGRESSION
+
+Y = mX + c
+
+m = slope
+c = intercept
+X = input
+Y = output
+
+Residual
+
+Actual − Predicted
+
+Metrics
+
+MSE  → Mean Squared Error
+RMSE → √MSE
+R²   → Goodness of fit
+
+Lower MSE/RMSE = better
+
+R² closer to 1 = better
+
+4. POLYNOMIAL REGRESSION
+
+Use when relationship is curved.
+
+Example:
+
+Y = c + mX + aX²
+
+Degree 1 → Straight line
+Degree 2 → Parabola
+Degree 3 → Complex curve
+
+Advantage: flexible
+
+Disadvantage: overfitting risk
+
+5. SVM
+
+Main objective:
+
+MAXIMUM MARGIN
+
+Class A       │       Class B
+● ●          │          ○ ○
+●          │          ○
+●       │       ○
+↑
+Hyperplane
+
+Three keywords
+
+Hyperplane + Margin + Support Vectors
+
+Support Vector
+
+Closest point to hyperplane.
+
+Dimensions
+
+1 feature → Point
+2 features → Line
+3 features → Plane
+3 → Hyperplane
+
+Multi-class
+
+One-vs-One
+Apple vs Mango
+Apple vs Orange
+Mango vs Orange
+
+One-vs-Rest
+Apple vs Rest
+
+6. KNN
+
+K = Number of neighbours
+
+Algorithm
+
+Store Data
+↓
+Choose K
+↓
+Calculate Distance
+↓
+Sort
+↓
+Choose K nearest
+↓
+Majority Vote
+↓
+Prediction
+
+Euclidean Distance
+
+d = √[(x₁−x₂)² + (y₁−y₂)²]
+
+Important
+
+Small K → sensitive to noise
+
+K=3/5 → generally more stable
+
+KNN is:
+
+Lazy Learning
+
+Because it doesn't build a model during training.
+
+7. DECISION TREE
+
+Structure
+
+ROOT
+│
+┌───────┴───────┐
+↓               ↓
+DECISION         DECISION
+NODE             NODE
+/   \\             /   \\
+↓     ↓           ↓     ↓
+LEAF  LEAF         LEAF  LEAF
+
+Components
+
+Root → first/best feature
+
+Decision Node → question/condition
+
+Leaf → final prediction
+
+Algorithm
+
+Dataset
+↓
+Select best feature
+↓
+Root
+↓
+Split
+↓
+Pure?
+├─ Yes → Leaf
+└─ No  → Split again
+
+8. CONFUSION MATRIX
+
+PREDICTED
++ve       -ve
+
+ACTUAL +ve     TP        FN
+ACTUAL -ve     FP        TN
+
+Remember:
+
+TP: Correct Positive
+
+TN: Correct Negative
+
+FP: False alarm
+
+FN: Missed positive
+
+9. CLASSIFICATION FORMULAS
+
+Accuracy
+
+(TP + TN) / Total
+
+Precision
+
+TP / (TP + FP)
+
+"When I said positive, how often was I correct?"
+
+Recall
+
+TP / (TP + FN)
+
+"Of all actual positives, how many did I catch?"
+
+F1
+
+2PR / (P + R)
+
+Harmonic mean of Precision + Recall
+
+10. OVERFITTING vs UNDERFITTING
+
+OVERFITTING
+Training → Very Good
+Testing  → Poor
+
+UNDERFITTING
+Training → Poor
+Testing  → Poor
+
+Memory trick
+
+OVER = learned TOO MUCH
+UNDER = learned TOO LITTLE
+
+11. COMPLETE ML WORKFLOW
+
+D → P → F → M → T → T → P → E → D
+
+Data Collection
+↓
+Preprocessing
+↓
+Feature Selection
+↓
+Model Selection
+↓
+Training
+↓
+Testing
+↓
+Prediction
+↓
+Evaluation
+↓
+Deployment
+</p>
