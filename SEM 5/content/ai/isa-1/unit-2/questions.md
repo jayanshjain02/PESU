@@ -1,0 +1,616 @@
+# **MODULE 1 — QUESTIONS**
+
+### **4-Mark Descriptive**
+
+**Q1 \[Easy\]:** Define Machine Learning. Explain why Machine Learning is needed.
+
+**Q2 \[Medium\]:** Explain the three major types of Machine Learning with suitable examples.
+
+### **1-Mark MCQs**
+
+**Q3 \[Easy\]** Machine Learning is a subset of:  
+A. DBMS  
+B. AI  
+C. Operating Systems  
+D. Computer Networks
+
+**Q4 \[Easy\]** Supervised Learning uses:  
+A. Unlabelled data  
+B. Labelled data  
+C. No data  
+D. Random data
+
+**Q5 \[Easy\]** Which learning type uses rewards and penalties?  
+A. Supervised  
+B. Unsupervised  
+C. Reinforcement  
+D. Regression
+
+**Q6 \[Medium\]** In a dataset, the variable that the model predicts is called:  
+A. Feature  
+B. Target/Label  
+C. Index  
+D. Attribute only
+
+### **2-Mark MCQs**
+
+**Q7 \[Easy\]** Which is an example of classification?  
+A. Predicting house price  
+B. Predicting temperature  
+C. Spam/Not Spam  
+D. Predicting salary
+
+**Q8 \[Medium\]** Which statement describes unsupervised learning?  
+A. Learns from labelled data  
+B. Learns from rewards  
+C. Finds patterns in unlabelled data  
+D. Uses only predefined rules
+
+**Q9 \[Medium\]** Which pair is correct?  
+A. Feature → output  
+B. Label → input  
+C. Feature → input  
+D. Model → raw data
+
+**Q10 \[Tough\]** Which sequence best represents supervised learning?  
+A. Unlabelled data → reward → policy  
+B. Labelled data → learn relationship → predict unseen output  
+C. Rules → compiler → output  
+D. Random data → clustering → reward
+
+### **ANSWER KEY**
+
+**Q1 — 4 points:**
+
+1. ML is a subset/branch of AI.  
+2. Enables computers to learn from data.  
+3. Improves performance without explicit programming.  
+4. Handles complex problems and unseen data.
+
+**Q2 — 4 points:**
+
+1. Supervised → labelled data.  
+2. Unsupervised → unlabelled data.  
+3. Reinforcement → rewards/penalties.  
+4. Give one suitable example for each.
+
+**MCQs:**  
+Q3 — **B**  
+Q4 — **B**  
+Q5 — **C**  
+Q6 — **B**  
+Q7 — **C**  
+Q8 — **C**  
+Q9 — **C**  
+Q10 — **B**
+
+---
+
+# **MODULE 2 — QUESTIONS**
+
+### **4-Mark Descriptive**
+
+**Q1 \[Easy\]:** Explain supervised learning with a suitable diagram.
+
+**Q2 \[Medium\]:** Differentiate classification and regression with four suitable examples.
+
+### **1-Mark MCQs**
+
+**Q3 \[Easy\]** Classification predicts:  
+A. Continuous values  
+B. Categories  
+C. Only images  
+D. Rewards
+
+**Q4 \[Easy\]** Regression predicts:  
+A. Categories  
+B. Continuous numerical values  
+C. Labels only  
+D. Classes only
+
+**Q5 \[Easy\]** Data used to teach a model is:  
+A. Testing data  
+B. Training data  
+C. Validation output  
+D. Prediction data
+
+**Q6 \[Medium\]** A model that performs extremely well on training data but poorly on unseen data is:  
+A. Underfitting  
+B. Overfitting  
+C. Classification  
+D. Clustering
+
+### **2-Mark MCQs**
+
+**Q7 \[Easy\]** Which is a regression problem?  
+A. Spam detection  
+B. Disease classification  
+C. Salary prediction  
+D. Fruit classification
+
+**Q8 \[Medium\]** Which output is categorical?  
+A. ₹50,000  
+B. 32.5°C  
+C. Pass/Fail  
+D. 5.7 kg
+
+**Q9 \[Medium\]** Which situation indicates underfitting?  
+A. Poor performance on both training and testing data  
+B. Perfect training and poor testing  
+C. Perfect testing only  
+D. High reward
+
+**Q10 \[Tough\]** A model memorizes training examples instead of learning general patterns. This is:  
+A. Regression  
+B. Underfitting  
+C. Overfitting  
+D. Reinforcement learning
+
+### **ANSWER KEY**
+
+**Q1 — 4 points:**
+
+1. Uses labelled data.  
+2. Contains features and correct labels.  
+3. Model learns relationship.  
+4. Predicts output for unseen data.
+
+**Q2 — 4 points:**
+
+1. Classification → categorical output.  
+2. Regression → continuous numerical output.  
+3. Classification examples: spam, disease.  
+4. Regression examples: salary, house price.
+
+**MCQs:**  
+Q3 — **B**  
+Q4 — **B**  
+Q5 — **B**  
+Q6 — **B**  
+Q7 — **C**  
+Q8 — **C**  
+Q9 — **A**  
+Q10 — **C**
+
+---
+
+# **MODULE 3 — QUESTIONS**
+
+### **4-Mark Descriptive**
+
+**Q1 \[Medium\]:** Explain Linear Regression with the equation `Y = mX + c` and a suitable example.
+
+**Q2 \[Tough\]:** Explain Polynomial Regression and differentiate it from Linear Regression.
+
+### **1-Mark MCQs**
+
+**Q3 \[Easy\]** Linear Regression predicts:  
+A. Categories  
+B. Continuous values  
+C. Rewards  
+D. Classes only
+
+**Q4 \[Easy\]** In `Y = mX + c`, m represents:  
+A. Intercept  
+B. Slope  
+C. Error  
+D. Target
+
+**Q5 \[Easy\]** Residual is:  
+A. Predicted − Actual  
+B. Actual − Predicted  
+C. Actual \+ Predicted  
+D. Actual × Predicted
+
+**Q6 \[Medium\]** Which metric is the square root of MSE?  
+A. MAE  
+B. RMSE  
+C. R²  
+D. SSE
+
+### **2-Mark MCQs**
+
+**Q7 \[Easy\]** If `Y = 10X + 30`, what is Y when X \= 5?  
+A. 50  
+B. 70  
+C. 80  
+D. 90
+
+**Q8 \[Medium\]** Polynomial Regression is useful when data shows:  
+A. No relationship  
+B. A curved relationship  
+C. Only categories  
+D. Rewards
+
+**Q9 \[Medium\]** Which metric measures how well a regression model explains variation?  
+A. R²  
+B. Precision  
+C. Recall  
+D. F1
+
+**Q10 \[Tough\]** If actual value \= 80 and predicted value \= 72, the residual is:  
+A. −8  
+B. 8  
+C. 152  
+D. 576
+
+### **ANSWER KEY**
+
+**Q1 — 4 points:**
+
+1. Supervised algorithm for continuous output.  
+2. Equation `Y=mX+c`.  
+3. m is slope and c is intercept.  
+4. Example: `Y=10X+30`; X=6 gives Y=90.
+
+**Q2 — 4 points:**
+
+1. Linear Regression fits a straight line.  
+2. Polynomial Regression fits curves.  
+3. Polynomial uses higher powers such as X²/X³.  
+4. Polynomial is more flexible but has higher overfitting risk.
+
+**MCQs:**  
+Q3 — **B**  
+Q4 — **B**  
+Q5 — **B**  
+Q6 — **B**  
+Q7 — **C**  
+Q8 — **B**  
+Q9 — **A**  
+Q10 — **B**
+
+---
+
+# **MODULE 4 — QUESTIONS**
+
+### **4-Mark Descriptive**
+
+**Q1 \[Easy\]:** Define SVM. Explain hyperplane, margin and support vectors.
+
+**Q2 \[Tough\]:** Explain the SVM algorithm with a neat diagram and explain why maximum margin is important.
+
+### **1-Mark MCQs**
+
+**Q3 \[Easy\]** SVM is a:  
+A. Supervised algorithm  
+B. Unsupervised algorithm  
+C. Reinforcement algorithm  
+D. Search algorithm
+
+**Q4 \[Easy\]** Points closest to the hyperplane are called:  
+A. Decision points  
+B. Support vectors  
+C. Root nodes  
+D. Target vectors
+
+**Q5 \[Easy\]** SVM tries to maximize the:  
+A. Error  
+B. Margin  
+C. Dataset  
+D. Number of features
+
+**Q6 \[Medium\]** With two features, the SVM decision boundary is a:  
+A. Point  
+B. Line  
+C. Plane  
+D. Cube
+
+### **2-Mark MCQs**
+
+**Q7 \[Easy\]** The hyperplane is used to:  
+A. Store data  
+B. Separate classes  
+C. Calculate RMSE  
+D. Create rewards
+
+**Q8 \[Medium\]** Which points primarily influence the SVM boundary?  
+A. Farthest points  
+B. Support vectors  
+C. Random points  
+D. All points equally
+
+**Q9 \[Medium\]** For three classes, One-vs-One creates:  
+A. One classifier only  
+B. Pairwise classifiers  
+C. No classifier  
+D. One regression line
+
+**Q10 \[Tough\]** If the nearest points of two classes are farther from the boundary, SVM generally has:  
+A. Smaller margin  
+B. Larger margin  
+C. No margin  
+D. More labels
+
+### **ANSWER KEY**
+
+**Q1 — 4 points:**
+
+1. SVM is supervised ML.  
+2. Hyperplane separates classes.  
+3. Margin is distance from boundary to closest points.  
+4. Support vectors are closest influential points.
+
+**Q2 — 4 points:**
+
+1. Plot data.  
+2. Find separating hyperplanes.  
+3. Select maximum-margin hyperplane.  
+4. Identify support vectors and use boundary for prediction.
+
+**MCQs:**  
+Q3 — **A**  
+Q4 — **B**  
+Q5 — **B**  
+Q6 — **B**  
+Q7 — **B**  
+Q8 — **B**  
+Q9 — **B**  
+Q10 — **B**
+
+---
+
+# **MODULE 5 — QUESTIONS**
+
+### **4-Mark Descriptive**
+
+**Q1 \[Easy\]:** Explain KNN and its working with a suitable flow diagram.
+
+**Q2 \[Tough\]:** Explain the KNN algorithm and Euclidean distance with a numerical example.
+
+### **1-Mark MCQs**
+
+**Q3 \[Easy\]** KNN is a:  
+A. Supervised algorithm  
+B. Unsupervised algorithm  
+C. Reinforcement algorithm  
+D. Search algorithm
+
+**Q4 \[Easy\]** K in KNN represents:  
+A. Number of features  
+B. Number of nearest neighbours  
+C. Number of classes  
+D. Number of labels
+
+**Q5 \[Easy\]** KNN is called:  
+A. Lazy Learning  
+B. Deep Learning  
+C. Active Learning  
+D. Reinforcement Learning
+
+**Q6 \[Medium\]** KNN commonly uses which distance measure?  
+A. Euclidean  
+B. Manhattan only  
+C. Cosine only  
+D. Hamming only
+
+### **2-Mark MCQs**
+
+**Q7 \[Easy\]** For K=3, KNN considers:  
+A. 1 neighbour  
+B. 2 neighbours  
+C. 3 neighbours  
+D. All neighbours
+
+**Q8 \[Medium\]** If three nearest neighbours are Apple, Apple and Mango, prediction is:  
+A. Mango  
+B. Apple  
+C. Both  
+D. Unknown
+
+**Q9 \[Medium\]** A very small K makes KNN more sensitive to:  
+A. Noise  
+B. Labels  
+C. Features only  
+D. Training speed
+
+**Q10 \[Tough\]** Distance between `(3,4)` and `(0,0)` using Euclidean distance is:  
+A. 3  
+B. 4  
+C. 5  
+D. 7
+
+### **ANSWER KEY**
+
+**Q1 — 4 points:**
+
+1. KNN is supervised.  
+2. Finds K nearest training points.  
+3. Uses distance to determine neighbours.  
+4. Predicts based on majority voting for classification.
+
+**Q2 — 4 points:**
+
+1. Store training data and choose K.  
+2. Calculate distances.  
+3. Sort/select K nearest neighbours.  
+4. Example `(3,4)` to `(0,0)` gives distance 5\.
+
+**MCQs:**  
+Q3 — **A**  
+Q4 — **B**  
+Q5 — **A**  
+Q6 — **A**  
+Q7 — **C**  
+Q8 — **B**  
+Q9 — **A**  
+Q10 — **C**
+
+---
+
+# **MODULE 6 — QUESTIONS**
+
+### **4-Mark Descriptive**
+
+**Q1 \[Easy\]:** Explain the structure of a Decision Tree with its three major components.
+
+**Q2 \[Medium\]:** Explain the Decision Tree construction algorithm with a suitable flow diagram.
+
+### **1-Mark MCQs**
+
+**Q3 \[Easy\]** The topmost node of a Decision Tree is:  
+A. Leaf  
+B. Root  
+C. Branch  
+D. Edge
+
+**Q4 \[Easy\]** A leaf node represents:  
+A. First feature  
+B. Final prediction  
+C. Dataset  
+D. Input only
+
+**Q5 \[Easy\]** Decision Trees are:  
+A. Supervised algorithms  
+B. Reinforcement algorithms  
+C. Search algorithms  
+D. Unsupervised only
+
+**Q6 \[Medium\]** The root node represents:  
+A. Final prediction  
+B. Best feature for first split  
+C. Testing data  
+D. Error
+
+### **2-Mark MCQs**
+
+**Q7 \[Easy\]** A Decision Tree can be used for:  
+A. Classification only  
+B. Regression only  
+C. Both classification and regression  
+D. Neither
+
+**Q8 \[Medium\]** If a subset contains only one class, the algorithm creates a:  
+A. Root  
+B. Leaf  
+C. New dataset  
+D. Hyperplane
+
+**Q9 \[Medium\]** Which problem is commonly associated with large Decision Trees?  
+A. Underflow  
+B. Overfitting  
+C. Encryption  
+D. Compilation
+
+**Q10 \[Tough\]** Correct Decision Tree construction order is:  
+A. Leaf → root → split → dataset  
+B. Dataset → root feature → split → check purity → repeat  
+C. Testing → prediction → root → dataset  
+D. Split → prediction → training → root
+
+### **ANSWER KEY**
+
+**Q1 — 4 points:**
+
+1. Root node \= first/best feature.  
+2. Decision nodes \= feature conditions/splits.  
+3. Leaf nodes \= final prediction.  
+4. Tree represents hierarchical decision-making.
+
+**Q2 — 4 points:**
+
+1. Start with complete dataset.  
+2. Select informative feature as root.  
+3. Split into subsets.  
+4. Create leaves for pure subsets; recursively split impure subsets.
+
+**MCQs:**  
+Q3 — **B**  
+Q4 — **B**  
+Q5 — **A**  
+Q6 — **B**  
+Q7 — **C**  
+Q8 — **B**  
+Q9 — **B**  
+Q10 — **B**
+
+---
+
+# **MODULE 7 — QUESTIONS**
+
+### **4-Mark Descriptive**
+
+**Q1 \[Medium\]:** Explain the confusion matrix and the four terms TP, TN, FP and FN.
+
+**Q2 \[Tough\]:** Explain the complete Machine Learning workflow from data collection to deployment.
+
+### **1-Mark MCQs**
+
+**Q3 \[Easy\]** A correct positive prediction is:  
+A. TN  
+B. TP  
+C. FP  
+D. FN
+
+**Q4 \[Easy\]** A model predicting positive when actual is negative gives:  
+A. TP  
+B. TN  
+C. FP  
+D. FN
+
+**Q5 \[Easy\]** Which metric is the harmonic mean of precision and recall?  
+A. Accuracy  
+B. MSE  
+C. F1-Score  
+D. R²
+
+**Q6 \[Medium\]** `test_size=0.30` means:  
+A. 30% training, 70% testing  
+B. 70% training, 30% testing  
+C. 30% prediction  
+D. 30% features
+
+### **2-Mark MCQs**
+
+**Q7 \[Easy\]** If TP=40 and TN=50 out of 100 samples, accuracy is:  
+A. 40%  
+B. 50%  
+C. 90%  
+D. 95%
+
+**Q8 \[Medium\]** Precision answers:  
+A. How many actual positives were found?  
+B. How many predicted positives were actually positive?  
+C. How many negatives were found?  
+D. How much regression error exists?
+
+**Q9 \[Medium\]** Which comes immediately before Model Training?  
+A. Deployment  
+B. Model Selection  
+C. Prediction  
+D. Evaluation
+
+**Q10 \[Tough\]** Given TP=80, FP=20, FN=10, TN=90, which is the accuracy?  
+A. 80%  
+B. 85%  
+C. 90%  
+D. 95%
+
+### **ANSWER KEY**
+
+**Q1 — 4 points:**
+
+1. Confusion matrix compares actual and predicted classes.  
+2. TP \= correctly predicted positive.  
+3. TN \= correctly predicted negative.  
+4. FP \= false positive; FN \= false negative.
+
+**Q2 — 4 points:**
+
+1. Collect and preprocess data.  
+2. Select features and model.  
+3. Train, test and make predictions.  
+4. Evaluate and deploy the model.
+
+**MCQs:**  
+Q3 — **B**  
+Q4 — **C**  
+Q5 — **C**  
+Q6 — **B**  
+Q7 — **C**  
+Q8 — **B**  
+Q9 — **B**  
+Q10 — **C**
+
+---
+
