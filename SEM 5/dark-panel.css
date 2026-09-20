@@ -1,0 +1,12 @@
+/* In dark mode, make the three study-section actions stand out without changing the unit card. */
+body:not(.light) .course-page .subtab {
+  border: 1px solid #fff;
+  background: #fff;
+  color: #111;
+}
+
+body:not(.light) .course-page .subtab:hover {
+  border-color: var(--red);
+  background: #f3f4f6;
+  color: #111;
+}

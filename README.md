@@ -1,102 +1,40 @@
-# 🎓 BCA PES
+# BCA PESU Study Hub
 
-> 📚 *Notes, PDFs, Important Topics & Exam Resources.*
+Course material, revision resources, and a Semester 5 study site for the BCA programme.
 
----
+## Repository layout
 
-## ✨ About This Repository
-  
-This repository is created to collect and organize **all academic resources** related to the **Bachelor of Computer Applications (BCA)** course.
-
-Instead of searching through chats, drives, or random folders, everything is stored here in a structured way.
-
-✔️ Merged Subject PDFs  
-✔️ Class Notes  
-✔️ Important Topics  
-✔️ Exam Preparation Material  
-✔️ Previous Resources & References  
-
----
-
-## 📘 What You’ll Find Here
-
-- 📄 **Merged PDFs** — Complete subject material in one file  
-- 📝 **Digital Notes**  
-- ⭐ **Important Exam Topics**  
-- 📑 **Quick Revision Material**  
-- 💡 **Concept Summaries**
-
----
-
-This repository helps BCA students:
-
-- Save time searching for materials  
-- Access organized subject content  
-- Prepare faster for exams  
-- Share knowledge collaboratively  
-
----
-
-## 🤝 Contribution Guide
-
-Want to contribute? Awesome! 🔥
-
-You can contribute by:
-
-- Adding new notes  
-- Uploading merged PDFs  
-- Sharing important questions  
-- Improving folder structure  
-- Updating outdated materials  
-
-### Steps:
-
-1. Fork the repository  
-2. Add your files in the correct semester/subject folder  
-3. Commit changes  
-4. Create a Pull Request  
-
----
-
-## 📌 Naming Convention (Recommended)
-
-Please follow this format while uploading files:
-
-```
-SubjectName_Topic_Type.pdf
+```text
+SEM 3/                         Semester 3 course material
+SEM 4/                         Semester 4 course material
+SEM 5/                         Deployable Semester 5 study site
+  index.html                   Course library entry point
+  [course].html                Individual course pages
+  study.html                   Focused notes, questions, and cheat-sheet reader
+  content/<course>/isa-1/      Study material, organised by unit
+  pdfs/<COURSE>/               Original course PDFs
+  assets/                      Course artwork and visual assets
+  *.css, *.js                  Shared site styling and behaviour
+.github/workflows/             GitHub Pages deployment workflow
 ```
 
-Examples:
+## Semester 5 site
 
-```
-DSA_Unit1_Notes.pdf
-JAVA_ImportantQuestions.pdf
-Python_MergedNotes.pdf
-```
+Open `SEM 5/index.html` with a local web server, such as VS Code Live Server. The reader fetches content files, so opening pages directly from the filesystem may prevent notes from loading.
 
----
+The site currently provides course pages for Artificial Intelligence, Blockchain dApp Development, Cloud Technologies, Digital Marketing, Software Testing & Automation, and Gaming. AI Unit 1 also includes Markdown-backed notes, questions, a cheat sheet, and an interactive MCQ quiz.
 
-## ⭐ Support
+### Adding study material
 
-If this repository helps you:
+1. Put a unit's reader files in `SEM 5/content/<course>/isa-1/unit-<number>/`.
+2. Keep the filenames `notes.html`, `questions.html`, and `cheat-sheet.html` so course links continue to work.
+3. For AI Unit 1, the matching `.md` files are the source used by the enhanced reader.
+4. Put original documents in `SEM 5/pdfs/<COURSE>/` and update the PDF filename in `SEM 5/course.js` if needed.
 
-⭐ Star the repo  
-📢 Share with classmates  
-🤝 Contribute resources  
+## Deployment
 
----
+Pushing changes under `SEM 5/` to `main` runs the GitHub Pages workflow in `.github/workflows/semester5-pages.yml`. It publishes the contents of `SEM 5/` as the site.
 
-## 👨‍💻 Maintained By
+## Contributing
 
-**BCA Students - Soham, Jayansh**
-
-Learning together. Growing together. 🚀
-
----
-
-## 📢 Disclaimer
-
-This repository is strictly for **educational purposes**.  
-All materials belong to their respective authors and institutions.
-
----
+Keep filenames descriptive, place material in the matching semester/course/unit folder, and avoid replacing existing resources unless the update is intentional. This repository is for educational use; source material remains the property of its respective authors and institutions.

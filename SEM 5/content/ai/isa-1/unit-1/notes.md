@@ -1,0 +1,776 @@
+# **UNIT 1 — ARTIFICIAL INTELLIGENCE**
+
+# **MODULE 1 — AI FOUNDATIONS**
+
+### **1.1 What is Artificial Intelligence?**
+
+**Artificial Intelligence (AI)** is a branch of Computer Science concerned with creating intelligent machines that can:
+
+* Think like humans  
+* Behave like humans  
+* Make decisions  
+* Solve real-world problems
+
+**Artificial \= man-made**  
+**Intelligence \= ability to think/reason**
+
+> **John McCarthy:** AI is the science and engineering of making intelligent machines capable of performing tasks that normally require human intelligence.
+
+### **1.2 Why AI?**
+
+AI helps us:
+
+* Solve real-world problems accurately and efficiently  
+* Build virtual assistants  
+* Develop robots for dangerous environments  
+* Create new technologies and opportunities
+
+### **1.3 Capabilities of AI**
+
+| Capability | Example |
+| ----- | ----- |
+| Learning | Netflix recommendations |
+| Logical reasoning | Google Maps |
+| Problem solving | Robot vacuum |
+| Decision making | Spam filter |
+
+A **self-driving car** demonstrates all four:
+
+**Experience → Reasoning → Problem solving → Decision**
+
+### **1.4 History and State-of-the-Art AI**
+
+| Year | Development |
+| ----- | ----- |
+| 1950 | Machines that think |
+| 1951 | Game AI / Checkers |
+| 1956 | McCarthy coined "AI" |
+| 1961 | ELIZA chatbot |
+| 2002 | Roomba mass-produced |
+| 2014 | Amazon Alexa |
+| 2018 | NLP & Generative AI |
+| 2022 | ChatGPT |
+
+**State-of-the-art AI technologies:**
+
+1. Autonomous planning & scheduling  
+2. Game strategizing — Deep Blue  
+3. Autonomous control — ALVINN  
+4. Medical diagnosis  
+5. Robotics  
+6. NLP/chatbots
+
+---
+
+# **MODULE 2 — TYPES OF AI**
+
+AI is classified in **two ways**:
+
+1. Based on **Capability**  
+2. Based on **Functionality**
+
+## **2.1 AI Based on Capability**
+
+             AI  
+              │  
+       ┌──────┼──────┐  
+       ↓      ↓      ↓  
+      ANI     AGI    ASI  
+    Narrow   General  Super
+
+### **ANI — Artificial Narrow Intelligence**
+
+Also called **Weak AI**.
+
+* Performs one specific task  
+* Cannot go beyond its trained purpose  
+* Works within predefined limits  
+* Most current AI systems belong here
+
+**Examples:** ChatGPT, Google Translate, Siri/Alexa, face recognition, Netflix recommendation, spam detection.
+
+### **AGI — Artificial General Intelligence**
+
+Also called **Strong AI**.
+
+* Performs different intellectual tasks  
+* Can reason and solve problems  
+* Adapts to new situations  
+* Human-level intelligence  
+* **No true AGI currently exists**
+
+### **ASI — Artificial Super Intelligence**
+
+* Intelligence exceeds humans  
+* Can solve highly complex problems  
+* Can independently learn and improve  
+* **Does not currently exist**  
+* Mainly hypothetical/science fiction
+
+---
+
+## **2.2 AI Based on Functionality**
+
+AI Functionality  
+       │  
+ ┌─────┼────────┬─────────┐  
+ ↓     ↓        ↓         ↓  
+Reactive Limited Theory  Self-  
+Machine  Memory  of Mind Aware
+
+### **Reactive Machines**
+
+* No memory  
+* No learning from previous experiences  
+* Uses only current input  
+* Example: **IBM Deep Blue**
+
+### **Limited Memory**
+
+* Uses current \+ past information  
+* Stores temporary information  
+* Learns from previous experiences  
+* Most modern AI systems fall here
+
+Examples: self-driving cars, ChatGPT, Google Maps, recommendation systems.
+
+### **Theory of Mind**
+
+Expected to understand:
+
+* Emotions  
+* Beliefs  
+* Intentions  
+* Human behaviour
+
+Currently under research.
+
+### **Self-Aware AI**
+
+Would possess:
+
+* Self-consciousness  
+* Awareness of existence  
+* Independent thinking  
+* Autonomous decisions
+
+**Currently does not exist.**
+
+---
+
+# **MODULE 3 — INTELLIGENT AGENTS**
+
+## **3.1 What is an Agent?**
+
+An **agent** is an entity that:
+
+* Perceives its environment through **sensors**  
+* Acts through **actuators**  
+* Works toward a specific goal
+
+### **Basic Agent Diagram**
+
+         Environment  
+               ↓  
+            Sensors  
+               ↓  
+             Agent  
+               ↓  
+           Actuators  
+               ↓  
+          Environment
+
+Examples:
+
+* Robot vacuum  
+* Self-driving car  
+* Chess AI  
+* Google Maps  
+* Autonomous drone  
+* Smart traffic signal  
+* Face Unlock agent
+
+---
+
+## **3.2 Characteristics of Intelligent Agents**
+
+Remember **P-A-G-A-A**:
+
+* **P**erception  
+* **A**utonomy  
+* **G**oal-oriented behaviour  
+* **A**ction  
+* **A**daptability
+
+Specifically:
+
+1. **Autonomy** — operates without human intervention  
+2. **Perception** — collects information using sensors  
+3. **Action** — performs tasks using actuators  
+4. **Goal-oriented** — works toward objectives  
+5. **Adaptability** — may learn/adapt from experience
+
+---
+
+## **3.3 Agent Function vs Agent Program**
+
+### **Agent Function**
+
+Defines **what action should be taken for every possible percept sequence**.
+
+Example:
+
+IF obstacle detected  
+        ↓  
+       STOP
+
+### **Agent Program**
+
+Actual **software/code implementing the agent function**.
+
+if obstacle \== True:  
+       Stop()  
+---
+
+## **3.4 Internal Working**
+
+Input  
+  ↓  
+Sensor  
+  ↓  
+Preprocessor  
+  ↓  
+Agent Function  
+  ↓  
+Actuator  
+  ↓  
+Action
+
+**Preprocessor:** Converts raw sensor data into usable information.
+
+Example — Self-driving car:
+
+* Sensors → cameras, radar, GPS  
+* Actuators → steering, brakes  
+* Agent program → detects lanes, avoids obstacles, navigates
+
+---
+
+## **3.5 Types of Intelligent Agents**
+
+Five types:
+
+1. **Simple Reflex Agent**  
+2. **Model-Based Reflex Agent**  
+3. **Goal-Based Agent**  
+4. **Utility-Based Agent**  
+5. **Learning Agent**
+
+### **Quick memory**
+
+Simple Reflex → Current condition  
+Model-Based   → Current \+ internal state  
+Goal-Based    → Goal  
+Utility-Based → Best/most useful outcome  
+Learning      → Improves from experience  
+---
+
+# **MODULE 4 — PEAS AND ENVIRONMENT**
+
+## **4.1 Environment**
+
+An **environment** is everything surrounding an agent that it can:
+
+* Perceive  
+* Interact with  
+* Act upon
+
+Example:
+
+**Vacuum robot environment:** floor, obstacles and dust.
+
+**Self-driving car:** roads, traffic lights, pedestrians and vehicles.
+
+---
+
+## **4.2 PEAS Model**
+
+**PEAS \=**
+
+P → Performance Measure  
+E → Environment  
+A → Actuators  
+S → Sensors
+
+PEAS is used to **describe/design an intelligent agent**.
+
+### **Meaning**
+
+| Component | Meaning |
+| ----- | ----- |
+| P | Measures success |
+| E | Surrounding world |
+| A | Mechanism for action |
+| S | Tools for perception |
+
+---
+
+## **4.3 PEAS Examples**
+
+### **Smart Traffic Signal**
+
+P → Reduce congestion & waiting time  
+E → Roads, vehicles, pedestrians  
+A → Traffic lights, display boards  
+S → Cameras, vehicle sensors
+
+### **Chess AI**
+
+P → Win the game  
+E → Chessboard, opponent  
+A → Move chess piece  
+S → Board position, opponent's move
+
+### **Driverless Car**
+
+P → Safe & efficient navigation  
+E → Roads, traffic, pedestrians, weather  
+A → Steering, acceleration, braking  
+S → Camera, LiDAR, GPS, radar  
+---
+
+## **4.4 Environment Characteristics**
+
+Six classifications:
+
+1. Fully Observable / Partially Observable  
+2. Deterministic / Stochastic  
+3. Episodic / Sequential  
+4. Static / Dynamic  
+5. Discrete / Continuous  
+6. Single-Agent / Multi-Agent
+
+---
+
+### **Fully vs Partially Observable**
+
+**Fully observable:** Complete state is available.
+
+Example: Chessboard.
+
+**Partially observable:** Some information is unavailable/hidden.
+
+Example: Driving in fog.
+
+### **Deterministic vs Stochastic**
+
+**Deterministic:** Same state \+ same action → same result.
+
+Example: Crossword.
+
+**Stochastic:** Outcome contains uncertainty/randomness.
+
+Example: Weather forecasting.
+
+### **Episodic vs Sequential**
+
+**Episodic:** Each decision is independent.
+
+Example: Image classification.
+
+**Sequential:** Current action affects future decisions.
+
+Example: Chess, driving.
+
+### **Static vs Dynamic**
+
+**Static:** Environment doesn't change while decision is made.
+
+Example: Sudoku.
+
+**Dynamic:** Environment changes continuously.
+
+Example: Traffic management.
+
+### **Discrete vs Continuous**
+
+**Discrete:** Finite states/actions.
+
+Example: Tic-Tac-Toe.
+
+**Continuous:** Values/states change continuously.
+
+Example: Health monitoring.
+
+### **Single vs Multi-Agent**
+
+**Single:** One agent operates independently.
+
+Example: Puzzle-solving bot.
+
+**Multi:** Multiple agents interact/cooperate/compete.
+
+Example: Warehouse robots.
+
+---
+
+# **MODULE 5 — PROBLEM SOLVING & STATE SPACE SEARCH**
+
+## **5.1 Problem Solving in AI**
+
+A problem consists of:
+
+Initial State  
+     ↓  
+Possible Actions  
+     ↓  
+State Transitions  
+     ↓  
+Goal State
+
+A problem is a scenario where an agent starts at an **initial state**, has a **goal**, and must find a path to reach it.
+
+---
+
+## **5.2 State Space Search**
+
+**State Space Search** explores possible states to find a path from the initial state to the goal.
+
+### **Why needed?**
+
+AI problems often have:
+
+* Multiple possible solutions  
+* Multiple possible states  
+* Different paths  
+* Need to select an appropriate solution
+
+Applications:
+
+* Puzzle solving  
+* Route planning  
+* Scheduling  
+* Game playing
+
+---
+
+## **5.3 Components of State Space Search**
+
+Remember:
+
+**S-S-I-G-T-P-S**
+
+1. **State** — current configuration  
+2. **State Space** — all possible states  
+3. **Initial State** — starting point  
+4. **Goal State** — desired result  
+5. **Transition** — action changing one state to another  
+6. **Path** — sequence of states  
+7. **Search Strategy** — method used to explore
+
+### **8-Puzzle**
+
+* Initial → starting board  
+* Actions → move tile up/down/left/right  
+* Goal → desired configuration  
+* Path cost → number of moves
+
+### **Route Finding**
+
+* Initial → City A  
+* Goal → City B  
+* Actions → drive to neighboring cities  
+* Transition → distance/time  
+* Cost → total distance/time
+
+---
+
+## **5.4 State Space Tree**
+
+            Start (S)  
+              /     \\  
+          Right      Down  
+            |          |  
+         Dead End    Continue  
+                       |  
+                    /     \\  
+                  Left    Right  
+                   |        |  
+              Dead End     Goal
+
+**Root node:** Initial state  
+**Branches:** Possible actions  
+**Nodes:** States  
+**Leaf:** Goal or dead end
+
+---
+
+## **5.5 Search Strategies**
+
+Search Strategies  
+       │  
+ ┌─────┴─────┐  
+ ↓           ↓  
+Uninformed   Informed  
+ ↓           ↓  
+BFS          A\*  
+DFS          Greedy  
+UCS          AO\*  
+             Hill Climbing
+
+**Uninformed:** No domain-specific heuristic knowledge.
+
+**Informed:** Uses heuristic/domain knowledge.
+
+---
+
+# **MODULE 6 — UNINFORMED SEARCH ALGORITHMS**
+
+## **6.1 Uninformed Search**
+
+Also called **Blind Search**.
+
+It:
+
+* Uses only problem definition  
+* Does not use heuristics  
+* Explores without additional goal information  
+* Can require high computational resources
+
+Examples:
+
+* BFS  
+* DFS  
+* UCS
+
+The PDF specifically describes **BFS** in detail. DFS and UCS are listed as uninformed algorithms but their detailed procedures are not provided in the uploaded material.
+
+---
+
+## **6.2 Search Properties**
+
+Four important properties:
+
+| Property | Meaning |
+| ----- | ----- |
+| Completeness | Will it find a solution? |
+| Optimality | Will it find best/lowest-cost solution? |
+| Time Complexity | Nodes generated |
+| Space Complexity | Nodes stored |
+
+---
+
+## **6.3 Breadth-First Search — BFS**
+
+**BFS \= Breadth-First Search**
+
+BFS explores the search tree **level by level**.
+
+### **Data Structure**
+
+**FIFO Queue**
+
+First In → First Out
+
+### **Properties from PDF**
+
+* Complete  
+* Optimal when path costs are uniform
+
+### **BFS Algorithm**
+
+1\. Initialize frontier with start node.  
+2\. Insert start node into queue.  
+3\. Remove first node from queue.  
+4\. If node is goal → return solution.  
+5\. Otherwise expand it.  
+6\. Add unvisited successors to end of queue.  
+7\. Repeat until goal is found or queue is empty.  
+---
+
+## **6.4 BFS Traversal**
+
+Given:
+
+         A  
+       /  |  \\  
+      B   C   D  
+     / \\     / \\  
+    E   F   G   H
+
+Traversal:
+
+Level 0 → A  
+Level 1 → B C D  
+Level 2 → E F G H
+
+BFS:  
+A → B → C → D → E → F → G → H
+
+### **BFS Applications**
+
+* Robot navigation  
+* Maze solving  
+* Shortest path with equal movement cost  
+* Social-network shortest connection
+
+---
+
+## **6.5 DFS, UCS — Exam Recognition**
+
+### **DFS — Depth-First Search**
+
+**Source coverage:** The PDF identifies DFS as an uninformed search algorithm but does not provide its detailed algorithm/procedure.
+
+Exam recognition:
+
+> **DFS explores deeper nodes before backtracking.**
+
+### **UCS — Uniform Cost Search**
+
+**Source coverage:** The PDF identifies UCS as an uninformed search algorithm but does not provide its detailed algorithm/procedure.
+
+Exam recognition:
+
+> **UCS selects the lowest path-cost node.**
+
+These two descriptions are standard algorithmic summaries, not detailed procedures supplied in the uploaded PDF. The PDF itself only explicitly provides the BFS procedure.
+
+---
+
+# **MODULE 7 — INFORMED SEARCH, HEURISTICS & A\***
+
+## **7.1 Informed Search**
+
+Also called **Heuristic Search**.
+
+It uses additional information to estimate which path is more promising.
+
+### **Advantages**
+
+* Uses heuristic information  
+* Searches intelligently toward goal  
+* Can explore fewer nodes  
+* Faster than uninformed search  
+* Useful for large/complex spaces
+
+Algorithms listed in the PDF:
+
+1. Greedy Search  
+2. A\* Search  
+3. AO\* Search  
+4. Hill Climbing
+
+---
+
+## **7.2 Heuristic Function — h(n)**
+
+**h(n)** estimates the cost from current node **n** to the goal.
+
+Example: **8-Puzzle**
+
+h(n) \= Number of misplaced tiles
+
+Interpretation:
+
+* Smaller h(n) → appears closer to goal  
+* Larger h(n) → appears farther from goal
+
+**Important:** h(n) is an **estimate**, not necessarily the exact cost.
+
+---
+
+## **7.3 A\* Search**
+
+A\* selects the node with the **lowest estimated total cost**.
+
+### **Most Important Formula**
+
+# **`f(n) = g(n) + h(n)`**
+
+Where:
+
+* **g(n)** \= actual cost from Start → n  
+* **h(n)** \= estimated cost from n → Goal  
+* **f(n)** \= total estimated cost
+
+A\* is complete and optimal when the heuristic is **admissible**, according to the PDF.
+
+### **A\* Procedure**
+
+1\. Calculate g(n)  
+2\. Calculate h(n)  
+3\. Calculate f(n) \= g(n) \+ h(n)  
+4\. Select node with smallest f(n)  
+5\. Expand it  
+6\. Repeat until goal  
+---
+
+## **7.4 A\* Numerical Example**
+
+Given:
+
+S → A \= 2  
+S → B \= 1
+
+A → C \= 2  
+C → G \= 1
+
+B → G \= 3
+
+Suppose:
+
+g(A) \= 2  
+h(A) \= 3
+
+f(A) \= 2 \+ 3 \= 5
+
+For B:
+
+g(B) \= 1  
+h(B) \= 3
+
+f(B) \= 1 \+ 3 \= 4
+
+Therefore:
+
+f(B) \< f(A)
+
+4 \< 5
+
+Choose B
+
+The PDF's second example ultimately gives:
+
+A → C → E → G
+
+with total cost **6**.
+
+---
+
+## **7.5 Other Informed Algorithms**
+
+The PDF **names** but does not provide detailed algorithms for:
+
+### **Greedy Best-First Search**
+
+Exam recognition:
+
+> Uses heuristic information to choose a promising node.
+
+### **AO\* Search**
+
+Exam recognition:
+
+> Listed by the PDF as an informed search algorithm.
+
+### **Hill Climbing**
+
+Exam recognition:
+
+> Listed by the PDF as an informed search algorithm.
+
+For these three, the uploaded material does **not** provide step-by-step pseudocode or worked examples, so don't assume a detailed procedure came from your lecture PDF.
+
+---
+

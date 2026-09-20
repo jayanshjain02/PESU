@@ -1,0 +1,20 @@
+.course-profile.ai .course-art {
+  background-image: linear-gradient(to top, rgb(0 0 0 / .28), transparent 58%), url("assets/ai-course-art.png");
+  background-position: center;
+  background-size: cover;
+}
+
+.course-profile.blc .course-art,
+.course-profile.ct .course-art,
+.course-profile.dm .course-art,
+.course-profile.sta .course-art,
+.course-profile.gam .course-art {
+  background-position: center;
+  background-size: cover;
+}
+
+.course-profile.blc .course-art { background-image: linear-gradient(to top, rgb(0 0 0 / .28), transparent 58%), url("assets/blc-course-art.png"); }
+.course-profile.ct .course-art { background-image: linear-gradient(to top, rgb(0 0 0 / .28), transparent 58%), url("assets/ct-course-art.png"); }
+.course-profile.dm .course-art { background-image: linear-gradient(to top, rgb(0 0 0 / .28), transparent 58%), url("assets/dm-course-art.png"); }
+.course-profile.sta .course-art { background-image: linear-gradient(to top, rgb(0 0 0 / .28), transparent 58%), url("assets/sta-course-art.png"); }
+.course-profile.gam .course-art { background-image: linear-gradient(to top, rgb(0 0 0 / .28), transparent 58%), url("assets/gaming-course-art.png"); }

@@ -1,0 +1,23 @@
+.study-content .diagram {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--red);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: .85rem;
+  line-height: 1.45;
+  white-space: pre;
+}
+
+.study-content .fact-list {
+  gap: 9px;
+  margin-bottom: 20px;
+}
+
+.study-content .fact-list li {
+  max-width: 76ch;
+}
