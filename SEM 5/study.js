@@ -105,23 +105,37 @@ function formatQuestionContent(source) {
   const moduleTitle = lines.find((line) => /^MODULE\s+\d+\s*[—-]\s*QUESTIONS/i.test(line)) || 'Questions';
   const answerKeyAt = lines.findIndex((line) => /ANSWER KEY$/i.test(line));
   const questionLines = answerKeyAt < 0 ? lines : lines.slice(0, answerKeyAt);
-  const sectionStarts = ['4-Mark Descriptive', '2-Mark MCQs', '1-Mark MCQs'].map((title) => ({ title, index: questionLines.findIndex((line) => line === title) })).filter(({ index }) => index >= 0);
+  const questionSections = [
+    { title: '4-Mark Descriptive', aliases: ['4-Mark Descriptive', '4-Mark Questions'] },
+    { title: '2-Mark MCQs', aliases: ['2-Mark MCQs'] },
+    { title: '1-Mark MCQs', aliases: ['1-Mark MCQs'] },
+  ];
+  const sectionStarts = questionSections.map(({ title, aliases }) => ({ title, index: questionLines.findIndex((line) => aliases.includes(line)) })).filter(({ index }) => index >= 0);
   const output = document.createElement('div');
   output.className = 'study-content question-content';
   output.innerHTML = `<p class="note-label">${escapeHtml(label)}</p><h1>${escapeHtml(moduleTitle)}</h1>`;
+  const displayNumbers = new Map();
+  let nextQuestionNumber = 1;
   const questionMarkup = (sectionLines) => {
     const starts = sectionLines.map((line, index) => ({ line, index })).filter(({ line }) => /^Q\d+\b/.test(line));
     if (!starts.length) return `<p class="raw-block">${escapeHtml(sectionLines.join('\n'))}</p>`;
     return starts.map(({ line, index }, questionIndex) => {
       const end = starts[questionIndex + 1]?.index ?? sectionLines.length;
-      return `<h4>${escapeHtml(line)}</h4><p class="raw-block">${escapeHtml(sectionLines.slice(index + 1, end).join('\n'))}</p>`;
+      const sourceNumber = line.match(/^Q(\d+)/)?.[1];
+      const displayNumber = nextQuestionNumber++;
+      if (sourceNumber) displayNumbers.set(sourceNumber, displayNumber);
+      const displayLine = line.replace(/^Q\d+\b/, `Q${displayNumber}`);
+      return `<h4>${escapeHtml(displayLine)}</h4><p class="raw-block">${escapeHtml(sectionLines.slice(index + 1, end).join('\n'))}</p>`;
     }).join('');
   };
   sectionStarts.forEach(({ title, index }, sectionIndex) => {
     const end = sectionStarts.map(({ index: next }) => next).sort((a, b) => a - b).find((next) => next > index) ?? questionLines.length;
     output.innerHTML += `<section class="question-group"><h2>${escapeHtml(title)}</h2>${questionMarkup(questionLines.slice(index + 1, end))}</section>`;
   });
-  if (answerKeyAt >= 0) output.innerHTML += `<section class="answer-key"><h2>Answer Key</h2><p class="raw-block">${escapeHtml(lines.slice(answerKeyAt + 1).join('\n'))}</p></section>`;
+  if (answerKeyAt >= 0) {
+    const answerText = lines.slice(answerKeyAt + 1).join('\n').replace(/\bQ(\d+)\b/g, (reference, sourceNumber) => displayNumbers.has(sourceNumber) ? `Q${displayNumbers.get(sourceNumber)}` : reference);
+    output.innerHTML += `<section class="answer-key"><h2>Answer Key</h2><p class="raw-block">${escapeHtml(answerText)}</p></section>`;
+  }
   return output.innerHTML;
 }
 
@@ -139,7 +153,7 @@ function parseUnitQuiz(source) {
       const tableMatch = line.match(/\|\s*(\d+)\s*\|\s*([A-D])\s*\|/i);
       return match ? [match[1], match[2].toUpperCase()] : tableMatch ? [tableMatch[1], tableMatch[2].toUpperCase()] : null;
     }).filter(Boolean));
-    const questionStarts = questionLines.map((line, index) => ({ line, index, match: line.match(/^Q(\d+)\s*(?:\[[^\]]+\])?\s*(.*)$/) })).filter(({ match }) => match && Number(match[1]) >= 3);
+    const questionStarts = questionLines.map((line, index) => ({ line, index, match: line.match(/^Q(\d+)\.?\s*(?:\[[^\]]+\])?\s*(.*)$/) })).filter(({ match }) => match && Number(match[1]) >= 3);
     return questionStarts.map(({ index, match }, questionIndex) => {
       const endIndex = questionStarts[questionIndex + 1]?.index ?? questionLines.length;
       const options = questionLines.slice(index + 1, endIndex).map((line) => line.match(/^([A-D])\.\s*(.+)$/i)).filter(Boolean).map(([, key, text]) => ({ key: key.toUpperCase(), text }));
