@@ -286,7 +286,7 @@ function renderMarkdown(markdown, label) {
 
 function extractMarkdownModule(markdown, moduleNumber) {
   const lines = markdown.replace(/\r/g, '').split('\n');
-  const starts = lines.map((line, index) => ({ index, match: line.match(/^#{1,6}\s+\*\*MODULE\s+(\d+)\s*(?:[-—]|â€”)/i) })).filter(({ match }) => match);
+  const starts = lines.map((line, index) => ({ index, match: line.match(/^#{1,6}\s+(?:\*\*)?MODULE\s+(\d+)\s*(?:[-—]|â€”)/i) })).filter(({ match }) => match);
   const startIndex = starts.findIndex(({ match }) => Number(match[1]) === moduleNumber);
   if (startIndex < 0) throw new Error(`Module ${moduleNumber} is not available in this study file.`);
   return lines.slice(starts[startIndex].index, starts[startIndex + 1]?.index).join('\n');
