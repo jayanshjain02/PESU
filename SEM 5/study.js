@@ -127,7 +127,7 @@ function formatQuestionContent(source) {
 
 function parseUnitQuiz(source) {
   const lines = source.replace(/\r/g, '').split('\n').map((line) => line.trim()).filter(Boolean);
-  const starts = lines.map((line, index) => ({ line, index, match: line.match(/^MODULE\s+(\d+)\s*[—-]\s*QUESTIONS/i) })).filter(({ match }) => match);
+  const starts = lines.map((line, index) => ({ line, index, match: line.match(/^MODULE\s+(\d+)\s*(?:[-—]|â€”)+\s*QUESTIONS/i) })).filter(({ match }) => match);
   return starts.flatMap(({ index: start }, moduleIndex) => {
     const end = starts[moduleIndex + 1]?.index ?? lines.length;
     const block = lines.slice(start, end);
@@ -286,7 +286,7 @@ function renderMarkdown(markdown, label) {
 
 function extractMarkdownModule(markdown, moduleNumber) {
   const lines = markdown.replace(/\r/g, '').split('\n');
-  const starts = lines.map((line, index) => ({ index, match: line.match(/^#{1,6}\s+\*\*MODULE\s+(\d+)\s*[—-]/i) })).filter(({ match }) => match);
+  const starts = lines.map((line, index) => ({ index, match: line.match(/^#{1,6}\s+\*\*MODULE\s+(\d+)\s*(?:[-—]|â€”)/i) })).filter(({ match }) => match);
   const startIndex = starts.findIndex(({ match }) => Number(match[1]) === moduleNumber);
   if (startIndex < 0) throw new Error(`Module ${moduleNumber} is not available in this study file.`);
   return lines.slice(starts[startIndex].index, starts[startIndex + 1]?.index).join('\n');
