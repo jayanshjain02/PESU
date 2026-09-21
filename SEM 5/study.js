@@ -2,8 +2,11 @@ const params = new URLSearchParams(window.location.search);
 const contentParam = params.get('content') || '';
 const validContentPath = /^content\/[a-z0-9-]+\/isa-1\/unit-[0-9]+\/(notes|questions|cheat-sheet)\.html$/;
 const readerCard = document.querySelector('#reader-card');
+const readerPagination = document.querySelector('#reader-pagination');
+const readerTopicPagination = document.querySelector('#reader-topic-pagination');
+const readerNavigation = document.querySelector('#reader-navigation');
 const typeNames = { notes: 'Notes', questions: 'Questions', 'cheat-sheet': 'Cheat Sheet' };
-const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2']);
+const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2']);
 const courseNames = { ai: 'Artificial Intelligence', blc: 'Blockchain dApp Development', ct: 'Cloud Technologies', dm: 'Digital Marketing', sta: 'Software Testing & Automation', gaming: 'Gaming' };
 const siteNav = document.querySelector('.nav');
 siteNav.innerHTML = '<a class="icon-button" href="index.html" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></a><button class="icon-button theme-toggle" type="button" aria-pressed="false" aria-label="Use light theme"><span class="theme-symbol" aria-hidden="true">☼</span></button>';
@@ -131,9 +134,10 @@ function parseUnitQuiz(source) {
     const answerKeyAt = block.findIndex((line) => /ANSWER KEY$/i.test(line));
     const questionLines = block.slice(0, answerKeyAt < 0 ? block.length : answerKeyAt);
     const answerLines = answerKeyAt < 0 ? [] : block.slice(answerKeyAt + 1);
-    const answers = new Map(answerLines.map((line) => {
+    const answers = new Map(answerLines.flatMap((line) => line.replace(/\*/g, '').split(';')).map((line) => {
       const match = line.match(/^Q(\d+)\s*[—-]\s*([A-D])(?:[.\s]|$)/i);
-      return match ? [match[1], match[2].toUpperCase()] : null;
+      const tableMatch = line.match(/\|\s*(\d+)\s*\|\s*([A-D])\s*\|/i);
+      return match ? [match[1], match[2].toUpperCase()] : tableMatch ? [tableMatch[1], tableMatch[2].toUpperCase()] : null;
     }).filter(Boolean));
     const questionStarts = questionLines.map((line, index) => ({ line, index, match: line.match(/^Q(\d+)\s*(?:\[[^\]]+\])?\s*(.*)$/) })).filter(({ match }) => match && Number(match[1]) >= 3);
     return questionStarts.map(({ index, match }, questionIndex) => {
@@ -370,6 +374,9 @@ async function loadReader() {
   const questionSource = markdown && quizEnabled ? markdownToQuestionText(visibleSource) : visibleSource;
   const quizSource = markdown && quizEnabled ? markdownToQuestionText(source) : source;
   readerCard.hidden = quizMode;
+  readerPagination.hidden = quizMode;
+  readerTopicPagination.hidden = quizMode || !modular;
+  readerNavigation.hidden = quizMode;
   if (quizMode) {
     document.body.classList.add('quiz-mode');
     document.querySelector('#reader-title').textContent = `${unitName} MCQ Quiz`;

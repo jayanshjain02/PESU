@@ -1,11 +1,11 @@
 const courseKey = document.querySelector('meta[name="course"]')?.content;
 const courses = {
   ai: { code: 'AI', name: 'Artificial Intelligence', folder: 'pdfs/AI', units: 2, pdfs: ['AI Unit 1.pdf', 'Ai Unit 2.pdf'], study: true },
+  sta: { code: 'STA', name: 'Software Testing & Automation', folder: 'pdfs/STA', units: 2, pdfs: ['STA Unit 1.pdf', 'STA Unit 2.pdf'], study: true },
   blc: { code: 'BLC', name: 'Blockchain dApp Development', folder: 'pdfs/BLC', units: 2, pdfs: ['U1-COMBINED.pdf', 'U2-COMBINED.pdf'], study: true },
+  gaming: { code: 'GAM', name: 'Gaming', folder: 'pdfs/Gaming', units: 2, pdfs: ['Gaming Unit 1.pdf', 'Gaming Unit 2.pdf'], study: true },
   ct: { code: 'CT', name: 'Cloud Technologies', folder: 'pdfs/CT', units: 1, pdfs: ['CT Unit 1.pdf'], study: true },
   dm: { code: 'DM', name: 'Digital Marketing', folder: 'pdfs/DM', units: 2, pdfs: ['DM Unit 1.pdf', 'DM Unit 2.pdf'], study: false },
-  sta: { code: 'STA', name: 'Software Testing & Automation', folder: 'pdfs/STA', units: 2, pdfs: ['STA Unit 1.pdf', 'STA Unit 2.pdf'], study: true },
-  gaming: { code: 'GAM', name: 'Gaming', folder: 'pdfs/Gaming', units: 2, pdfs: ['Gaming Unit 1.pdf', 'Gaming Unit 2.pdf'], study: true },
 };
 
 const course = courses[courseKey];
@@ -44,7 +44,7 @@ function wireUnitTabs() {
 function studyButtons(unit) {
   if (!course.study) return '<p class="coming-soon">Interactive notes coming soon. The available PDFs are below.</p>';
   const root = `content/${courseKey}/isa-1/unit-${unit}/`;
-  const quizButton = courseKey === 'ai' && [1, 2].includes(unit) ? `<button class="subtab" type="button" data-content="${root}questions.html" data-quiz="true">Quiz</button>` : '';
+  const quizButton = ['ai', 'sta'].includes(courseKey) && [1, 2].includes(unit) ? `<button class="subtab" type="button" data-content="${root}questions.html" data-quiz="true">Quiz</button>` : '';
   return `<div class="subtab-list" aria-label="Unit ${unit} study sections"><button class="subtab" type="button" data-content="${root}notes.html">Notes</button><button class="subtab" type="button" data-content="${root}questions.html">Questions</button><button class="subtab" type="button" data-content="${root}cheat-sheet.html">Cheat Sheet</button>${quizButton}</div><p class="reader-hint">Each section opens in a focused study-reader tab.</p>`;
 }
 
