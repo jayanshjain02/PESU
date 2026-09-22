@@ -263,6 +263,73 @@ function addUnitQuiz(source, unitName) {
   renderStart();
 }
 
+const solidityStarter = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+contract CounterLab {
+    uint256 private count;
+
+    function increment() external {
+        count += 1;
+    }
+
+    function getCount() external view returns (uint256) {
+        return count;
+    }
+}`;
+
+function addSolidityLab() {
+  const lab = document.createElement('section');
+  lab.className = 'solidity-lab';
+  lab.innerHTML = `<div class="solidity-lab__heading"><div><p class="note-label">Interactive learning sandbox</p><h2>Remix, MetaMask and Ganache workflow</h2><p>This in-site simulation is for learning. It does not access a wallet, compile Solidity, or send a real transaction.</p></div><div class="solidity-lab__links"><a class="button button-secondary" href="https://remix.ethereum.org/" target="_blank" rel="noopener">Open Remix</a><a class="button button-secondary" href="https://metamask.io/download/" target="_blank" rel="noopener">Get MetaMask</a><a class="button button-secondary" href="https://archive.trufflesuite.com/ganache/" target="_blank" rel="noopener">Get Ganache</a></div></div><ol class="solidity-lab__flow"><li><strong>Remix</strong><span>Write and compile the contract.</span></li><li><strong>MetaMask</strong><span>Connect a Ganache test account and approve transactions.</span></li><li><strong>Ganache</strong><span>Mine and inspect local blocks and transactions.</span></li></ol><div class="solidity-lab__workspace"><section><label for="solidity-editor">CounterLab.sol</label><textarea id="solidity-editor" spellcheck="false" aria-label="Solidity contract editor"></textarea><div class="solidity-lab__actions"><button class="button button-secondary" type="button" data-lab-action="compile">Compile</button><button class="button button-secondary" type="button" data-lab-action="connect">Connect MetaMask</button><button class="button button-primary" type="button" data-lab-action="deploy" disabled>Deploy to Ganache</button></div></section><section class="solidity-lab__console" aria-live="polite"><p class="note-label">Local transaction console</p><p data-lab-status>Step 1: edit the sample contract and compile it.</p><dl><div><dt>Compiler</dt><dd data-lab-compiler>Waiting</dd></div><div><dt>Wallet</dt><dd data-lab-wallet>Not connected</dd></div><div><dt>Contract</dt><dd data-lab-contract>Not deployed</dd></div><div><dt>Ganache blocks</dt><dd data-lab-blocks>0</dd></div></dl><div class="solidity-lab__contract-actions" hidden><button class="button button-secondary" type="button" data-lab-action="read">Read getCount()</button><button class="button button-primary" type="button" data-lab-action="increment">Send increment()</button></div></section></div><div class="solidity-lab__tip"><strong>What changes when you click a button?</strong> Compile checks the code shape in this simulation. Connecting represents MetaMask choosing a Ganache test account. Deploying creates a local example address and block. Calling <code>increment()</code> creates another local transaction and changes the displayed contract state.</div>`;
+  readerCard.before(lab);
+  const editor = lab.querySelector('#solidity-editor');
+  const status = lab.querySelector('[data-lab-status]');
+  const compiler = lab.querySelector('[data-lab-compiler]');
+  const wallet = lab.querySelector('[data-lab-wallet]');
+  const contract = lab.querySelector('[data-lab-contract]');
+  const blocks = lab.querySelector('[data-lab-blocks]');
+  const deploy = lab.querySelector('[data-lab-action="deploy"]');
+  const contractActions = lab.querySelector('.solidity-lab__contract-actions');
+  editor.value = solidityStarter;
+  let compiled = false;
+  let connected = false;
+  let deployed = false;
+  let count = 0;
+  let blockCount = 0;
+  const setBlocks = () => { blocks.textContent = String(blockCount); };
+  lab.querySelector('[data-lab-action="compile"]').addEventListener('click', () => {
+    compiled = /pragma\s+solidity/.test(editor.value) && /contract\s+\w+/.test(editor.value);
+    compiler.textContent = compiled ? 'Compiled locally (simulation)' : 'Missing pragma or contract declaration';
+    status.textContent = compiled ? 'Step 2: connect the simulated MetaMask account.' : 'Add both a pragma and a contract declaration, then compile again.';
+    deploy.disabled = !(compiled && connected);
+  });
+  lab.querySelector('[data-lab-action="connect"]').addEventListener('click', () => {
+    connected = true;
+    wallet.textContent = 'Ganache test account: 0xA1...9C4E';
+    status.textContent = compiled ? 'Step 3: deploy the compiled contract to the simulated Ganache chain.' : 'Wallet connected. Compile the contract before deployment.';
+    deploy.disabled = !compiled;
+  });
+  deploy.addEventListener('click', () => {
+    deployed = true;
+    blockCount += 1;
+    contract.textContent = '0xC0unt...Lab (local example)';
+    setBlocks();
+    contractActions.hidden = false;
+    status.textContent = 'Deployment mined in local block 1. Read the initial count or send increment().';
+  });
+  lab.querySelector('[data-lab-action="read"]').addEventListener('click', () => {
+    if (deployed) status.textContent = `getCount() returned ${count}. This view call did not create a transaction or block.`;
+  });
+  lab.querySelector('[data-lab-action="increment"]').addEventListener('click', () => {
+    if (!deployed) return;
+    count += 1;
+    blockCount += 1;
+    setBlocks();
+    status.textContent = `increment() was approved by the simulated wallet. Local block ${blockCount} now stores count = ${count}.`;
+  });
+}
+
 function markdownInline(value) {
   let text = escapeHtml(value.trim().replace(/\\([=*+<>.])/g, '$1'));
   text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -482,6 +549,7 @@ async function loadReader() {
     const blcQuestions = course === 'blc' && type === 'questions';
     const readerLabel = isEl ? 'Experiential Learning / Solidity Lab' : `${unitName} ${typeNames[type]}`;
     readerCard.innerHTML = quizEnabled && !blcQuestions ? formatQuestionContent(questionSource) : markdown ? renderMarkdown(visibleSource, readerLabel) : formatStudyContent(visibleSource, typeNames[type]);
+    if (isEl) addSolidityLab();
   }
   readerCard.setAttribute('aria-busy', 'false');
 }
