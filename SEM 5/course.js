@@ -44,7 +44,7 @@ function wireUnitTabs() {
 function studyButtons(unit) {
   if (!course.study) return '<p class="coming-soon">Interactive notes coming soon. The available PDFs are below.</p>';
   const root = `content/${courseKey}/isa-1/unit-${unit}/`;
-  const quizButton = ['ai', 'sta'].includes(courseKey) && [1, 2].includes(unit) ? `<button class="subtab" type="button" data-content="${root}questions.html" data-quiz="true">Quiz</button>` : '';
+  const quizButton = ['ai', 'sta', 'blc'].includes(courseKey) && [1, 2].includes(unit) ? `<button class="subtab" type="button" data-content="${root}questions.html" data-quiz="true">Quiz</button>` : '';
   return `<div class="subtab-list" aria-label="Unit ${unit} study sections"><button class="subtab" type="button" data-content="${root}notes.html">Notes</button><button class="subtab" type="button" data-content="${root}questions.html">Questions</button><button class="subtab" type="button" data-content="${root}cheat-sheet.html">Cheat Sheet</button>${quizButton}</div><p class="reader-hint">Each section opens in a focused study-reader tab.</p>`;
 }
 
@@ -59,8 +59,13 @@ if (!course) {
 } else {
   document.title = `${course.name} | Semester 5`;
   document.querySelector('#course-crumb').textContent = course.name;
-  const tabs = Array.from({ length: course.units }, (_, index) => `<button id="unit-${index + 1}-tab" class="unit-tab ${index === 0 ? 'is-active' : ''}" type="button" role="tab" aria-selected="${index === 0}" aria-controls="unit-${index + 1}-panel" ${index === 0 ? '' : 'tabindex="-1"'}>Unit ${index + 1}</button>`).join('');
-  const panels = Array.from({ length: course.units }, (_, index) => `<section id="unit-${index + 1}-panel" class="unit-panel" role="tabpanel" aria-labelledby="unit-${index + 1}-tab" ${index === 0 ? '' : 'hidden'}><div class="study-intro"><div><p class="eyebrow">Unit ${index + 1}</p><h2>${course.name}</h2></div><p>Choose a study section or open the original PDF.</p></div>${studyButtons(index + 1)}<div class="pdf-grid">${pdfLink(index + 1)}</div></section>`).join('');
+  const sections = Array.from({ length: course.units }, (_, index) => ({ key: `unit-${index + 1}`, label: `Unit ${index + 1}`, unit: index + 1 }));
+  if (courseKey === 'blc') sections.push({ key: 'el', label: 'EL', title: 'Experiential Learning' });
+  const tabs = sections.map((section, index) => `<button id="${section.key}-tab" class="unit-tab ${index === 0 ? 'is-active' : ''}" type="button" role="tab" aria-selected="${index === 0}" aria-controls="${section.key}-panel" ${index === 0 ? '' : 'tabindex="-1"'}>${section.label}</button>`).join('');
+  const panels = sections.map((section, index) => {
+    if (section.key === 'el') return `<section id="el-panel" class="unit-panel" role="tabpanel" aria-labelledby="el-tab" ${index === 0 ? '' : 'hidden'}><div class="study-intro"><div><p class="eyebrow">BLC / EL</p><h2>${section.title}</h2></div><p>Build, deploy and test Solidity contracts on a local Ganache network.</p></div><div class="subtab-list" aria-label="Experiential Learning study section"><button class="subtab" type="button" data-content="content/blc/isa-1/el/el.html">Solidity Lab</button></div><p class="reader-hint">Open the guided lab for local development and deployment examples.</p></section>`;
+    return `<section id="${section.key}-panel" class="unit-panel" role="tabpanel" aria-labelledby="${section.key}-tab" ${index === 0 ? '' : 'hidden'}><div class="study-intro"><div><p class="eyebrow">${section.label}</p><h2>${course.name}</h2></div><p>Choose a study section or open the original PDF.</p></div>${studyButtons(section.unit)}<div class="pdf-grid">${pdfLink(section.unit)}</div></section>`;
+  }).join('');
   courseRoot.innerHTML = `<div class="course-heading"><div><p class="eyebrow">Semester 5 / ${course.code}</p><h1>${course.name}</h1></div><a class="button button-secondary" href="index.html">← All courses</a></div><div class="unit-tabs" role="tablist" aria-label="${course.name} units">${tabs}</div>${panels}`;
   wireUnitTabs();
   document.querySelectorAll('.subtab').forEach((button) => button.addEventListener('click', () => {

@@ -1,12 +1,17 @@
 const params = new URLSearchParams(window.location.search);
 const contentParam = params.get('content') || '';
+const elContentPath = 'content/blc/isa-1/el/el.html';
 const validContentPath = /^content\/[a-z0-9-]+\/isa-1\/unit-[0-9]+\/(notes|questions|cheat-sheet)\.html$/;
 const readerCard = document.querySelector('#reader-card');
 const readerPagination = document.querySelector('#reader-pagination');
 const readerTopicPagination = document.querySelector('#reader-topic-pagination');
 const readerNavigation = document.querySelector('#reader-navigation');
 const typeNames = { notes: 'Notes', questions: 'Questions', 'cheat-sheet': 'Cheat Sheet' };
-const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2']);
+const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'blc/unit-1', 'blc/unit-2']);
+const markdownModuleCounts = new Map([
+  ['blc/unit-1', 5],
+  ['blc/unit-2', 5],
+]);
 const courseNames = { ai: 'Artificial Intelligence', blc: 'Blockchain dApp Development', ct: 'Cloud Technologies', dm: 'Digital Marketing', sta: 'Software Testing & Automation', gaming: 'Gaming' };
 const siteNav = document.querySelector('.nav');
 siteNav.innerHTML = '<a class="icon-button" href="index.html" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></a><button class="icon-button theme-toggle" type="button" aria-pressed="false" aria-label="Use light theme"><span class="theme-symbol" aria-hidden="true">☼</span></button>';
@@ -139,7 +144,40 @@ function formatQuestionContent(source) {
   return output.innerHTML;
 }
 
+function parseBlcQuiz(source) {
+  const lines = source.replace(/\r/g, '').split('\n').map((line) => line.trim());
+  const answerKeyAt = lines.findIndex((line) => /ANSWER KEY/i.test(line));
+  const questionLines = lines.slice(0, answerKeyAt < 0 ? lines.length : answerKeyAt);
+  const answerLines = answerKeyAt < 0 ? [] : lines.slice(answerKeyAt + 1);
+  const answers = new Map();
+  let answerModule = null;
+  let answerMarks = null;
+  answerLines.forEach((line) => {
+    const moduleMatch = line.match(/^#{1,6}\s+\*\*MODULE\s+(\d+)/i);
+    if (moduleMatch) { answerModule = moduleMatch[1]; answerMarks = null; return; }
+    const marksMatch = line.match(/^#{1,6}\s+\*\*(\d)-Mark/i);
+    if (marksMatch) { answerMarks = marksMatch[1]; return; }
+    const answerMatch = line.match(/^(\d+)\.\s+\*\*([A-D])\*\*/i);
+    if (answerModule && answerMarks && answerMatch) answers.set(`${answerModule}/${answerMarks}/${answerMatch[1]}`, answerMatch[2].toUpperCase());
+  });
+  const sectionStarts = questionLines.map((line, index) => ({ line, index, match: line.match(/^#{1,6}\s+\*\*(\d)-MARK MCQs.*MODULE\s+(\d+)/i) })).filter(({ match }) => match);
+  return sectionStarts.flatMap(({ index: start, match }, sectionIndex) => {
+    const end = sectionStarts[sectionIndex + 1]?.index ?? questionLines.length;
+    const marks = match[1];
+    const module = match[2];
+    const block = questionLines.slice(start + 1, end);
+    const starts = block.map((line, index) => ({ line, index, match: line.match(/^\*\*(\d+)\\?\.\s+(.+?)\*\*:??$/) })).filter(({ match: questionMatch }) => questionMatch);
+    return starts.map(({ index, match: questionMatch }, questionIndex) => {
+      const next = starts[questionIndex + 1]?.index ?? block.length;
+      const options = block.slice(index + 1, next).map((line) => line.match(/^([A-D])\)\s*(.+)$/i)).filter(Boolean).map(([, key, text]) => ({ key: key.toUpperCase(), text }));
+      const answer = answers.get(`${module}/${marks}/${questionMatch[1]}`);
+      return answer && options.length === 4 ? { prompt: questionMatch[2], options, answer, marks } : null;
+    }).filter(Boolean);
+  });
+}
+
 function parseUnitQuiz(source) {
+  if (/^#\s+\*\*4-MARK QUESTIONS.*MODULE\s+\d+/im.test(source)) return parseBlcQuiz(source);
   const lines = source.replace(/\r/g, '').split('\n').map((line) => line.trim()).filter(Boolean);
   const starts = lines.map((line, index) => ({ line, index, match: line.match(/^MODULE\s+(\d+)\s*(?:[-—]|â€”)+\s*QUESTIONS/i) })).filter(({ match }) => match);
   return starts.flatMap(({ index: start }, moduleIndex) => {
@@ -251,6 +289,14 @@ function renderMarkdown(markdown, label) {
       index += 1;
       continue;
     }
+    if (/^```/.test(trimmed)) {
+      const code = [];
+      index += 1;
+      while (index < lines.length && !/^```/.test(lines[index].trim())) { code.push(lines[index]); index += 1; }
+      if (index < lines.length) index += 1;
+      output.push(`<pre><code>${escapeHtml(code.join('\n'))}</code></pre>`);
+      continue;
+    }
     if (/^---+$/.test(trimmed)) { output.push('<hr>'); index += 1; continue; }
     if (isTableLine(line) && isTableSeparator(lines[index + 1] || '')) {
       const headers = tableCells(line);
@@ -300,6 +346,20 @@ function renderMarkdown(markdown, label) {
 
 function extractMarkdownModule(markdown, moduleNumber) {
   const lines = markdown.replace(/\r/g, '').split('\n');
+  const isBlcQuestionFile = lines.some((line) => /^#{1,6}\s+\*\*4-MARK QUESTIONS.*MODULE\s+\d+/i.test(line));
+  if (isBlcQuestionFile) {
+    const startPattern = new RegExp(`^#{1,6}\\s+\\*\\*4-MARK QUESTIONS.*MODULE\\s+${moduleNumber}\\*\\*\\s*$`, 'i');
+    const start = lines.findIndex((line) => startPattern.test(line));
+    if (start < 0) throw new Error(`Module ${moduleNumber} is not available in this study file.`);
+    const answerKeyAt = lines.findIndex((line) => /^#{1,6}\s+\*\*ANSWER KEY/i.test(line));
+    const nextModuleAt = lines.slice(start + 1, answerKeyAt < 0 ? lines.length : answerKeyAt).findIndex((line) => /^#{1,6}\s+\*\*4-MARK QUESTIONS.*MODULE\s+\d+/i.test(line));
+    const end = nextModuleAt < 0 ? (answerKeyAt < 0 ? lines.length : answerKeyAt) : start + 1 + nextModuleAt;
+    const answerPattern = new RegExp(`^#{1,6}\\s+\\*\\*MODULE\\s+${moduleNumber}\\*\\*\\s*$`, 'i');
+    const answerStart = answerKeyAt < 0 ? -1 : lines.findIndex((line, index) => index > answerKeyAt && answerPattern.test(line));
+    const answerEndAt = answerStart < 0 ? -1 : lines.slice(answerStart + 1).findIndex((line) => /^#{1,6}\s+\*\*MODULE\s+\d+\*\*\s*$/i.test(line));
+    const answer = answerStart < 0 ? [] : lines.slice(answerStart, answerEndAt < 0 ? lines.length : answerStart + 1 + answerEndAt);
+    return [...lines.slice(start, end), ...(answer.length ? ['---', '# **ANSWER KEY**', ...answer] : [])].join('\n');
+  }
   const starts = lines.map((line, index) => ({ index, match: line.match(/^#{1,6}\s+(?:\*\*)?MODULE\s+(\d+)\s*(?:[-—]|â€”)/i) })).filter(({ match }) => match);
   const startIndex = starts.findIndex(({ match }) => Number(match[1]) === moduleNumber);
   if (startIndex < 0) throw new Error(`Module ${moduleNumber} is not available in this study file.`);
@@ -329,7 +389,7 @@ function extractModule(source, moduleNumber, type) {
   return `<p class="note-label">${escapeHtml(`${unitLabel} / Module ${moduleNumber}`)}</p><p>${escapeHtml(lines.slice(start, end).join('\n'))}</p>`;
 }
 
-function renderNavigation(basePath, type, topic, modular) {
+function renderNavigation(basePath, type, topic, modular, moduleCount = 7) {
   const types = ['notes', 'questions', 'cheat-sheet'];
   const typeIndex = types.indexOf(type);
   const typeNavigation = document.querySelector('#reader-pagination');
@@ -341,10 +401,21 @@ function renderNavigation(basePath, type, topic, modular) {
   const navigation = document.querySelector('#reader-navigation');
   if (modular) {
     topicNavigation.hidden = false;
-    topicNavigation.innerHTML = Array.from({ length: 7 }, (_, index) => `<a class="${index + 1 === topic ? 'is-active' : ''}" ${index + 1 === topic ? 'aria-current="page"' : ''} href="${readerUrl(`${basePath}${type}.html`, index + 1)}">${index + 1}</a>`).join('');
+    topicNavigation.innerHTML = Array.from({ length: moduleCount }, (_, index) => `<a class="${index + 1 === topic ? 'is-active' : ''}" ${index + 1 === topic ? 'aria-current="page"' : ''} href="${readerUrl(`${basePath}${type}.html`, index + 1)}">${index + 1}</a>`).join('');
     const previous = topic > 1 ? `<a class="button button-secondary" href="${readerUrl(`${basePath}${type}.html`, topic - 1)}">← Previous module</a>` : '<span class="button button-secondary is-disabled" aria-disabled="true">← Previous module</span>';
     const next = topic < 7 ? `<a class="button button-primary" href="${readerUrl(`${basePath}${type}.html`, topic + 1)}">Next module →</a>` : '<span class="button button-primary is-disabled" aria-disabled="true">Next module →</span>';
     navigation.innerHTML = `${previous}<span class="page-count">Module ${topic} of 7</span>${next}`;
+    navigation.querySelector('.page-count').textContent = `Module ${topic} of ${moduleCount}`;
+    if (topic >= moduleCount) {
+      const nextLink = navigation.querySelector('a.button-primary');
+      if (nextLink) {
+        const disabledNext = document.createElement('span');
+        disabledNext.className = 'button button-primary is-disabled';
+        disabledNext.setAttribute('aria-disabled', 'true');
+        disabledNext.textContent = 'Next module';
+        nextLink.replaceWith(disabledNext);
+      }
+    }
     return;
   }
   topicNavigation.hidden = true;
@@ -354,20 +425,30 @@ function renderNavigation(basePath, type, topic, modular) {
 }
 
 async function loadReader() {
-  if (!validContentPath.test(contentParam)) throw new Error('Invalid study-material location.');
-  const [, course, unit, type] = contentParam.match(/^content\/([a-z0-9-]+)\/isa-1\/(unit-[0-9]+)\/(notes|questions|cheat-sheet)\.html$/);
-  const unitName = unit.replace('-', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+  const isEl = contentParam === elContentPath;
+  if (!isEl && !validContentPath.test(contentParam)) throw new Error('Invalid study-material location.');
+  const contentMatch = isEl ? null : contentParam.match(/^content\/([a-z0-9-]+)\/isa-1\/(unit-[0-9]+)\/(notes|questions|cheat-sheet)\.html$/);
+  const [, course, unit, type] = contentMatch || [null, 'blc', 'el', 'el'];
+  const unitName = isEl ? 'Experiential Learning' : unit.replace('-', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+  const sectionName = isEl ? 'Solidity Lab' : typeNames[type];
   const title = `${courseNames[course]} — ${unitName}`;
-  const markdownBacked = markdownUnits.has(`${course}/${unit}`);
-  const modular = markdownBacked && (type === 'notes' || type === 'questions');
-  const topic = modular ? Math.min(7, Math.max(1, Number.parseInt(params.get('topic'), 10) || 1)) : null;
+  const markdownBacked = isEl || markdownUnits.has(`${course}/${unit}`);
+  const modular = !isEl && markdownBacked && (type === 'notes' || type === 'questions');
+  const moduleCount = markdownModuleCounts.get(`${course}/${unit}`) || 7;
+  const topic = modular ? Math.min(moduleCount, Math.max(1, Number.parseInt(params.get('topic'), 10) || 1)) : null;
   document.title = `${typeNames[type]} | ${title}`;
   document.querySelector('#reader-title').textContent = modular ? `Module ${topic} — ${typeNames[type]}` : typeNames[type];
   document.querySelector('#reader-kicker').textContent = title;
   document.querySelector('#reader-crumb').textContent = title;
   document.querySelector('#reader-status').textContent = modular ? `Module ${topic} of 7` : `${typeNames[type]} · ${unitName}`;
+  if (modular) document.querySelector('#reader-status').textContent = `Module ${topic} of ${moduleCount}`;
+  if (isEl) {
+    document.title = `${sectionName} | ${courseNames[course]}`;
+    document.querySelector('#reader-title').textContent = sectionName;
+    document.querySelector('#reader-status').textContent = 'Hands-on guide';
+  }
   const basePath = contentParam.slice(0, contentParam.lastIndexOf('/') + 1);
-  renderNavigation(basePath, type, topic, modular);
+  if (!isEl) renderNavigation(basePath, type, topic, modular, moduleCount);
   let source;
   let markdown = false;
   if (markdownBacked) {
@@ -382,15 +463,15 @@ async function loadReader() {
     if (!response.ok) throw new Error('The requested study file could not be opened.');
     source = await response.text();
   }
-  const visibleSource = markdown && modular ? extractMarkdownModule(source, topic) : modular ? extractModule(source, topic, typeNames[type]) : source;
+  const visibleSource = isEl ? source : markdown && modular ? extractMarkdownModule(source, topic) : modular ? extractModule(source, topic, typeNames[type]) : source;
   const quizEnabled = markdownBacked && type === 'questions';
   const quizMode = quizEnabled && params.get('quiz') === '1';
   const questionSource = markdown && quizEnabled ? markdownToQuestionText(visibleSource) : visibleSource;
-  const quizSource = markdown && quizEnabled ? markdownToQuestionText(source) : source;
+  const quizSource = markdown && quizEnabled ? (course === 'blc' ? source : markdownToQuestionText(source)) : source;
   readerCard.hidden = quizMode;
-  readerPagination.hidden = quizMode;
+  readerPagination.hidden = quizMode || isEl;
   readerTopicPagination.hidden = quizMode || !modular;
-  readerNavigation.hidden = quizMode;
+  readerNavigation.hidden = quizMode || isEl;
   if (quizMode) {
     document.body.classList.add('quiz-mode');
     document.querySelector('#reader-title').textContent = `${unitName} MCQ Quiz`;
@@ -398,7 +479,9 @@ async function loadReader() {
     readerCard.innerHTML = '';
     addUnitQuiz(quizSource, unitName);
   } else {
-    readerCard.innerHTML = quizEnabled ? formatQuestionContent(questionSource) : markdown ? renderMarkdown(visibleSource, `${unitName} ${typeNames[type]}`) : formatStudyContent(visibleSource, typeNames[type]);
+    const blcQuestions = course === 'blc' && type === 'questions';
+    const readerLabel = isEl ? 'Experiential Learning / Solidity Lab' : `${unitName} ${typeNames[type]}`;
+    readerCard.innerHTML = quizEnabled && !blcQuestions ? formatQuestionContent(questionSource) : markdown ? renderMarkdown(visibleSource, readerLabel) : formatStudyContent(visibleSource, typeNames[type]);
   }
   readerCard.setAttribute('aria-busy', 'false');
 }
