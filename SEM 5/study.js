@@ -178,8 +178,47 @@ function parseBlcQuiz(source) {
   });
 }
 
+function parseCtQuiz(source) {
+  const lines = source.replace(/\r/g, '').split('\n').map((line) => line.trim());
+  const answerKeyAt = lines.findIndex((line) => /ANSWER KEY/i.test(line));
+  const questionLines = lines.slice(0, answerKeyAt < 0 ? lines.length : answerKeyAt);
+  const answerLines = answerKeyAt < 0 ? [] : lines.slice(answerKeyAt + 1);
+  const answers = new Map();
+  let answerModule = null;
+  let answerMarks = null;
+  answerLines.forEach((line) => {
+    const plain = line.replace(/\*/g, '');
+    const moduleMatch = plain.match(/^#{1,6}\s+Module\s+(\d+)/i);
+    if (moduleMatch) { answerModule = moduleMatch[1]; answerMarks = null; return; }
+    const marksMatch = plain.match(/^(?:#{1,6}\s+)?([12])-Mark\b/i);
+    if (marksMatch) { answerMarks = marksMatch[1]; return; }
+    const answerMatch = plain.match(/^(\d+)\.\s+([A-D])\b/i);
+    if (answerModule && answerMarks && answerMatch) answers.set(`${answerModule}/${answerMarks}/${answerMatch[1]}`, answerMatch[2]);
+  });
+  const moduleStarts = questionLines.map((line, index) => ({ line, index })).filter(({ line }) => /^#{2,6}\s+\*\*4-Mark Questions\*\*/i.test(line));
+  return moduleStarts.flatMap(({ index: start }, moduleIndex) => {
+    const end = moduleStarts[moduleIndex + 1]?.index ?? questionLines.length;
+    const block = questionLines.slice(start, end);
+    const module = String(moduleIndex + 1);
+    const sectionStarts = block.map((line, index) => ({ line, index, match: line.match(/^#{2,6}\s+\*\*([12])-Mark MCQs\*\*/i) })).filter(({ match }) => match);
+    return sectionStarts.flatMap(({ index, match }, sectionIndex) => {
+      const sectionEnd = sectionStarts[sectionIndex + 1]?.index ?? block.length;
+      const marks = match[1];
+      const section = block.slice(index + 1, sectionEnd);
+      const starts = section.map((line, questionIndex) => ({ line, index: questionIndex, match: line.match(/^\*\*(?:Q)?(\d+)\\?\.\*\*\s*(.*)$/) })).filter(({ match: questionMatch }) => questionMatch);
+      return starts.map(({ index: questionStart, match: questionMatch }, questionIndex) => {
+        const questionEnd = starts[questionIndex + 1]?.index ?? section.length;
+        const options = section.slice(questionStart + 1, questionEnd).map((line) => line.match(/^([A-D])\.\s*(.+)$/i)).filter(Boolean).map(([, key, text]) => ({ key: key.toUpperCase(), text }));
+        const answer = answers.get(`${module}/${marks}/${questionMatch[1]}`);
+        return answer && options.length === 4 ? { prompt: questionMatch[2], options, answer, marks } : null;
+      }).filter(Boolean);
+    });
+  });
+}
+
 function parseUnitQuiz(source) {
   if (/^#\s+\*\*4-MARK QUESTIONS.*MODULE\s+\d+/im.test(source)) return parseBlcQuiz(source);
+  if (/^#{2,6}\s+\*\*4-Mark Questions\*\*/im.test(source)) return parseCtQuiz(source);
   const lines = source.replace(/\r/g, '').split('\n').map((line) => line.trim()).filter(Boolean);
   const starts = lines.map((line, index) => ({ line, index, match: line.match(/^MODULE\s+(\d+)\s*(?:[-—]|â€”)+\s*QUESTIONS/i) })).filter(({ match }) => match);
   return starts.flatMap(({ index: start }, moduleIndex) => {
@@ -748,10 +787,10 @@ async function loadReader() {
     source = await response.text();
   }
   const visibleSource = isEl ? source : markdown && modular ? extractMarkdownModule(source, topic) : modular ? extractModule(source, topic, typeNames[type]) : source;
-  const quizEnabled = ['ai', 'sta', 'blc'].includes(course) && markdownBacked && type === 'questions';
+  const quizEnabled = ['ai', 'sta', 'blc', 'ct'].includes(course) && markdownBacked && type === 'questions';
   const quizMode = quizEnabled && params.get('quiz') === '1';
   const questionSource = markdown && quizEnabled ? markdownToQuestionText(visibleSource) : visibleSource;
-  const quizSource = markdown && quizEnabled ? (course === 'blc' ? source : markdownToQuestionText(source)) : source;
+  const quizSource = markdown && quizEnabled ? (['blc', 'ct'].includes(course) ? source : markdownToQuestionText(source)) : source;
   readerCard.hidden = quizMode;
   readerPagination.hidden = quizMode || isEl;
   readerTopicPagination.hidden = quizMode || !modular;

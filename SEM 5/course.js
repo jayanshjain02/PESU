@@ -44,7 +44,7 @@ function wireUnitTabs() {
 function studyButtons(unit) {
   if (!course.study) return '<p class="coming-soon">Interactive notes coming soon. The available PDFs are below.</p>';
   const root = `content/${courseKey}/isa-1/unit-${unit}/`;
-  const quizButton = ['ai', 'sta', 'blc'].includes(courseKey) && [1, 2].includes(unit) ? `<button class="subtab" type="button" data-content="${root}questions.html" data-quiz="true">Quiz</button>` : '';
+  const quizButton = ['ai', 'sta', 'blc', 'ct'].includes(courseKey) && [1, 2].includes(unit) ? `<button class="subtab" type="button" data-content="${root}questions.html" data-quiz="true">Quiz</button>` : '';
   return `<div class="subtab-list" aria-label="Unit ${unit} study sections"><button class="subtab" type="button" data-content="${root}notes.html">Notes</button><button class="subtab" type="button" data-content="${root}questions.html">Questions</button><button class="subtab" type="button" data-content="${root}cheat-sheet.html">Cheat Sheet</button>${quizButton}</div><p class="reader-hint">Each section opens in a focused study-reader tab.</p>`;
 }
 
