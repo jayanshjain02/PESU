@@ -7,10 +7,12 @@ const readerPagination = document.querySelector('#reader-pagination');
 const readerTopicPagination = document.querySelector('#reader-topic-pagination');
 const readerNavigation = document.querySelector('#reader-navigation');
 const typeNames = { notes: 'Notes', questions: 'Questions', 'cheat-sheet': 'Cheat Sheet' };
-const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'blc/unit-1', 'blc/unit-2']);
+const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'blc/unit-1', 'blc/unit-2', 'ct/unit-1', 'ct/unit-2']);
 const markdownModuleCounts = new Map([
   ['blc/unit-1', 5],
   ['blc/unit-2', 5],
+  ['ct/unit-1', 9],
+  ['ct/unit-2', 7],
 ]);
 const courseNames = { ai: 'Artificial Intelligence', blc: 'Blockchain dApp Development', ct: 'Cloud Technologies', dm: 'Digital Marketing', sta: 'Software Testing & Automation', gaming: 'Gaming' };
 const siteNav = document.querySelector('.nav');
@@ -640,6 +642,19 @@ function extractMarkdownModule(markdown, moduleNumber) {
     const answer = answerStart < 0 ? [] : lines.slice(answerStart, answerEndAt < 0 ? lines.length : answerStart + 1 + answerEndAt);
     return [...lines.slice(start, end), ...(answer.length ? ['---', '# **ANSWER KEY**', ...answer] : [])].join('\n');
   }
+  const isCtQuestionFile = lines.some((line) => /^#{2,6}\s+\*\*4-Mark Questions\*\*/i.test(line));
+  if (isCtQuestionFile) {
+    const starts = lines.map((line, index) => ({ line, index })).filter(({ line }) => /^#{2,6}\s+\*\*4-Mark Questions\*\*/i.test(line));
+    const start = starts[moduleNumber - 1]?.index;
+    if (start === undefined) throw new Error(`Module ${moduleNumber} is not available in this study file.`);
+    const answerKeyAt = lines.findIndex((line) => /ANSWER KEY/i.test(line));
+    const end = starts[moduleNumber]?.index ?? (answerKeyAt < 0 ? lines.length : answerKeyAt);
+    const answerPattern = new RegExp(`^##\\s+\\*\\*Module\\s+${moduleNumber}\\*\\*`, 'i');
+    const answerStart = answerKeyAt < 0 ? -1 : lines.findIndex((line, index) => index > answerKeyAt && answerPattern.test(line));
+    const answerEndAt = answerStart < 0 ? -1 : lines.slice(answerStart + 1).findIndex((line) => /^##\s+\*\*Module\s+\d+\*\*/i.test(line));
+    const answer = answerStart < 0 ? [] : lines.slice(answerStart, answerEndAt < 0 ? lines.length : answerStart + 1 + answerEndAt);
+    return [`# **MODULE ${moduleNumber} — QUESTIONS**`, ...lines.slice(start, end), ...(answer.length ? ['---', '# **ANSWER KEY**', ...answer] : [])].join('\n');
+  }
   const starts = lines.map((line, index) => ({ index, match: line.match(/^#{1,6}\s+(?:\*\*)?MODULE\s+(\d+)\s*(?:[-—]|â€”)/i) })).filter(({ match }) => match);
   const startIndex = starts.findIndex(({ match }) => Number(match[1]) === moduleNumber);
   if (startIndex < 0) throw new Error(`Module ${moduleNumber} is not available in this study file.`);
@@ -683,19 +698,8 @@ function renderNavigation(basePath, type, topic, modular, moduleCount = 7) {
     topicNavigation.hidden = false;
     topicNavigation.innerHTML = Array.from({ length: moduleCount }, (_, index) => `<a class="${index + 1 === topic ? 'is-active' : ''}" ${index + 1 === topic ? 'aria-current="page"' : ''} href="${readerUrl(`${basePath}${type}.html`, index + 1)}">${index + 1}</a>`).join('');
     const previous = topic > 1 ? `<a class="button button-secondary" href="${readerUrl(`${basePath}${type}.html`, topic - 1)}">← Previous module</a>` : '<span class="button button-secondary is-disabled" aria-disabled="true">← Previous module</span>';
-    const next = topic < 7 ? `<a class="button button-primary" href="${readerUrl(`${basePath}${type}.html`, topic + 1)}">Next module →</a>` : '<span class="button button-primary is-disabled" aria-disabled="true">Next module →</span>';
-    navigation.innerHTML = `${previous}<span class="page-count">Module ${topic} of 7</span>${next}`;
-    navigation.querySelector('.page-count').textContent = `Module ${topic} of ${moduleCount}`;
-    if (topic >= moduleCount) {
-      const nextLink = navigation.querySelector('a.button-primary');
-      if (nextLink) {
-        const disabledNext = document.createElement('span');
-        disabledNext.className = 'button button-primary is-disabled';
-        disabledNext.setAttribute('aria-disabled', 'true');
-        disabledNext.textContent = 'Next module';
-        nextLink.replaceWith(disabledNext);
-      }
-    }
+    const next = topic < moduleCount ? `<a class="button button-primary" href="${readerUrl(`${basePath}${type}.html`, topic + 1)}">Next module →</a>` : '<span class="button button-primary is-disabled" aria-disabled="true">Next module →</span>';
+    navigation.innerHTML = `${previous}<span class="page-count">Module ${topic} of ${moduleCount}</span>${next}`;
     return;
   }
   topicNavigation.hidden = true;
@@ -744,7 +748,7 @@ async function loadReader() {
     source = await response.text();
   }
   const visibleSource = isEl ? source : markdown && modular ? extractMarkdownModule(source, topic) : modular ? extractModule(source, topic, typeNames[type]) : source;
-  const quizEnabled = markdownBacked && type === 'questions';
+  const quizEnabled = ['ai', 'sta', 'blc'].includes(course) && markdownBacked && type === 'questions';
   const quizMode = quizEnabled && params.get('quiz') === '1';
   const questionSource = markdown && quizEnabled ? markdownToQuestionText(visibleSource) : visibleSource;
   const quizSource = markdown && quizEnabled ? (course === 'blc' ? source : markdownToQuestionText(source)) : source;
@@ -759,7 +763,7 @@ async function loadReader() {
     readerCard.innerHTML = '';
     addUnitQuiz(quizSource, unitName);
   } else {
-    const blcQuestions = course === 'blc' && type === 'questions';
+    const markdownQuestions = ['blc', 'ct'].includes(course) && type === 'questions';
     const readerLabel = isEl ? 'Experiential Learning / Solidity Lab' : `${unitName} ${typeNames[type]}`;
     if (isEl) {
       const { labNotes, unitOne, unitTwo } = splitElMaterial(visibleSource);
@@ -772,7 +776,7 @@ async function loadReader() {
         lab.after(unitTwoCard);
       }
     } else {
-      readerCard.innerHTML = quizEnabled && !blcQuestions ? formatQuestionContent(questionSource) : markdown ? renderMarkdown(visibleSource, readerLabel) : formatStudyContent(visibleSource, typeNames[type]);
+      readerCard.innerHTML = quizEnabled && !markdownQuestions ? formatQuestionContent(questionSource) : markdown ? renderMarkdown(visibleSource, readerLabel) : formatStudyContent(visibleSource, typeNames[type]);
     }
   }
   readerCard.setAttribute('aria-busy', 'false');

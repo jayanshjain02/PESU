@@ -4,7 +4,7 @@ const courses = {
   sta: { code: 'STA', name: 'Software Testing & Automation', folder: 'pdfs/STA', units: 2, pdfs: ['STA Unit 1.pdf', 'STA Unit 2.pdf'], study: true },
   blc: { code: 'BLC', name: 'Blockchain dApp Development', folder: 'pdfs/BLC', units: 2, pdfs: ['U1-COMBINED.pdf', 'U2-COMBINED.pdf'], study: true },
   gaming: { code: 'GAM', name: 'Gaming', folder: 'pdfs/Gaming', units: 2, pdfs: ['Gaming Unit 1.pdf', 'Gaming Unit 2.pdf'], study: true },
-  ct: { code: 'CT', name: 'Cloud Technologies', folder: 'pdfs/CT', units: 1, pdfs: ['CT Unit 1.pdf'], study: true },
+  ct: { code: 'CT', name: 'Cloud Technologies', folder: 'pdfs/CT', units: 2, pdfs: ['CT Unit 1.pdf', 'CT Unit 2.pdf'], study: true },
   dm: { code: 'DM', name: 'Digital Marketing', folder: 'pdfs/DM', units: 2, pdfs: ['DM Unit 1.pdf', 'DM Unit 2.pdf'], study: false },
 };
 
