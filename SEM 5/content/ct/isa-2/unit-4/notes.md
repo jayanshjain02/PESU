@@ -6,7 +6,7 @@
 
 > Based on **CT Unit 4.pdf**. Unit topics are arranged into seven sections, following the presentation's order.
 
-## 1. CIA Triad — Confidentiality, Integrity, Availability
+## Section 1 - CIA Triad — Confidentiality, Integrity, Availability
 
 ### CIA Triad
 The **CIA Triad** is the core information-security model consisting of:
@@ -91,7 +91,7 @@ These principles apply across **IaaS, PaaS, and SaaS**.
 
 ---
 
-## 2. Cloud Security Architecture
+## Section 2 - Cloud Security Architecture
 
 ### Definition
 Cloud security architecture is the structured design and implementation of security controls, policies, and technologies to protect cloud environments. It secures cloud data, applications, and infrastructure and accounts for **shared responsibility** between provider and customer.
@@ -152,7 +152,7 @@ Evidence includes **logs, metrics, alerts, and audit trails**.
 
 ---
 
-## 3. Cloud Service Provider (CSP) and Virtualization Issues
+## Section 3 - Cloud Service Provider (CSP) and Virtualization Issues
 
 ### Cloud Service Provider issues
 Customers depend on CSPs for infrastructure, platforms, and services. Responsibility is shared, but customers may have limited visibility into provider-internal controls.
@@ -211,7 +211,7 @@ Multi-tenancy improves utilization and reduces cost, but increases the importanc
 
 ---
 
-## 4. Cloud Data Security and Legal Issues
+## Section 4 - Cloud Data Security and Legal Issues
 
 ### Data security lifecycle
 Data security protects information through:
@@ -319,7 +319,7 @@ Check:
 
 ---
 
-## 5. Cloud Performance Monitoring and Management
+## Section 5 - Cloud Performance Monitoring and Management
 
 ### Purpose
 Performance monitoring continuously observes the health, speed, and reliability of cloud applications and infrastructure. It helps identify problems before they severely affect users and provides evidence for troubleshooting, capacity planning, and SLA reports.
@@ -378,7 +378,7 @@ Workflow: **Metrics + Logs → Dashboard → Threshold crossed → Alert → Inc
 
 ---
 
-## 6. Cloud Risk Management Framework
+## Section 6 - Cloud Risk Management Framework
 
 ### Definition
 Cloud risk management is the process of identifying, assessing, treating, and monitoring risks in cloud environments. It protects data, applications, users, and business operations. Risks cannot always be eliminated; they should be reduced to acceptable levels. Risk management continues throughout the cloud lifecycle.
@@ -431,7 +431,7 @@ Mnemonic: **P-C-S-I-A-A-M** (Prepare, Categorize, Select, Implement, Assess, Aut
 
 ---
 
-## 7. Cloud SLA and Trust Management
+## Section 7 - Cloud SLA and Trust Management
 
 ### SLA
 A **Service Level Agreement (SLA)** is a formal agreement between a cloud provider and customer defining expected service levels, how they are measured, responsibilities, and remedies for failure.
@@ -513,36 +513,3 @@ Elements:
 - Data protection: account details stored securely and backed up.
 
 ---
-
-# Final Rapid Recall
-
-| Topic | Must remember |
-|---|---|
-| CIA | Confidentiality = unauthorized disclosure; Integrity = unauthorized change; Availability = access/service outage |
-| Security layers | Physical → Hardware/Hypervisor → Network/Storage → Platform/Runtime → Application/Data |
-| IAM | Authentication, authorization, least privilege, MFA, access review |
-| Shared responsibility | IaaS customer has more management; SaaS provider manages more, but customer still protects access/data use |
-| CSP risks | Insider access, supply chain, transparency/audit, lock-in, outages |
-| Virtualization | VM, hypervisor, multi-tenancy, isolation, VM escape, noisy neighbor |
-| Data protection | Classification, access, encryption, key lifecycle, backups, retention, deletion |
-| Legal | Ownership, location/residency, jurisdiction, contracts, compliance, liability, portability |
-| Monitoring | Availability, latency, errors, throughput/traffic, saturation, cost |
-| Incident response | Detect → Analyze → Respond → Recover → Review |
-| Risk | Asset, threat, vulnerability, likelihood, impact, residual risk |
-| Treatment | Avoid, Mitigate, Transfer, Accept |
-| NIST RMF | Prepare → Categorize → Select → Implement → Assess → Authorize → Monitor |
-| SLA | SLI = metric; SLO = target; SLA = agreement/remedy |
-| SLA types | Customer-based, Service-based, Multi-level |
-| Trust | Responsibilities + controls + evidence + audits + transparency + exit plan |
-
-## High-probability scenario questions
-- Marks altered without authorization → **Integrity**.
-- Unauthorized person reads exam records → **Confidentiality**.
-- DDoS makes portal unavailable → **Availability**.
-- Attacker breaks out of VM → **VM escape**.
-- CPU at 90% and service slows → **Saturation**.
-- Classify student marks by sensitivity → **Categorize** (NIST RMF).
-- Management decides whether residual risk is acceptable → **Authorize**.
-- Measurable percentage of successful requests → **SLI**.
-- 99.9% target → **SLO**.
-- Service credit when target missed → **SLA**.

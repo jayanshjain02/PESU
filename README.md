@@ -28,7 +28,7 @@ The site currently provides course pages for Artificial Intelligence, Blockchain
 
 1. Put a unit's reader files in `SEM 5/content/<course>/isa-<assessment>/unit-<number>/`.
 2. Use `notes.md`, `questions.md`, and `cheat-sheet.md` for Markdown-backed units. Reader URLs retain `.html` for compatibility; these units do not require duplicate HTML files.
-3. To enable another unit, update the course unit/PDF configuration in `SEM 5/course.js` and `markdownUnits` in `SEM 5/study.js`. ISA 1 notes/questions use module pagination; the new ISA 2 documents render as complete units. MCQ banks require four labelled options and an answer key.
+3. To enable another unit, update the course unit/PDF configuration in `SEM 5/course.js` and `markdownUnits` in `SEM 5/study.js`. ISA 1 notes/questions use module pagination; CT ISA 2 notes and questions use seven section pages. The questions files contain only questions; separate `answers.md` files supply the interactive quizzes. MCQ banks require four labelled options and an answer key.
 4. Put original documents in `SEM 5/pdfs/<COURSE>/` and update the PDF filename in `SEM 5/course.js` if needed.
 
 ## Deployment

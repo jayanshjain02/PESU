@@ -687,6 +687,12 @@ function renderMarkdown(markdown, label) {
 
 function extractMarkdownModule(markdown, moduleNumber) {
   const lines = markdown.replace(/\r/g, '').split('\n');
+  const sectionStarts = lines.map((line, index) => ({ index, match: line.match(/^## Section ([1-7])\b/) })).filter(({ match }) => match);
+  if (sectionStarts.length) {
+    const start = sectionStarts.findIndex(({ match }) => Number(match[1]) === moduleNumber);
+    if (start < 0) throw new Error(`Section ${moduleNumber} is not available in this study file.`);
+    return lines.slice(sectionStarts[start].index, sectionStarts[start + 1]?.index).join('\n');
+  }
   const isBlcQuestionFile = lines.some((line) => /^#{1,6}\s+\*\*4-MARK QUESTIONS.*MODULE\s+\d+/i.test(line));
   if (isBlcQuestionFile) {
     const startPattern = new RegExp(`^#{1,6}\\s+\\*\\*4-MARK QUESTIONS.*MODULE\\s+${moduleNumber}\\*\\*\\s*$`, 'i');
@@ -743,7 +749,7 @@ function extractModule(source, moduleNumber, type) {
   return `<p class="note-label">${escapeHtml(`${unitLabel} / Module ${moduleNumber}`)}</p><p>${escapeHtml(lines.slice(start, end).join('\n'))}</p>`;
 }
 
-function renderNavigation(basePath, type, topic, modular, moduleCount = 7) {
+function renderNavigation(basePath, type, topic, modular, moduleCount = 7, topicLabel = 'Module') {
   const types = ['notes', 'questions', 'cheat-sheet'];
   const typeIndex = types.indexOf(type);
   const typeNavigation = document.querySelector('#reader-pagination');
@@ -756,9 +762,9 @@ function renderNavigation(basePath, type, topic, modular, moduleCount = 7) {
   if (modular) {
     topicNavigation.hidden = false;
     topicNavigation.innerHTML = Array.from({ length: moduleCount }, (_, index) => `<a class="${index + 1 === topic ? 'is-active' : ''}" ${index + 1 === topic ? 'aria-current="page"' : ''} href="${readerUrl(`${basePath}${type}.html`, index + 1)}">${index + 1}</a>`).join('');
-    const previous = topic > 1 ? `<a class="button button-secondary" href="${readerUrl(`${basePath}${type}.html`, topic - 1)}">← Previous module</a>` : '<span class="button button-secondary is-disabled" aria-disabled="true">← Previous module</span>';
-    const next = topic < moduleCount ? `<a class="button button-primary" href="${readerUrl(`${basePath}${type}.html`, topic + 1)}">Next module →</a>` : '<span class="button button-primary is-disabled" aria-disabled="true">Next module →</span>';
-    navigation.innerHTML = `${previous}<span class="page-count">Module ${topic} of ${moduleCount}</span>${next}`;
+    const previous = topic > 1 ? `<a class="button button-secondary" href="${readerUrl(`${basePath}${type}.html`, topic - 1)}">← Previous ${topicLabel.toLowerCase()}</a>` : `<span class="button button-secondary is-disabled" aria-disabled="true">← Previous ${topicLabel.toLowerCase()}</span>`;
+    const next = topic < moduleCount ? `<a class="button button-primary" href="${readerUrl(`${basePath}${type}.html`, topic + 1)}">Next ${topicLabel.toLowerCase()} →</a>` : `<span class="button button-primary is-disabled" aria-disabled="true">Next ${topicLabel.toLowerCase()} →</span>`;
+    navigation.innerHTML = `${previous}<span class="page-count">${topicLabel} ${topic} of ${moduleCount}</span>${next}`;
     return;
   }
   topicNavigation.hidden = true;
@@ -781,22 +787,24 @@ async function loadReader() {
   const sectionName = isEl ? 'Solidity Lab' : typeNames[type];
   const title = `${courseNames[course]} — ${unitName}`;
   const markdownBacked = isEl || markdownUnits.has(`${course}/${unit}`);
-  const modular = !isEl && !contentParam.includes('/isa-2/') && markdownBacked && (type === 'notes' || type === 'questions');
+  const sectioned = course === 'ct' && contentParam.includes('/isa-2/');
+  const topicLabel = sectioned ? 'Section' : 'Module';
+  const modular = !isEl && markdownBacked && (type === 'notes' || type === 'questions');
   const moduleCount = markdownModuleCounts.get(`${course}/${unit}`) || 7;
   const topic = modular ? Math.min(moduleCount, Math.max(1, Number.parseInt(params.get('topic'), 10) || 1)) : null;
   document.title = `${typeNames[type]} | ${title}`;
-  document.querySelector('#reader-title').textContent = modular ? `Module ${topic} — ${typeNames[type]}` : typeNames[type];
+  document.querySelector('#reader-title').textContent = modular ? `${topicLabel} ${topic} — ${typeNames[type]}` : typeNames[type];
   document.querySelector('#reader-kicker').textContent = title;
   document.querySelector('#reader-crumb').textContent = title;
   document.querySelector('#reader-status').textContent = modular ? `Module ${topic} of 7` : `${typeNames[type]} · ${unitName}`;
-  if (modular) document.querySelector('#reader-status').textContent = `Module ${topic} of ${moduleCount}`;
+  if (modular) document.querySelector('#reader-status').textContent = `${topicLabel} ${topic} of ${moduleCount}`;
   if (isEl) {
     document.title = `${sectionName} | ${courseNames[course]}`;
     document.querySelector('#reader-title').textContent = sectionName;
     document.querySelector('#reader-status').textContent = 'Hands-on guide';
   }
   const basePath = contentParam.slice(0, contentParam.lastIndexOf('/') + 1);
-  if (!isEl) renderNavigation(basePath, type, topic, modular, moduleCount);
+  if (!isEl) renderNavigation(basePath, type, topic, modular, moduleCount, topicLabel);
   let source;
   let markdown = false;
   if (markdownBacked) {
@@ -815,7 +823,12 @@ async function loadReader() {
   const quizEnabled = ['ai', 'sta', 'blc', 'ct'].includes(course) && markdownBacked && type === 'questions';
   const quizMode = quizEnabled && params.get('quiz') === '1';
   const questionSource = markdown && quizEnabled ? markdownToQuestionText(visibleSource) : visibleSource;
-  const quizSource = markdown && quizEnabled ? (['blc', 'ct'].includes(course) ? source : markdownToQuestionText(source)) : source;
+  let quizSource = markdown && quizEnabled ? (['blc', 'ct'].includes(course) ? source : markdownToQuestionText(source)) : source;
+  if (quizMode && sectioned) {
+    const response = await fetch(`${basePath}answers.md`);
+    if (!response.ok) throw new Error('The quiz answer key could not be opened.');
+    quizSource += `\n${await response.text()}`;
+  }
   readerCard.hidden = quizMode;
   readerPagination.hidden = isEl;
   if (quizEnabled) {
