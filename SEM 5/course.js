@@ -49,7 +49,7 @@ function studyButtons(unit) {
   const assessment = courseKey === 'ct' && unit >= 3 ? 'isa-2' : 'isa-1';
   const root = `content/${courseKey}/${assessment}/unit-${unit}/`;
   const quizButton = ['ai', 'sta', 'blc', 'ct'].includes(courseKey) && (unit <= 2 || courseKey === 'ct') ? `<button class="subtab" type="button" data-content="${root}questions.html" data-quiz="true">Take MCQs</button>` : '';
-  return `<div class="subtab-list" aria-label="Unit ${unit} study sections"><button class="subtab" type="button" data-content="${root}notes.html">Notes</button><button class="subtab" type="button" data-content="${root}questions.html">Questions</button><button class="subtab" type="button" data-content="${root}cheat-sheet.html">Cheat Sheet</button>${quizButton}</div><p class="reader-hint">Choose notes, revision questions, or an interactive MCQ practice session.</p>`;
+  return `<div class="subtab-list" aria-label="Unit ${unit} study sections"><button class="subtab" type="button" data-content="${root}notes.html">Notes</button><button class="subtab" type="button" data-content="${root}questions.html">Questions</button><button class="subtab" type="button" data-content="${root}cheat-sheet.html">Cheat Sheet</button>${quizButton}</div>`;
 }
 
 function pdfLink(unit) {
@@ -62,15 +62,15 @@ if (!course) {
   courseRoot.innerHTML = '<h1>Course unavailable</h1><p>Return to the Semester 5 course library.</p>';
 } else {
   document.title = `${course.name} | Semester 5`;
-  document.querySelector('#course-crumb').textContent = course.name;
-  const sections = Array.from({ length: course.units }, (_, index) => ({ key: `unit-${index + 1}`, label: `Unit ${index + 1}${courseKey === 'ct' ? (index < 2 ? ' / ISA 1' : ' / ISA 2') : ''}`, unit: index + 1 }));
+  document.querySelector('.breadcrumbs')?.remove();
+  const sections = Array.from({ length: course.units }, (_, index) => ({ key: `unit-${index + 1}`, label: `Unit ${index + 1}`, unit: index + 1 }));
   if (courseKey === 'blc') sections.push({ key: 'el', label: 'EL', title: 'Experiential Learning' });
   const tabs = sections.map((section, index) => `<button id="${section.key}-tab" class="unit-tab ${index === 0 ? 'is-active' : ''}" type="button" role="tab" aria-selected="${index === 0}" aria-controls="${section.key}-panel" ${index === 0 ? '' : 'tabindex="-1"'}>${section.label}</button>`).join('');
   const panels = sections.map((section, index) => {
     if (section.key === 'el') return `<section id="el-panel" class="unit-panel" role="tabpanel" aria-labelledby="el-tab" ${index === 0 ? '' : 'hidden'}><div class="study-intro"><div><p class="eyebrow">BLC / EL</p><h2>${section.title}</h2></div><p>Build, deploy and test Solidity contracts on a local Ganache network.</p></div><div class="subtab-list" aria-label="Experiential Learning study section"><button class="subtab" type="button" data-content="content/blc/isa-1/el/el.html">Solidity Lab</button></div><p class="reader-hint">Open the guided lab for local development and deployment examples.</p></section>`;
-    return `<section id="${section.key}-panel" class="unit-panel" role="tabpanel" aria-labelledby="${section.key}-tab" ${index === 0 ? '' : 'hidden'}><div class="study-intro"><div><p class="eyebrow">${section.label}</p><h2>${course.name}</h2></div><p>Choose a study section or open the original PDF.</p></div>${studyButtons(section.unit)}<div class="pdf-grid">${pdfLink(section.unit)}</div></section>`;
+    return `<section id="${section.key}-panel" class="unit-panel" role="tabpanel" aria-labelledby="${section.key}-tab" ${index === 0 ? '' : 'hidden'}>${studyButtons(section.unit)}<div class="pdf-grid">${pdfLink(section.unit)}</div></section>`;
   }).join('');
-  courseRoot.innerHTML = `<div class="course-heading"><div><p class="eyebrow">Semester 5 / ${course.code}</p><h1>${course.name}</h1></div><a class="button button-secondary" href="index.html">← All courses</a></div><div class="unit-tabs" role="tablist" aria-label="${course.name} units">${tabs}</div>${panels}`;
+  courseRoot.innerHTML = `<div class="course-heading"><div><h1>${course.name}</h1></div><a class="button button-secondary" href="index.html">← All courses</a></div><div class="unit-tabs" role="tablist" aria-label="${course.name} units">${tabs}</div>${panels}`;
   wireUnitTabs();
   document.querySelectorAll('.subtab').forEach((button) => button.addEventListener('click', () => {
     const readerUrl = new URL('study.html', window.location.href);
