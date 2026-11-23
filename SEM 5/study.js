@@ -1,13 +1,13 @@
 const params = new URLSearchParams(window.location.search);
 const contentParam = params.get('content') || '';
 const elContentPath = 'content/blc/isa-1/el/el.html';
-const validContentPath = /^content\/[a-z0-9-]+\/isa-1\/unit-[0-9]+\/(notes|questions|cheat-sheet)\.html$/;
+const validContentPath = /^content\/[a-z0-9-]+\/isa-[12]\/unit-[0-9]+\/(notes|questions|cheat-sheet)\.html$/;
 const readerCard = document.querySelector('#reader-card');
 const readerPagination = document.querySelector('#reader-pagination');
 const readerTopicPagination = document.querySelector('#reader-topic-pagination');
 const readerNavigation = document.querySelector('#reader-navigation');
 const typeNames = { notes: 'Notes', questions: 'Questions', 'cheat-sheet': 'Cheat Sheet' };
-const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'blc/unit-1', 'blc/unit-2', 'ct/unit-1', 'ct/unit-2']);
+const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'blc/unit-1', 'blc/unit-2', 'ct/unit-1', 'ct/unit-2', 'ct/unit-3', 'ct/unit-4']);
 const markdownModuleCounts = new Map([
   ['blc/unit-1', 5],
   ['blc/unit-2', 5],
@@ -216,7 +216,21 @@ function parseCtQuiz(source) {
   });
 }
 
+function parseSectionQuiz(source) {
+  const [body, key = ''] = source.split(/^#{1,6}\s+Answer Key.*$/im);
+  const answers = new Map([...key.matchAll(/^\|\s*(\d+)\s*\|\s*\*?\*?([A-D])\*?\*?\s*\|\s*(.*?)\s*\|$/gm)].map(([, id, answer, explanation]) => [id, { answer, explanation }]));
+  const starts = [...body.matchAll(/^###\s+Q(\d+)\.?\s*\(([^)]+)\)\s*$/gm)];
+  return starts.map((match, index) => {
+    const block = body.slice(match.index + match[0].length, starts[index + 1]?.index);
+    const options = [...block.matchAll(/^([A-D])\.\s*(.+)$/gm)].map(([, key, text]) => ({ key, text: text.trim() }));
+    const prompt = block.slice(0, block.search(/^A\.\s/m)).trim();
+    const solution = answers.get(match[1]);
+    return solution && options.length === 4 ? { prompt, options, ...solution, marks: '1', difficulty: match[2] } : null;
+  }).filter(Boolean);
+}
+
 function parseUnitQuiz(source) {
+  if (/^###\s+Q\d+\.?\s*\(/m.test(source)) return parseSectionQuiz(source);
   if (/^#\s+\*\*4-MARK QUESTIONS.*MODULE\s+\d+/im.test(source)) return parseBlcQuiz(source);
   if (/^#{2,6}\s+\*\*4-Mark Questions\*\*/im.test(source)) return parseCtQuiz(source);
   const lines = source.replace(/\r/g, '').split('\n').map((line) => line.trim()).filter(Boolean);
@@ -227,7 +241,7 @@ function parseUnitQuiz(source) {
     const answerKeyAt = block.findIndex((line) => /ANSWER KEY$/i.test(line));
     const questionLines = block.slice(0, answerKeyAt < 0 ? block.length : answerKeyAt);
     const answerLines = answerKeyAt < 0 ? [] : block.slice(answerKeyAt + 1);
-    const answers = new Map(answerLines.flatMap((line) => line.replace(/\*/g, '').split(';')).map((line) => {
+    const answers = new Map(answerLines.flatMap((line) => line.replace(/\*/g, '').replace(/^MCQs:\s*/i, '').split(';').map((part) => part.trim())).map((line) => {
       const match = line.match(/^Q(\d+)\s*[—-]\s*([A-D])(?:[.\s]|$)/i);
       const tableMatch = line.match(/\|\s*(\d+)\s*\|\s*([A-D])\s*\|/i);
       return match ? [match[1], match[2].toUpperCase()] : tableMatch ? [tableMatch[1], tableMatch[2].toUpperCase()] : null;
@@ -245,7 +259,7 @@ function parseUnitQuiz(source) {
 
 function addUnitQuiz(source, unitName) {
   const sourceQuestions = parseUnitQuiz(source);
-  if (!sourceQuestions.length) return;
+  if (!sourceQuestions.length) throw new Error('No valid MCQs were found for this unit.');
   const shuffleQuestions = () => {
     const shuffled = [...sourceQuestions];
     for (let current = shuffled.length - 1; current > 0; current -= 1) {
@@ -261,17 +275,32 @@ function addUnitQuiz(source, unitName) {
   const totalMarks = sourceQuestions.reduce((sum, { marks }) => sum + Number(marks), 0);
   let index = 0;
   let score = 0;
+  let skipped = 0;
   let marksEarned = 0;
   const renderStart = () => {
-    quiz.innerHTML = `<p class="note-label">${unitName} interactive quiz</p><h2>Test your MCQs</h2><p>${questions.length} questions drawn from this unit's 1-mark and 2-mark MCQs. Get immediate feedback after every answer.</p><button class="button button-primary" type="button">Start quiz</button>`;
+    quiz.innerHTML = `<p class="note-label">${unitName} interactive quiz</p><h2>Test your MCQs</h2><p>${questions.length} questions drawn from this unit's MCQ bank. Skip any question; skipped questions earn no marks. Get immediate feedback after every answer.</p><button class="button button-primary" type="button">Start quiz</button>`;
     quiz.querySelector('button').addEventListener('click', renderQuestion);
+  };
+  const advance = () => {
+    quiz.dataset.answered = '';
+    index += 1;
+    if (index < questions.length) { renderQuestion(); return; }
+    const percent = Math.round(marksEarned / totalMarks * 100);
+    quiz.innerHTML = `<p class="note-label">Quiz complete</p><h2>Total score: ${marksEarned} / ${totalMarks} marks</h2><p class="quiz-percent">${percent}%</p><p>${score} correct; ${questions.length - skipped - score} incorrect; ${skipped} skipped</p><button class="button button-secondary" type="button">Try again</button>`;
+    quiz.querySelector('button').addEventListener('click', () => { questions = shuffleQuestions(); index = 0; score = 0; marksEarned = 0; skipped = 0; renderQuestion(); });
+    quiz.querySelector('h2').tabIndex = -1;
+    quiz.querySelector('h2').focus();
   };
   const renderQuestion = () => {
     const question = questions[index];
-    quiz.innerHTML = `<p class="note-label">Question ${index + 1} of ${questions.length}</p><p class="quiz-mark">${question.marks}-mark MCQ</p><h2>${escapeHtml(question.prompt)}</h2><div class="quiz-options">${question.options.map(({ key, text }) => `<button class="quiz-option" type="button" data-answer="${key}"><strong>${key}</strong><span>${escapeHtml(text)}</span></button>`).join('')}</div><p class="quiz-feedback" aria-live="polite"></p>`;
+    quiz.innerHTML = `<p class="note-label">Question ${index + 1} of ${questions.length}</p><p class="quiz-mark">${question.marks}-mark MCQ</p><h2>${escapeHtml(question.prompt)}</h2><div class="quiz-options">${question.options.map(({ key, text }) => `<button class="quiz-option" type="button" data-answer="${key}"><strong>${key}</strong><span>${escapeHtml(text)}</span></button>`).join('')}</div><p class="quiz-feedback" aria-live="polite"></p><button class="button button-secondary quiz-skip" type="button">Skip question</button>`;
+    quiz.querySelector('.quiz-skip').addEventListener('click', () => { skipped += 1; advance(); });
+    quiz.querySelector('h2').tabIndex = -1;
+    quiz.querySelector('h2').focus();
     quiz.querySelectorAll('.quiz-option').forEach((option) => option.addEventListener('click', () => {
       if (quiz.dataset.answered) return;
       quiz.dataset.answered = 'true';
+      quiz.querySelector('.quiz-skip').remove();
       const selected = option.dataset.answer;
       const correct = selected === question.answer;
       if (correct) { score += 1; marksEarned += Number(question.marks); }
@@ -282,22 +311,13 @@ function addUnitQuiz(source, unitName) {
       });
       const feedback = quiz.querySelector('.quiz-feedback');
       feedback.textContent = correct ? 'Correct!' : `Not quite — the correct answer is ${question.answer}.`;
+      if (question.explanation) feedback.textContent += ` ${question.explanation}`;
       feedback.classList.add(correct ? 'is-correct' : 'is-wrong');
       const next = document.createElement('button');
       next.className = 'button button-primary';
       next.type = 'button';
       next.textContent = index + 1 === questions.length ? 'See result' : 'Next question';
-      next.addEventListener('click', () => {
-        quiz.dataset.answered = '';
-        index += 1;
-        if (index === questions.length) {
-          const percent = Math.round((marksEarned / totalMarks) * 100);
-          quiz.innerHTML = `<p class="note-label">Quiz complete</p><h2>Total score: ${marksEarned} / ${totalMarks} marks</h2><p class="quiz-percent">${percent}%</p><p>You answered ${score} of ${questions.length} question${questions.length === 1 ? '' : 's'} correctly.</p><button class="button button-secondary" type="button">Try again</button>`;
-          quiz.querySelector('button').addEventListener('click', () => { questions = shuffleQuestions(); index = 0; score = 0; marksEarned = 0; renderQuestion(); });
-          return;
-        }
-        renderQuestion();
-      });
+      next.addEventListener('click', advance);
       quiz.append(next);
     }));
   };
@@ -363,7 +383,7 @@ function formatElUnitTwo(source) {
 function addLegacySolidityLab(labNotes = '') {
   const lab = document.createElement('section');
   lab.className = 'solidity-lab';
-  lab.innerHTML = `<div class="solidity-lab__heading"><div><p class="note-label">Interactive learning sandbox</p><h2>Remix, MetaMask and Ganache workflow</h2><p>This in-site simulation is for learning. It does not access a wallet, compile Solidity, or send a real transaction.</p></div><div class="solidity-lab__links"><a class="button button-secondary" href="https://remix.ethereum.org/" target="_blank" rel="noopener">Open Remix</a><a class="button button-secondary" href="https://metamask.io/download/" target="_blank" rel="noopener">Get MetaMask</a><a class="button button-secondary" href="https://archive.trufflesuite.com/ganache/" target="_blank" rel="noopener">Get Ganache</a></div></div><ol class="solidity-lab__flow"><li><strong>Remix</strong><span>Write and compile the contract.</span></li><li><strong>MetaMask</strong><span>Connect a Ganache test account and approve transactions.</span></li><li><strong>Ganache</strong><span>Mine and inspect local blocks and transactions.</span></li></ol><div class="solidity-lab__workspace"><section><label for="solidity-editor">CounterLab.sol</label><textarea id="solidity-editor" spellcheck="false" aria-label="Solidity contract editor"></textarea><div class="solidity-lab__actions"><button class="button button-secondary" type="button" data-lab-action="compile">Compile</button><button class="button button-secondary" type="button" data-lab-action="connect">Connect MetaMask</button><button class="button button-primary" type="button" data-lab-action="deploy" disabled>Deploy to Ganache</button></div></section><section class="solidity-lab__console" aria-live="polite"><p class="note-label">Local transaction console</p><p data-lab-status>Step 1: edit the sample contract and compile it.</p><dl><div><dt>Compiler</dt><dd data-lab-compiler>Waiting</dd></div><div><dt>Wallet</dt><dd data-lab-wallet>Not connected</dd></div><div><dt>Contract</dt><dd data-lab-contract>Not deployed</dd></div><div><dt>Ganache blocks</dt><dd data-lab-blocks>0</dd></div></dl><div class="solidity-lab__contract-actions" hidden><button class="button button-secondary" type="button" data-lab-action="read">Read getCount()</button><button class="button button-primary" type="button" data-lab-action="increment">Send increment()</button></div></section></div><div class="solidity-lab__tip"><strong>What changes when you click a button?</strong> Compile checks the code shape in this simulation. Connecting represents MetaMask choosing a Ganache test account. Deploying creates a local example address and block. Calling <code>increment()</code> creates another local transaction and changes the displayed contract state.</div>`;
+  lab.innerHTML = `<div class="solidity-lab__heading"><div><p class="note-label">Interactive learning sandbox</p><h2>Remix, MetaMask and Ganache workflow</h2><p>This in-site simulation is for learning. It does not access a wallet, compile Solidity, or send a real transaction.</p></div><div class="solidity-lab__links"><a class="button button-secondary" href="https://remix.ethereum.org/">Open Remix</a><a class="button button-secondary" href="https://metamask.io/download/">Get MetaMask</a><a class="button button-secondary" href="https://archive.trufflesuite.com/ganache/">Get Ganache</a></div></div><ol class="solidity-lab__flow"><li><strong>Remix</strong><span>Write and compile the contract.</span></li><li><strong>MetaMask</strong><span>Connect a Ganache test account and approve transactions.</span></li><li><strong>Ganache</strong><span>Mine and inspect local blocks and transactions.</span></li></ol><div class="solidity-lab__workspace"><section><label for="solidity-editor">CounterLab.sol</label><textarea id="solidity-editor" spellcheck="false" aria-label="Solidity contract editor"></textarea><div class="solidity-lab__actions"><button class="button button-secondary" type="button" data-lab-action="compile">Compile</button><button class="button button-secondary" type="button" data-lab-action="connect">Connect MetaMask</button><button class="button button-primary" type="button" data-lab-action="deploy" disabled>Deploy to Ganache</button></div></section><section class="solidity-lab__console" aria-live="polite"><p class="note-label">Local transaction console</p><p data-lab-status>Step 1: edit the sample contract and compile it.</p><dl><div><dt>Compiler</dt><dd data-lab-compiler>Waiting</dd></div><div><dt>Wallet</dt><dd data-lab-wallet>Not connected</dd></div><div><dt>Contract</dt><dd data-lab-contract>Not deployed</dd></div><div><dt>Ganache blocks</dt><dd data-lab-blocks>0</dd></div></dl><div class="solidity-lab__contract-actions" hidden><button class="button button-secondary" type="button" data-lab-action="read">Read getCount()</button><button class="button button-primary" type="button" data-lab-action="increment">Send increment()</button></div></section></div><div class="solidity-lab__tip"><strong>What changes when you click a button?</strong> Compile checks the code shape in this simulation. Connecting represents MetaMask choosing a Ganache test account. Deploying creates a local example address and block. Calling <code>increment()</code> creates another local transaction and changes the displayed contract state.</div>`;
   readerCard.after(lab);
   const editor = lab.querySelector('#solidity-editor');
   const status = lab.querySelector('[data-lab-status]');
@@ -451,7 +471,7 @@ function addSolidityLab(labNotes = '', providedContracts = []) {
   const templates = providedContracts.length ? providedContracts : [{ label: 'Counter Lab', contractName: 'CounterLab', code: solidityStarter }];
   const lab = document.createElement('section');
   lab.className = 'solidity-lab';
-  lab.innerHTML = `<div class="solidity-lab__heading"><div><p class="note-label">Interactive learning sandbox</p><h2>Remix, MetaMask and Ganache workflow</h2><p>Choose one of the ten Unit 2 examples or paste one into the editor. The filename, deploy target, and available function controls update from its contract declaration.</p></div><div class="solidity-lab__links"><a class="button button-secondary" href="https://remix.ethereum.org/" target="_blank" rel="noopener">Open Remix</a><a class="button button-secondary" href="https://metamask.io/download/" target="_blank" rel="noopener">Get MetaMask</a><a class="button button-secondary" href="https://archive.trufflesuite.com/ganache/" target="_blank" rel="noopener">Get Ganache</a></div></div><ol class="solidity-lab__flow"><li><strong>Remix</strong><span>Choose or paste a contract and compile it.</span></li><li><strong>MetaMask</strong><span>Connect a Ganache test account.</span></li><li><strong>Ganache</strong><span>Deploy and run the contract functions.</span></li></ol><div class="solidity-lab__workspace"><section><label for="solidity-template">Unit 2 practice contract</label><select id="solidity-template"><option value="">Paste your own of the 10 examples</option>${templates.map((template, index) => `<option value="${index}">${escapeHtml(template.label)}</option>`).join('')}</select><label for="solidity-editor" data-lab-filename>Contract.sol</label><textarea id="solidity-editor" spellcheck="false" aria-label="Solidity contract editor"></textarea><div class="solidity-lab__actions"><button class="button button-secondary" type="button" data-lab-action="compile">Compile</button><button class="button button-secondary" type="button" data-lab-action="connect">Connect MetaMask</button><button class="button button-primary" type="button" data-lab-action="deploy" disabled>Deploy to Ganache</button></div></section><section class="solidity-lab__console" aria-live="polite"><p class="note-label">Local transaction console</p><p data-lab-status>Step 1: choose or paste one of the Unit 2 contracts.</p><dl><div><dt>Compiler</dt><dd data-lab-compiler>Waiting</dd></div><div><dt>Wallet</dt><dd data-lab-wallet>Not connected</dd></div><div><dt>Contract</dt><dd data-lab-contract>Not deployed</dd></div><div><dt>Ganache blocks</dt><dd data-lab-blocks>0</dd></div></dl><div class="solidity-lab__contract-actions" hidden></div></section></div><div class="solidity-lab__tip"><strong>Learning simulation:</strong> the editor recognises the supplied Unit 2 contracts and simulates their state locally. Use <em>Open Remix</em> when you are ready to compile and deploy the same code with a real local Ganache node and your MetaMask test account.</div>`;
+  lab.innerHTML = `<div class="solidity-lab__heading"><div><p class="note-label">Interactive learning sandbox</p><h2>Remix, MetaMask and Ganache workflow</h2><p>Choose one of the ten Unit 2 examples or paste one into the editor. The filename, deploy target, and available function controls update from its contract declaration.</p></div><div class="solidity-lab__links"><a class="button button-secondary" href="https://remix.ethereum.org/">Open Remix</a><a class="button button-secondary" href="https://metamask.io/download/">Get MetaMask</a><a class="button button-secondary" href="https://archive.trufflesuite.com/ganache/">Get Ganache</a></div></div><ol class="solidity-lab__flow"><li><strong>Remix</strong><span>Choose or paste a contract and compile it.</span></li><li><strong>MetaMask</strong><span>Connect a Ganache test account.</span></li><li><strong>Ganache</strong><span>Deploy and run the contract functions.</span></li></ol><div class="solidity-lab__workspace"><section><label for="solidity-template">Unit 2 practice contract</label><select id="solidity-template"><option value="">Paste your own of the 10 examples</option>${templates.map((template, index) => `<option value="${index}">${escapeHtml(template.label)}</option>`).join('')}</select><label for="solidity-editor" data-lab-filename>Contract.sol</label><textarea id="solidity-editor" spellcheck="false" aria-label="Solidity contract editor"></textarea><div class="solidity-lab__actions"><button class="button button-secondary" type="button" data-lab-action="compile">Compile</button><button class="button button-secondary" type="button" data-lab-action="connect">Connect MetaMask</button><button class="button button-primary" type="button" data-lab-action="deploy" disabled>Deploy to Ganache</button></div></section><section class="solidity-lab__console" aria-live="polite"><p class="note-label">Local transaction console</p><p data-lab-status>Step 1: choose or paste one of the Unit 2 contracts.</p><dl><div><dt>Compiler</dt><dd data-lab-compiler>Waiting</dd></div><div><dt>Wallet</dt><dd data-lab-wallet>Not connected</dd></div><div><dt>Contract</dt><dd data-lab-contract>Not deployed</dd></div><div><dt>Ganache blocks</dt><dd data-lab-blocks>0</dd></div></dl><div class="solidity-lab__contract-actions" hidden></div></section></div><div class="solidity-lab__tip"><strong>Learning simulation:</strong> the editor recognises the supplied Unit 2 contracts and simulates their state locally. Use <em>Open Remix</em> when you are ready to compile and deploy the same code with a real local Ganache node and your MetaMask test account.</div>`;
   readerCard.after(lab);
   const editor = lab.querySelector('#solidity-editor');
   const templatePicker = lab.querySelector('#solidity-template');
@@ -750,13 +770,18 @@ function renderNavigation(basePath, type, topic, modular, moduleCount = 7) {
 async function loadReader() {
   const isEl = contentParam === elContentPath;
   if (!isEl && !validContentPath.test(contentParam)) throw new Error('Invalid study-material location.');
-  const contentMatch = isEl ? null : contentParam.match(/^content\/([a-z0-9-]+)\/isa-1\/(unit-[0-9]+)\/(notes|questions|cheat-sheet)\.html$/);
+  const contentMatch = isEl ? null : contentParam.match(/^content\/([a-z0-9-]+)\/isa-[12]\/(unit-[0-9]+)\/(notes|questions|cheat-sheet)\.html$/);
   const [, course, unit, type] = contentMatch || [null, 'blc', 'el', 'el'];
+  const subjectLink = document.createElement('a');
+  subjectLink.className = 'button button-secondary';
+  subjectLink.href = `${course}.html#${unit}`;
+  subjectLink.textContent = `Back to ${courseNames[course] || 'subject'}`;
+  document.querySelector('.reader-heading').before(subjectLink);
   const unitName = isEl ? 'Experiential Learning' : unit.replace('-', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
   const sectionName = isEl ? 'Solidity Lab' : typeNames[type];
   const title = `${courseNames[course]} — ${unitName}`;
   const markdownBacked = isEl || markdownUnits.has(`${course}/${unit}`);
-  const modular = !isEl && markdownBacked && (type === 'notes' || type === 'questions');
+  const modular = !isEl && !contentParam.includes('/isa-2/') && markdownBacked && (type === 'notes' || type === 'questions');
   const moduleCount = markdownModuleCounts.get(`${course}/${unit}`) || 7;
   const topic = modular ? Math.min(moduleCount, Math.max(1, Number.parseInt(params.get('topic'), 10) || 1)) : null;
   document.title = `${typeNames[type]} | ${title}`;
@@ -792,7 +817,20 @@ async function loadReader() {
   const questionSource = markdown && quizEnabled ? markdownToQuestionText(visibleSource) : visibleSource;
   const quizSource = markdown && quizEnabled ? (['blc', 'ct'].includes(course) ? source : markdownToQuestionText(source)) : source;
   readerCard.hidden = quizMode;
-  readerPagination.hidden = quizMode || isEl;
+  readerPagination.hidden = isEl;
+  if (quizEnabled) {
+    const quizLink = document.createElement('a');
+    const url = readerUrl(`${basePath}questions.html`);
+    url.searchParams.set('quiz', '1');
+    quizLink.href = url;
+    quizLink.textContent = 'Take MCQs';
+    if (quizMode) {
+      readerPagination.querySelectorAll('a').forEach((link) => { link.classList.remove('is-active'); link.removeAttribute('aria-current'); });
+      quizLink.className = 'is-active';
+      quizLink.setAttribute('aria-current', 'page');
+    }
+    readerPagination.append(quizLink);
+  }
   readerTopicPagination.hidden = quizMode || !modular;
   readerNavigation.hidden = quizMode || isEl;
   if (quizMode) {
@@ -824,6 +862,7 @@ async function loadReader() {
 loadReader().catch((error) => {
   document.querySelector('#reader-title').textContent = 'Study material unavailable';
   document.querySelector('#reader-status').textContent = 'Unavailable';
+  readerCard.hidden = false;
   readerCard.innerHTML = `<p class="note-label">Unable to open</p><h4>${error.message}</h4><p>Return to the Semester 5 course page and select a valid study section.</p>`;
   readerCard.setAttribute('aria-busy', 'false');
 });

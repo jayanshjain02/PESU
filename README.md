@@ -11,7 +11,7 @@ SEM 5/                         Deployable Semester 5 study site
   index.html                   Course library entry point
   [course].html                Individual course pages
   study.html                   Focused notes, questions, and cheat-sheet reader
-  content/<course>/isa-1/      Study material, organised by unit
+  content/<course>/isa-<assessment>/      Study material, organised by unit
   pdfs/<COURSE>/               Original course PDFs
   assets/                      Course artwork and visual assets
   *.css, *.js                  Shared site styling and behaviour
@@ -22,13 +22,13 @@ SEM 5/                         Deployable Semester 5 study site
 
 Open `SEM 5/index.html` with a local web server, such as VS Code Live Server. The reader fetches content files, so opening pages directly from the filesystem may prevent notes from loading.
 
-The site currently provides course pages for Artificial Intelligence, Blockchain dApp Development, Cloud Technologies, Digital Marketing, Software Testing & Automation, and Gaming. AI Units 1 and 2 also include Markdown-backed notes, questions, a cheat sheet, and an interactive MCQ quiz.
+The site currently provides course pages for Artificial Intelligence, Blockchain dApp Development, Cloud Technologies, Digital Marketing, Software Testing & Automation, and Gaming. AI, STA, BLC, and CT include interactive MCQ practice with skipping and result totals. CT Units 3 and 4 (ISA 2) include Markdown-backed notes, questions, cheat sheets, and the original PDFs. Study links open in the same tab, and the reader links back to the selected subject/unit.
 
 ### Adding study material
 
-1. Put a unit's reader files in `SEM 5/content/<course>/isa-1/unit-<number>/`.
-2. Keep the filenames `notes.html`, `questions.html`, and `cheat-sheet.html` so course links continue to work.
-3. For AI Units 1 and 2, the matching `.md` files are the source used by the enhanced reader. To enable another unit, add it to `markdownUnits` in `SEM 5/study.js` (and to the quiz check in `SEM 5/course.js` if it has MCQs).
+1. Put a unit's reader files in `SEM 5/content/<course>/isa-<assessment>/unit-<number>/`.
+2. Use `notes.md`, `questions.md`, and `cheat-sheet.md` for Markdown-backed units. Reader URLs retain `.html` for compatibility; these units do not require duplicate HTML files.
+3. To enable another unit, update the course unit/PDF configuration in `SEM 5/course.js` and `markdownUnits` in `SEM 5/study.js`. ISA 1 notes/questions use module pagination; the new ISA 2 documents render as complete units. MCQ banks require four labelled options and an answer key.
 4. Put original documents in `SEM 5/pdfs/<COURSE>/` and update the PDF filename in `SEM 5/course.js` if needed.
 
 ## Deployment

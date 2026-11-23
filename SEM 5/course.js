@@ -4,7 +4,7 @@ const courses = {
   sta: { code: 'STA', name: 'Software Testing & Automation', folder: 'pdfs/STA', units: 2, pdfs: ['STA Unit 1.pdf', 'STA Unit 2.pdf'], study: true },
   blc: { code: 'BLC', name: 'Blockchain dApp Development', folder: 'pdfs/BLC', units: 2, pdfs: ['U1-COMBINED.pdf', 'U2-COMBINED.pdf'], study: true },
   gaming: { code: 'GAM', name: 'Gaming', folder: 'pdfs/Gaming', units: 2, pdfs: ['Gaming Unit 1.pdf', 'Gaming Unit 2.pdf'], study: true },
-  ct: { code: 'CT', name: 'Cloud Technologies', folder: 'pdfs/CT', units: 2, pdfs: ['CT Unit 1.pdf', 'CT Unit 2.pdf'], study: true },
+  ct: { code: 'CT', name: 'Cloud Technologies', folder: 'pdfs/CT', units: 4, pdfs: ['CT Unit 1.pdf', 'CT Unit 2.pdf', 'CT Unit 3.pdf', 'CT Unit 4.pdf'], study: true },
   dm: { code: 'DM', name: 'Digital Marketing', folder: 'pdfs/DM', units: 2, pdfs: ['DM Unit 1.pdf', 'DM Unit 2.pdf'], study: false },
 };
 
@@ -27,7 +27,10 @@ function wireUnitTabs() {
       item.tabIndex = active ? 0 : -1;
     });
     panels.forEach((panel) => { panel.hidden = panel.id !== tab.getAttribute('aria-controls'); });
+    history.replaceState(null, '', `#${tab.id.replace('-tab', '')}`);
   };
+  const initial = tabs.find((tab) => `#${tab.id.replace('-tab', '')}` === location.hash);
+  if (initial) activate(initial);
   tabs.forEach((tab, index) => {
     tab.addEventListener('click', () => activate(tab));
     tab.addEventListener('keydown', (event) => {
@@ -43,15 +46,16 @@ function wireUnitTabs() {
 
 function studyButtons(unit) {
   if (!course.study) return '<p class="coming-soon">Interactive notes coming soon. The available PDFs are below.</p>';
-  const root = `content/${courseKey}/isa-1/unit-${unit}/`;
-  const quizButton = ['ai', 'sta', 'blc', 'ct'].includes(courseKey) && [1, 2].includes(unit) ? `<button class="subtab" type="button" data-content="${root}questions.html" data-quiz="true">Quiz</button>` : '';
-  return `<div class="subtab-list" aria-label="Unit ${unit} study sections"><button class="subtab" type="button" data-content="${root}notes.html">Notes</button><button class="subtab" type="button" data-content="${root}questions.html">Questions</button><button class="subtab" type="button" data-content="${root}cheat-sheet.html">Cheat Sheet</button>${quizButton}</div><p class="reader-hint">Each section opens in a focused study-reader tab.</p>`;
+  const assessment = courseKey === 'ct' && unit >= 3 ? 'isa-2' : 'isa-1';
+  const root = `content/${courseKey}/${assessment}/unit-${unit}/`;
+  const quizButton = ['ai', 'sta', 'blc', 'ct'].includes(courseKey) && (unit <= 2 || courseKey === 'ct') ? `<button class="subtab" type="button" data-content="${root}questions.html" data-quiz="true">Take MCQs</button>` : '';
+  return `<div class="subtab-list" aria-label="Unit ${unit} study sections"><button class="subtab" type="button" data-content="${root}notes.html">Notes</button><button class="subtab" type="button" data-content="${root}questions.html">Questions</button><button class="subtab" type="button" data-content="${root}cheat-sheet.html">Cheat Sheet</button>${quizButton}</div><p class="reader-hint">Choose notes, revision questions, or an interactive MCQ practice session.</p>`;
 }
 
 function pdfLink(unit) {
   const file = course.pdfs[unit - 1];
   if (!file) return '';
-  return `<a class="pdf-link" href="${encodePath(`${course.folder}/${file}`)}" target="_blank" rel="noopener"><span>PDF</span><strong>${course.code} Unit ${unit}</strong><small>Open document ↗</small></a>`;
+  return `<a class="pdf-link" href="${encodePath(`${course.folder}/${file}`)}"><span>PDF</span><strong>${course.code} Unit ${unit}</strong><small>Open document</small></a>`;
 }
 
 if (!course) {
@@ -59,7 +63,7 @@ if (!course) {
 } else {
   document.title = `${course.name} | Semester 5`;
   document.querySelector('#course-crumb').textContent = course.name;
-  const sections = Array.from({ length: course.units }, (_, index) => ({ key: `unit-${index + 1}`, label: `Unit ${index + 1}`, unit: index + 1 }));
+  const sections = Array.from({ length: course.units }, (_, index) => ({ key: `unit-${index + 1}`, label: `Unit ${index + 1}${courseKey === 'ct' ? (index < 2 ? ' / ISA 1' : ' / ISA 2') : ''}`, unit: index + 1 }));
   if (courseKey === 'blc') sections.push({ key: 'el', label: 'EL', title: 'Experiential Learning' });
   const tabs = sections.map((section, index) => `<button id="${section.key}-tab" class="unit-tab ${index === 0 ? 'is-active' : ''}" type="button" role="tab" aria-selected="${index === 0}" aria-controls="${section.key}-panel" ${index === 0 ? '' : 'tabindex="-1"'}>${section.label}</button>`).join('');
   const panels = sections.map((section, index) => {
@@ -72,7 +76,7 @@ if (!course) {
     const readerUrl = new URL('study.html', window.location.href);
     readerUrl.searchParams.set('content', button.dataset.content);
     if (button.dataset.quiz) readerUrl.searchParams.set('quiz', '1');
-    window.open(readerUrl, '_blank', 'noopener');
+    window.location.assign(readerUrl);
   }));
 }
 

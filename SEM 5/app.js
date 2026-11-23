@@ -32,14 +32,14 @@ selectAll('.study-course').forEach((course) => wireTabs('.unit-tab', '.unit-pane
 
 selectAll('.unit-panel .note-card').forEach((card) => {
   card.removeAttribute('aria-busy');
-  card.innerHTML = '<p class="note-label">Study reader</p><h4>Open a section in a new tab</h4><p>Select Notes, Questions, or Cheat Sheet above to read it in the focused study view.</p>';
+  card.innerHTML = '<p class="note-label">Study reader</p><h4>Open a study section</h4><p>Select Notes, Questions, or Cheat Sheet above to read it in the focused study view.</p>';
 });
 
 selectAll('.subtab').forEach((tab) => {
   tab.addEventListener('click', () => {
     const readerUrl = new URL('study.html', window.location.href);
     readerUrl.searchParams.set('content', tab.dataset.content);
-    window.open(readerUrl, '_blank', 'noopener');
+    window.location.assign(readerUrl);
   });
 });
 
