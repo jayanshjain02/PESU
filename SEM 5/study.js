@@ -7,10 +7,11 @@ const readerPagination = document.querySelector('#reader-pagination');
 const readerTopicPagination = document.querySelector('#reader-topic-pagination');
 const readerNavigation = document.querySelector('#reader-navigation');
 const typeNames = { notes: 'Notes', questions: 'Questions', 'cheat-sheet': 'Cheat Sheet' };
-const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'blc/unit-1', 'blc/unit-2', 'ct/unit-1', 'ct/unit-2', 'ct/unit-3', 'ct/unit-4']);
+const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'blc/unit-1', 'blc/unit-2', 'blc/unit-3', 'ct/unit-1', 'ct/unit-2', 'ct/unit-3', 'ct/unit-4']);
 const markdownModuleCounts = new Map([
   ['blc/unit-1', 5],
   ['blc/unit-2', 5],
+  ['blc/unit-3', 7],
   ['ct/unit-1', 9],
   ['ct/unit-2', 7],
 ]);
@@ -219,18 +220,28 @@ function parseCtQuiz(source) {
 function parseSectionQuiz(source) {
   const [body, key = ''] = source.split(/^#{1,6}\s+Answer Key.*$/im);
   const answers = new Map([...key.matchAll(/^\|\s*(\d+)\s*\|\s*\*?\*?([A-D])\*?\*?\s*\|\s*(.*?)\s*\|$/gm)].map(([, id, answer, explanation]) => [id, { answer, explanation }]));
-  const starts = [...body.matchAll(/^###\s+Q(\d+)\.?\s*\(([^)]+)\)\s*$/gm)];
+  // The supplied Blockchain bank uses a compact key and numbered explanations.
+  for (const [, id, answer] of key.matchAll(/\bQ(\d+)\s+\*\*([A-D])\*\*/g)) answers.set(id, { answer });
+  for (const [, id, answer, explanation] of key.matchAll(/^(\d+)\.\s+\*\*([A-D]):\*\*\s*(.+)$/gm)) answers.set(id, { answer, explanation });
+  const starts = [...body.matchAll(/^###\s+Q(\d+)\.?\s*(?:\(([^)]+)\)|[-\u2013\u2014]\s*(.+))\s*$/gm)];
   return starts.map((match, index) => {
-    const block = body.slice(match.index + match[0].length, starts[index + 1]?.index);
-    const options = [...block.matchAll(/^([A-D])\.\s*(.+)$/gm)].map(([, key, text]) => ({ key, text: text.trim() }));
-    const prompt = block.slice(0, block.search(/^A\.\s/m)).trim();
+    const block = body.slice(match.index + match[0].length, starts[index + 1]?.index).split(/^### Topic coverage map/m)[0];
+    let options = [...block.matchAll(/^(?:-\s+)?([A-D])\.\s*(.+)$/gm)].map(([, key, text]) => ({ key, text: text.trim() }));
+    let optionStart = block.search(/^(?:-\s+)?A\.\s/m);
+    if (!options.length) {
+      const header = block.match(/^\| Option \|(.+)\|\s*$/m);
+      const labels = header?.[1].split('|').map((cell) => cell.trim()) || [];
+      options = [...block.matchAll(/^\| ([A-D]) \|(.+)\|\s*$/gm)].map(([, key, row]) => ({ key, text: row.split('|').map((cell, index) => `${labels[index]}: ${cell.trim()}`).join('; ') }));
+      optionStart = header?.index ?? -1;
+    }
+    const prompt = block.slice(0, optionStart < 0 ? block.length : optionStart).trim();
     const solution = answers.get(match[1]);
-    return solution && options.length === 4 ? { prompt, options, ...solution, marks: '1', difficulty: match[2] } : null;
+    return solution && options.length === 4 ? { prompt, options, ...solution, marks: '1', difficulty: match[2] || match[3], richPrompt: Boolean(match[3]) } : null;
   }).filter(Boolean);
 }
 
 function parseUnitQuiz(source) {
-  if (/^###\s+Q\d+\.?\s*\(/m.test(source)) return parseSectionQuiz(source);
+  if (/^###\s+Q\d+\.?\s*(?:\(|[-\u2013\u2014])/m.test(source)) return parseSectionQuiz(source);
   if (/^#\s+\*\*4-MARK QUESTIONS.*MODULE\s+\d+/im.test(source)) return parseBlcQuiz(source);
   if (/^#{2,6}\s+\*\*4-Mark Questions\*\*/im.test(source)) return parseCtQuiz(source);
   const lines = source.replace(/\r/g, '').split('\n').map((line) => line.trim()).filter(Boolean);
@@ -293,7 +304,7 @@ function addUnitQuiz(source, unitName) {
   };
   const renderQuestion = () => {
     const question = questions[index];
-    quiz.innerHTML = `<p class="note-label">Question ${index + 1} of ${questions.length}</p><p class="quiz-mark">${question.marks}-mark MCQ</p><h2>${escapeHtml(question.prompt)}</h2><div class="quiz-options">${question.options.map(({ key, text }) => `<button class="quiz-option" type="button" data-answer="${key}"><strong>${key}</strong><span>${escapeHtml(text)}</span></button>`).join('')}</div><p class="quiz-feedback" aria-live="polite"></p><button class="button button-secondary quiz-skip" type="button">Skip question</button>`;
+    quiz.innerHTML = `<p class="note-label">Question ${index + 1} of ${questions.length}</p><p class="quiz-mark">${question.marks}-mark MCQ</p>${question.richPrompt ? `<h2>Choose the best answer</h2><div class="quiz-prompt">${renderMarkdown(question.prompt, 'Scenario')}</div>` : `<h2>${escapeHtml(question.prompt)}</h2>`}<div class="quiz-options">${question.options.map(({ key, text }) => `<button class="quiz-option" type="button" data-answer="${key}"><strong>${key}</strong><span>${question.richPrompt ? markdownInline(text) : escapeHtml(text)}</span></button>`).join('')}</div><p class="quiz-feedback" aria-live="polite"></p><button class="button button-secondary quiz-skip" type="button">Skip question</button>`;
     quiz.querySelector('.quiz-skip').addEventListener('click', () => { skipped += 1; advance(); });
     quiz.querySelector('h2').tabIndex = -1;
     quiz.querySelector('h2').focus();
@@ -686,7 +697,7 @@ function renderMarkdown(markdown, label) {
 }
 
 function extractMarkdownModule(markdown, moduleNumber) {
-  const lines = markdown.replace(/\r/g, '').split('\n');
+  const lines = markdown.replace(/\r/g, '').split(/^### Topic coverage map/m)[0].split('\n');
   const sectionStarts = lines.map((line, index) => ({ index, match: line.match(/^## Section ([1-7])\b/) })).filter(({ match }) => match);
   if (sectionStarts.length) {
     const start = sectionStarts.findIndex(({ match }) => Number(match[1]) === moduleNumber);
@@ -787,7 +798,7 @@ async function loadReader() {
   const sectionName = isEl ? 'Solidity Lab' : typeNames[type];
   const title = `${courseNames[course]} — ${unitName}`;
   const markdownBacked = isEl || markdownUnits.has(`${course}/${unit}`);
-  const sectioned = course === 'ct' && contentParam.includes('/isa-2/');
+  const sectioned = ['ct', 'blc'].includes(course) && contentParam.includes('/isa-2/');
   const topicLabel = sectioned ? 'Section' : 'Module';
   const modular = !isEl && markdownBacked && (type === 'notes' || type === 'questions');
   const moduleCount = markdownModuleCounts.get(`${course}/${unit}`) || 7;
@@ -824,7 +835,7 @@ async function loadReader() {
   const quizMode = quizEnabled && params.get('quiz') === '1';
   const questionSource = markdown && quizEnabled ? markdownToQuestionText(visibleSource) : visibleSource;
   let quizSource = markdown && quizEnabled ? (['blc', 'ct'].includes(course) ? source : markdownToQuestionText(source)) : source;
-  if (quizMode && sectioned) {
+  if (quizMode && sectioned && course === 'ct') {
     const response = await fetch(`${basePath}answers.md`);
     if (!response.ok) throw new Error('The quiz answer key could not be opened.');
     quizSource += `\n${await response.text()}`;
@@ -867,6 +878,15 @@ async function loadReader() {
       }
     } else {
       readerCard.innerHTML = quizEnabled && !markdownQuestions ? formatQuestionContent(questionSource) : markdown ? renderMarkdown(visibleSource, readerLabel) : formatStudyContent(visibleSource, typeNames[type]);
+    }
+  }
+  if (course === 'blc' && unit === 'unit-3' && type === 'questions') {
+    const assumptions = source.match(/^\*\*Common assumptions:\*\*\s*(.+)$/m)?.[1];
+    if (assumptions) {
+      const guide = document.createElement('details');
+      guide.className = 'question-assumptions';
+      guide.innerHTML = `<summary>Question assumptions</summary><p>${markdownInline(assumptions)}</p>`;
+      (quizMode ? document.querySelector('.quiz-card') : readerCard).before(guide);
     }
   }
   readerCard.setAttribute('aria-busy', 'false');

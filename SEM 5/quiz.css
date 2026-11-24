@@ -24,3 +24,11 @@
 
 .quiz-percent { margin: 0 0 8px; color: var(--red) !important; font-size: 2.4rem; font-weight: 850; letter-spacing: -.04em; }
 .quiz-mode .reader-topic-pagination, .quiz-mode .reader-navigation { display: none; }
+
+.quiz-prompt { margin-block: 18px; line-height: 1.65; }
+.quiz-prompt pre { overflow-x: auto; padding: 16px; border-radius: 8px; background: var(--surface-2); font-size: .85rem; }
+.quiz-prompt p, .quiz-prompt li { overflow-wrap: anywhere; }
+.quiz-prompt .note-label { display: none; }
+.question-assumptions { margin-bottom: 20px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); }
+.question-assumptions summary { cursor: pointer; font-weight: 700; color: var(--text); }
+.question-assumptions p { line-height: 1.6; }
