@@ -7,11 +7,12 @@ const readerPagination = document.querySelector('#reader-pagination');
 const readerTopicPagination = document.querySelector('#reader-topic-pagination');
 const readerNavigation = document.querySelector('#reader-navigation');
 const typeNames = { notes: 'Notes', questions: 'Questions', 'cheat-sheet': 'Cheat Sheet' };
-const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'blc/unit-1', 'blc/unit-2', 'blc/unit-3', 'ct/unit-1', 'ct/unit-2', 'ct/unit-3', 'ct/unit-4']);
+const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'blc/unit-1', 'blc/unit-2', 'blc/unit-3', 'blc/unit-4', 'ct/unit-1', 'ct/unit-2', 'ct/unit-3', 'ct/unit-4']);
 const markdownModuleCounts = new Map([
   ['blc/unit-1', 5],
   ['blc/unit-2', 5],
   ['blc/unit-3', 7],
+  ['blc/unit-4', 7],
   ['ct/unit-1', 9],
   ['ct/unit-2', 7],
 ]);
@@ -880,8 +881,8 @@ async function loadReader() {
       readerCard.innerHTML = quizEnabled && !markdownQuestions ? formatQuestionContent(questionSource) : markdown ? renderMarkdown(visibleSource, readerLabel) : formatStudyContent(visibleSource, typeNames[type]);
     }
   }
-  if (course === 'blc' && unit === 'unit-3' && type === 'questions') {
-    const assumptions = source.match(/^\*\*Common assumptions:\*\*\s*(.+)$/m)?.[1];
+  if (course === 'blc' && ['unit-3', 'unit-4'].includes(unit) && type === 'questions') {
+    const assumptions = source.match(/^\*\*(?:Common assumptions|Assumptions):\*\*\s*(.+)$/m)?.[1];
     if (assumptions) {
       const guide = document.createElement('details');
       guide.className = 'question-assumptions';
