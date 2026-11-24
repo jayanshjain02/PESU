@@ -1,251 +1,239 @@
 # Unit 3 Questions
 
-## Section 1 – Cloud Applications & Google App Engine
+## Section 1 - Cloud Applications & Google App Engine
 
-### Q1. (Easy)
-Which cloud service model primarily provides a ready-to-use software application to users over the internet?
+### Q1. (Challenging)
+A booking site keeps carts only in instance memory. After adding automatic scaling, some users lose their carts between requests. Which change addresses the underlying problem?
 
-A. IaaS  
-B. SaaS  
-C. PaaS  
-D. Cloud-native orchestration  
+A. Move cart state into a shared data store.
+B. Raise the maximum instance count substantially.
+C. Deploy each cart as a separate application version.
+D. Place every request behind a new DNS record.
 
-### Q2. (Very Tough)
-A team wants to deploy a web application while avoiding direct management of physical servers and most underlying infrastructure. It also wants application services, version management, monitoring, and automatic scaling. Which option best matches this requirement?
+### Q2. (Challenging)
+A team needs independently deployable billing and search components. Each component must retain old releases for rollback within one App Engine application. Which layout fits?
 
-A. Google Compute Engine, because users control virtual machines and infrastructure configuration  
-B. Google App Engine, because it provides a managed application platform  
-C. Shared web hosting, because it always provides independent application versions and automatic scaling  
-D. Google Drive, because it hosts application business logic and REST APIs  
+A. Create one version per component and overwrite it per release.
+B. Create one instance per component and reuse its filesystem.
+C. Create one service per component with versions per release.
+D. Create one project per release with instances per component.
 
-### Q3. (Very Tough)
-Which sequence correctly represents the App Engine application hierarchy described in the notes?
+### Q3. (Challenging)
+An application requires installation of a custom kernel module. The team also wants to avoid infrastructure administration. Which assessment best exposes the conflict?
 
-A. Project → Versions → App → Instances → Services  
-B. App → Project → Instances → Services → Versions  
-C. Project → App Engine App → Services → Versions → Instances  
-D. Project → Services → App Engine App → Instances → Versions  
+A. A new App Engine version can supply any missing kernel feature.
+B. The module requires host control beyond a managed runtime.
+C. Storing the module in Datastore grants it execution privileges.
+D. Adding more managed instances removes the kernel dependency.
 
-### Q4. (Very Tough)
-Which statement correctly combines App Engine environments, cloud application use cases, and the GCE–GAE distinction?
+### Q4. (Challenging)
+A service doubles its application instances, but throughput barely changes and database wait time rises. What should the team investigate first?
 
-A. Standard runs applications in Compute Engine containers exclusively; Flexible uses only a sandbox, and both are IaaS.  
-B. Standard is a managed sandbox using supported runtimes; Flexible uses containers on Compute Engine VMs; GCE offers more infrastructure control while GAE abstracts more infrastructure.  
-C. Flexible cannot use containers; GCE is PaaS while GAE is IaaS.  
-D. App Engine is only for static websites and cannot host APIs, mobile back ends, portals, or microservices.
+A. Whether the release should become a separate cloud project.
+B. Whether the application should switch from PaaS to SaaS.
+C. Whether a second domain would distribute database writes.
+D. Whether the shared database is now the limiting resource.
 
----
+## Section 2 - Google Apps & Google Apps Script
 
-## Section 2 – Google Apps & Google Apps Script
+### Q5. (Challenging)
+A script creates a Calendar event and then emails the attendee. Email delivery fails; rerunning the script creates a duplicate event. Which design best supports safe retries?
 
-### Q5. (Easy)
-Which language is primarily used to write Google Apps Script?
+A. Record completed work against a stable submission ID.
+B. Create a new submission ID on every execution attempt.
+C. Send the message first and always recreate the event.
+D. Catch every error and mark the submission complete.
 
-A. Java  
-B. Python  
-C. JavaScript  
-D. C#
+### Q6. (Challenging)
+A spreadsheet automation works for its author, but a colleague cannot access a destination Drive folder when running it under their own account. What is the strongest initial explanation?
 
-### Q6. (Very Tough)
-A workflow must create a Calendar event from a form response, send a confirmation email, and log the email attachment in Drive/Sheets. Which statement best describes an appropriate Apps Script solution?
+A. The folder must be converted into a spreadsheet first.
+B. The script must use DocumentApp instead of DriveApp.
+C. The colleague must copy the code into a new project.
+D. The executing account lacks the required folder access.
 
-A. Apps Script must run on a user-managed VM; use SSH to connect Gmail and Calendar.  
-B. Chain Google service APIs such as CalendarApp, GmailApp, DriveApp, and spreadsheet services; authorize required OAuth scopes, and let the script run in Google's cloud.  
-C. Use `UrlFetchApp` only; it cannot interact with native Google Workspace services.  
-D. Use Google Docs as a relational database because Apps Script cannot read Sheets or Forms.
+### Q7. (Challenging)
+A monthly report combines spreadsheet records with live exchange-rate data returned by an external HTTPS API. Which division of work is appropriate?
 
-### Q7. (Very Tough)
-Which pairing is **incorrectly** matched?
+A. DriveApp retrieves rates; CalendarApp combines the rows.
+B. Spreadsheet services read rows; UrlFetchApp retrieves rates.
+C. DocumentApp retrieves rates; GmailApp performs the joins.
+D. CalendarApp reads rows; DriveApp calculates the rates.
 
-A. `GmailApp` — sending or managing Gmail operations  
-B. `DocumentApp` — creating or modifying Google Docs  
-C. `CalendarApp` — creating calendar events  
-D. `UrlFetchApp` — directly managing Drive folders without using Drive services
+### Q8. (Challenging)
+A process generates a document and emails its link. Users receive emails, but some generated documents are empty after a data-fetch failure. What is the best correction?
 
-### Q8. (Very Tough)
-A developer wants to create a document from spreadsheet data, add a custom menu to Sheets, call an external REST API, and publish a script as a web app. Which option is the most accurate?
+A. Email the link before creating the destination document.
+B. Give the document a new filename on every failed run.
+C. Validate the input before publishing and notifying users.
+D. Switch the destination from Drive to another folder.
 
-A. These are not possible because Apps Script only supports email automation.  
-B. These are possible uses of Apps Script: document automation, UI extensions, external API calls, and HTML Service-based web apps; execution may require authorization.  
-C. Only custom menus and sidebars are possible; external APIs and web apps require a physical server.  
-D. Apps Script is a local JavaScript interpreter and does not execute in Google's cloud.
+## Section 3 - Datastore & Database Services
 
----
+### Q9. (Challenging)
+Two requests read the last available seat and both register a student before writing the new seat count. Which change prevents overselling?
 
-## Section 3 – Datastore & Database Services
+A. Add another application instance for registration requests.
+B. Store the seat count inside each application instance.
+C. Update the count after sending both confirmation emails.
+D. Check and update availability in one transaction.
 
-### Q9. (Easy)
-In Datastore's entity-based data model, what is the closest analogy to a relational database table?
+### Q10. (Challenging)
+A portal stores uploaded PDFs and must filter registration records by semester and status. Which allocation best fits the access patterns?
 
-A. Property  
-B. Entity  
-C. Kind  
-D. Index  
+A. Keep PDFs and registration records together as database text.
+B. Keep PDFs in object storage and registrations in a database.
+C. Keep PDFs on instance disks and registrations in DNS records.
+D. Keep registrations in object filenames and PDFs in memory.
 
-### Q10. (Very Tough)
-A student portal stores user records where entities of the same kind may have different properties. The system needs a managed, scalable NoSQL database and Datastore-style compatibility. Which statement is correct?
+### Q11. (Challenging)
+Some applicant entities have a scholarship property while others do not. The UI must show a consistent form for both. Which conclusion follows?
 
-A. Datastore requires every entity in a kind to have exactly the same schema and uses relational joins as its primary model.  
-B. Firestore in Datastore mode uses an entity/kind/property model and supports a schema-less design, making it suitable for Datastore-compatible workloads.  
-C. Cloud Storage should be used because object files are equivalent to transactional database entities.  
-D. Firestore Native mode is the same as Datastore mode in data model and primary use, with no distinction.
+A. The application still needs validation and missing-value rules.
+B. Every missing property must become a separate database kind.
+C. The database must be replaced before optional fields are used.
+D. Each entity must gain identical properties before any lookup.
 
-### Q11. (Very Tough)
-Which description correctly matches components in the student portal example?
+### Q12. (Challenging)
+An admission system requires frequent relational joins across fees, departments, and registrations. Which requirement most strongly supports choosing Cloud SQL over an entity-oriented store?
 
-A. App Engine stores PDFs and profile images; Cloud Storage executes business logic; Datastore serves as the web server.  
-B. App Engine runs the application/API and business logic; Datastore stores records such as profiles and registrations; Cloud Storage stores files such as PDFs and images; Cloud SQL may hold relational records such as marks or fees.  
-C. Cloud SQL is used only for images and PDFs; Cloud Storage stores entity properties and performs ACID transactions.  
-D. Datastore replaces the need for an application runtime, and App Engine is used only for backups.
+A. The website serves users in more than one city.
+B. The application runs on a managed cloud platform.
+C. The dominant queries depend on relational joins.
+D. The records include optional contact information.
 
-### Q12. (Very Tough)
-Which option gives the **best** distinction among Datastore, Firestore Native mode, Cloud SQL, and Cloud Storage, while also reflecting the notes' transaction/query concepts?
+## Section 4 - Apple iCloud & Amazon Web Services (AWS)
 
-A. Datastore is object storage; Native mode is a relational SQL database; Cloud SQL stores files; Cloud Storage provides entity-group transactions.  
-B. Datastore mode provides an entity/kind-oriented NoSQL model; Native mode uses document/collection concepts and supports real-time app patterns; Cloud SQL is relational/SQL-oriented; Cloud Storage stores objects/files. Datastore uses indexes for query performance and supports ACID transactions within entity groups as described.  
-C. All four are interchangeable storage services and differ only in pricing.  
-D. Cloud Storage is the preferred relational database for joins; Datastore is intended for file sharing; Native mode cannot store documents.
+### Q13. (Challenging)
+A photo deletion made on one device appears on the other devices using the same synchronized library. Which assumption caused the greatest recovery risk?
 
----
+A. Synchronization was treated as an independent backup.
+B. The devices were assumed to use the same user account.
+C. The photo library was expected to update over a network.
+D. The service was expected to store more than one photo.
 
-## Section 4 – Apple iCloud & Amazon Web Services (AWS)
+### Q14. (Challenging)
+An AWS application needs to read one S3 bucket. A developer proposes giving it full administrative permissions to avoid access errors. Which response best meets the requirement?
 
-### Q13. (Easy)
-What is iCloud primarily designed to provide to Apple-device users?
+A. Grant the developer account password to every instance.
+B. Make all application buckets publicly readable instead.
+C. Allow only the required operations on the target bucket.
+D. Move all objects into the account root user directory.
 
-A. Virtual servers for hosting enterprise applications  
-B. Personal cloud storage, backup, and synchronization  
-C. Relational database administration  
-D. Container orchestration
+### Q15. (Challenging)
+A retailer already uses iCloud for employee device backups. It now needs virtual servers and a managed relational database for checkout. What is the sound architectural conclusion?
 
-### Q14. (Very Tough)
-A user wants photos and documents available across Apple devices, a device backup for restoration, and the option to strengthen protection with Advanced Data Protection. Which statement is accurate?
+A. Existing iCloud capacity can be reassigned as RDS instances.
+B. A consumer backup subscription does not supply that stack.
+C. Device synchronization can execute the checkout API instead.
+D. The database should be stored inside each employee backup.
 
-A. iCloud Drive is used only for device backups, while iCloud Backup stores shared files.  
-B. iCloud Photos synchronizes supported photos/videos; iCloud Drive stores files; iCloud Backup helps restore device data; Advanced Data Protection extends end-to-end encryption to more iCloud data categories.  
-C. Find My is AWS's load-balancing service, and Advanced Data Protection is mandatory for all accounts.  
-D. iCloud cannot synchronize data across devices signed in to the same Apple Account.
+### Q16. (Challenging)
+An application server is compromised. Which design most directly limits how much unrelated stored data its credentials can expose?
 
-### Q15. (Very Tough)
-Which AWS service/function pairing is **correctly** matched?
+A. Give all servers the same account-wide storage permissions.
+B. Use a longer storage bucket name for confidential records.
+C. Run the relational database on a larger managed instance.
+D. Scope server permissions to the data its workload needs.
 
-A. IAM – object storage for static files  
-B. EC2 – virtual servers; S3 – object storage; RDS – managed relational databases; IAM – identities and permissions  
-C. S3 – relational database with SQL joins; EC2 – calendar synchronization  
-D. Load Balancing – stores backups; RDS – authenticates user identities and permissions
+## Section 5 - Web Hosting & Cloud Hosting
 
-### Q16. (Very Tough)
-Which comparison best captures the difference between iCloud and AWS in the presentation?
+### Q17. (Challenging)
+A website works at the new server IP but its domain still reaches the previous server. Both servers are healthy. Which layer should be investigated first?
 
-A. Both are identical infrastructure platforms; the only difference is branding.  
-B. iCloud focuses on consumer personal data storage, backup, and synchronization with a simple Apple-ecosystem experience; AWS provides configurable on-demand cloud services for building and operating applications and systems.  
-C. AWS is only for photo synchronization, while iCloud is used to provision virtual servers and databases.  
-D. iCloud is primarily a development platform for microservices; AWS is primarily a device backup service.
+A. The HTML document encoding on the new server.
+B. The relational schema used by the application.
+C. The amount of RAM allocated to the new server.
+D. The domain records and cached name resolution.
 
----
+### Q18. (Challenging)
+A shop moves to a fixed-size VM in a public cloud and assumes flash-sale traffic is now handled automatically. Which missing element most directly challenges that assumption?
 
-## Section 5 – Web Hosting & Cloud Hosting
+A. A second registered domain name for the storefront.
+B. A configured scaling and traffic-distribution design.
+C. A reseller account for purchasing additional domains.
+D. A private email server beside the application VM.
 
-### Q17. (Easy)
-In traditional web hosting, what does DNS primarily do during website access?
+### Q19. (Challenging)
+A customer buys a VPS and concludes that no other customer shares the underlying physical machine. Which distinction corrects this?
 
-A. Encrypts all website files  
-B. Maps a domain name to an IP address so the browser can locate the server  
-C. Automatically writes the website's HTML  
-D. Replaces the hosting server with a database
+A. A VPS reserves a complete physical server for each guest.
+B. A VPS shares the same application process with every site.
+C. A VPS provides a virtual environment on shared hardware.
+D. A VPS removes the need to manage any operating system.
 
-### Q18. (Very Tough)
-A small blog is hosted on a server shared with many other websites. The plan is inexpensive but performance may be affected by other sites using the same resources. Which hosting type and limitation are described?
+### Q20. (Challenging)
+A load balancer routes requests to two healthy servers. A user logs in on one request but appears logged out on the next. Both servers use local session files. Which change best addresses the cause?
 
-A. Dedicated hosting; no resources are shared  
-B. Shared hosting; shared server resources can limit performance  
-C. VPS hosting; the customer owns the physical server  
-D. Cloud hosting; it must use a single fixed physical server
+A. Use a shared session store available to both servers.
+B. Increase the number of DNS records for the same domain.
+C. Give the two servers identical amounts of free disk space.
+D. Increase the load balancer health-check frequency.
 
-### Q19. (Very Tough)
-Which option correctly distinguishes hosting types and cloud deployment models?
+## Section 6 - App/Web Configuration & Deployment
 
-A. VPS divides a server into virtual environments; dedicated hosting reserves a server for one client; public cloud uses provider resources, private cloud is dedicated to one organization, hybrid combines public and private, and community cloud is shared by organizations with common needs.  
-B. Shared hosting gives every website its own physical server; VPS is always free hosting; hybrid cloud is a single public server.  
-C. Colocation means the provider owns and operates all customer hardware; reseller hosting means reselling domain names only.  
-D. Private cloud is shared by the public; community cloud is exclusive to a single individual; dedicated hosting is a container on a shared server.
+### Q21. (Challenging)
+A deployment succeeds, but it appears in a different Google Cloud project from the one the team intended. Which check should have preceded deployment?
 
-### Q20. (Very Tough)
-An e-commerce site experiences unpredictable traffic. It needs pooled compute resources, traffic distribution, redundancy/failover, and scaling without being restricted to one server. Which reasoning is most appropriate?
+A. Inspect the local browser cache for old application files.
+B. Confirm the active identity and selected project.
+C. Rename the main HTML file to the target project ID.
+D. Increase the configured automatic scaling limit.
 
-A. Traditional hosting is inherently distributed across a cluster and always provides automatic failover.  
-B. Cloud hosting is suitable because resources can be pooled and scaled, a load balancer can distribute traffic, and redundancy/failover can improve availability; usage-based costs may nevertheless increase.  
-C. Dedicated hosting must be selected because cloud hosting cannot support e-commerce workloads.  
-D. Shared hosting is best because performance and resource allocation are guaranteed to be unaffected by other customers.
+### Q22. (Challenging)
+A release changes the command used to start an application, but leaves the configured entrypoint unchanged. The code uploads successfully and startup then fails. What should be checked first?
 
----
+A. Whether the domain uses the same name as the service.
+B. Whether the deployment folder contains a screenshot.
+C. Whether every instance has a different runtime version.
+D. Whether the entrypoint matches the new startup command.
 
-## Section 6 – App/Web Configuration & Deployment
+### Q23. (Challenging)
+A team changes an API base URL by editing source code for every environment. The values are configuration, not secrets. Which change best reduces accidental cross-environment edits?
 
-### Q21. (Easy)
-Which file is the main deployment configuration descriptor identified for Google App Engine?
+A. Set environment-specific values through configuration.
+B. Create a different programming language for each release.
+C. Store the development URL in the production HTML title.
+D. Use a separate domain registrar for every application.
 
-A. `index.html`  
-B. `package-lock.json`  
-C. `app.yaml`  
-D. `server.conf`
+### Q24. (Challenging)
+An administrator uploads a revised Apache configuration using SFTP. Requests still follow the previous configuration, and no reload has occurred. Which next action best fits this evidence?
 
-### Q22. (Very Tough)
-A developer is deploying an App Engine app. They need to authenticate, select the correct project, deploy the configuration, and open the deployed site. Which command sequence is correct?
+A. Change the website domain before inspecting the server.
+B. Upload the same configuration with a different filename.
+C. Validate the configuration, then reload Apache.
+D. Delete the remote configuration and restart the laptop.
 
-A. `gcloud app browse` → `gcloud config set project PROJECT_ID` → `gcloud auth login` → `gcloud app deploy app.yaml`  
-B. `gcloud auth login` → `gcloud config set project PROJECT_ID` → `gcloud app deploy app.yaml` → `gcloud app browse`  
-C. `ssh PROJECT_ID` → `sudo systemctl reload apache2` → `gcloud app deploy` → `gcloud auth login`  
-D. `gcloud auth login` → `nano index.html` → `gcloud app browse` → `gcloud config unset project`
+## Section 7 - EL: Cloud Shell & Cloudflare Pages
 
-### Q23. (Very Tough)
-Which configuration mapping is correct for `app.yaml`?
+### Q25. (Challenging)
+The site folder is ~/site, but a student starts the Python server from ~. Web Preview shows a directory listing rather than the expected home page. What is the most direct fix?
 
-A. `runtime` specifies the programming language/runtime; `service` identifies a service; `entrypoint` specifies how the app starts; `automatic_scaling` configures scaling; `env_variables` supplies configuration values.  
-B. `runtime` specifies the DNS address; `service` contains the database password; `entrypoint` creates a Cloud SQL table; `automatic_scaling` disables instances permanently.  
-C. `runtime` is a user password; `service` defines HTML content; `entrypoint` sets the domain's DNS; `env_variables` controls physical server temperature.  
-D. `app.yaml` is only an HTML stylesheet and cannot configure scaling or runtime.
+A. Switch Web Preview to an unrelated unused port.
+B. Change the Cloudflare project name and retry preview.
+C. Serve ~/site as the document root on the preview port.
+D. Upload the directory listing as the new index.html.
 
-### Q24. (Very Tough)
-An administrator uploads website files securely, remotely manages the server, and reloads Apache after changing its configuration. Which sequence and command interpretation is correct?
+### Q26. (Challenging)
+A deployment reports success, but the root URL returns 404. The uploaded directory contains public/index.html rather than a root index.html. Which correction matches this evidence?
 
-A. SFTP → SSH → `sudo systemctl reload apache2`; SFTP securely transfers files, SSH remotely accesses/manages the server, and the reload command reloads Apache configuration.  
-B. SSH → SFTP → `sudo systemctl reload apache2`; SSH uploads files, SFTP restarts Apache, and systemctl changes DNS.  
-C. SFTP → `gcloud app browse` → `sudo systemctl reload apache2`; all three commands upload files.  
-D. `sudo systemctl reload apache2` → SFTP → SSH; Apache reload creates a secure remote session and SFTP selects a project.
+A. Deploy the public directory as the site root.
+B. Run the local server on port 443 before retrying.
+C. Rename the Cloud Shell terminal to the project name.
+D. Change the browser language and reuse the deployment.
 
----
+### Q27. (Challenging)
+A Cloud Shell preview works while Python is running, then stops after the process is terminated. A student expected a permanent public website. Which conclusion is correct?
 
-## Section 7 – EL (Experiential Learning): Cloud Shell & Cloudflare Pages
+A. Preview success proves the files are already on Cloudflare.
+B. The permanent URL must use the local preview port number.
+C. The preview can be restored by changing the DNS provider.
+D. A running preview is separate from a published deployment.
 
-### Q25. (Easy)
-Which command starts the local Python web server for the lab on port 8080?
+### Q28. (Challenging)
+The CLI confirms the intended account and a successful deployment. A guessed project URL fails, while the exact URL printed by the deployment loads the new page. What is the best next step?
 
-A. `python3 -m http.server 8080`  
-B. `npx wrangler pages deploy 8080`  
-C. `gcloud app deploy 8080`  
-D. `sudo systemctl reload python8080`
-
-### Q26. (Very Tough)
-A student created `~/my-website`, saved `index.html`, and started the server with `python3 -m http.server 8080`. Which next step correctly previews the local site before public deployment?
-
-A. Open Cloudflare DNS and point the domain to port 8080; the Python server is already public.  
-B. Use Cloud Shell's Web Preview and select preview on port 8080; keep the server running and test the page and button.  
-C. Run `npx wrangler whoami`; this automatically opens the local server preview.  
-D. Stop the server with Ctrl+C before opening Web Preview because the preview works without a running process.
-
-### Q27. (Very Tough)
-Which sequence best represents a Wrangler-based deployment, including verification and the role of the project name?
-
-A. Deploy first → skip account verification → assume the URL → place `index.html` in any nested directory.  
-B. Check Wrangler version → authenticate (`npx wrangler login`, using the supported login flow) → verify account with `npx wrangler whoami` → deploy the site directory using `npx wrangler pages deploy . --project-name=my-first-website` → open the exact URL printed by the deployment.  
-C. Run `python3 -m http.server 8080` → `npx wrangler whoami` → use that output as the public website URL; no deploy command is required.  
-D. Use `gcloud app deploy app.yaml` to publish to Cloudflare Pages; Wrangler is only an HTML editor.
-
-### Q28. (Very Tough)
-After deployment, the Pages URL displays a 404. Which troubleshooting approach most closely follows the lab?
-
-A. Assume Cloudflare is down and delete the project immediately.  
-B. Check Wrangler authentication/account, confirm `index.html` exists in the intended directory and at the deployment root, redeploy the correct directory, inspect the deployment output for the exact URL, and check the Pages project/deployment in the dashboard; if CLI is blocked, use direct upload as an alternative.  
-C. Change the local preview port from 8080 to 443 and do not redeploy.  
-D. Upload only the CSS file and use the Cloudflare dashboard URL from memory.
+A. Redeploy the same files repeatedly until the guess works.
+B. Use the confirmed URL and inspect its deployment mapping.
+C. Rebuild the HTML because the deployment must be corrupt.
+D. Change the local preview port to match the guessed name.
