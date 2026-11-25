@@ -22,7 +22,7 @@ SEM 5/                         Deployable Semester 5 study site
 
 Open `SEM 5/index.html` with a local web server, such as VS Code Live Server. The reader fetches content files, so opening pages directly from the filesystem may prevent notes from loading.
 
-The site currently provides course pages for Artificial Intelligence, Blockchain dApp Development, Cloud Technologies, Digital Marketing, Software Testing & Automation, and Gaming. AI, STA, BLC, and CT include interactive MCQ practice with skipping and result totals. CT Units 3 and 4 and Blockchain Units 3 and 4 include Markdown-backed notes, questions, cheat sheets, and the original PDFs. Blockchain Units 3 and 4 use the supplied MCQs unchanged, including code and table-based questions. Study links open in the same tab, and the reader links back to the selected subject/unit.
+The site currently provides course pages for Artificial Intelligence, Blockchain dApp Development, Cloud Technologies, Digital Marketing, Software Testing & Automation, and Gaming. AI, STA, BLC, and CT include interactive MCQ practice with skipping and result totals. CT Units 3 and 4 and Blockchain Units 3 and 4 include Markdown-backed notes, questions, cheat sheets, and the original PDFs. Blockchain Unit 3 uses concise, challenging MCQs with focused reasoning and short code examples. Unit 4 retains the supplied MCQs. Study links open in the same tab, and the reader links back to the selected subject/unit.
 
 ### EL Playground
 

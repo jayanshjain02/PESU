@@ -3,7 +3,7 @@
 **Source:** `U3-COMBINED.pdf`; section numbering matches `notes.md`.
 **Format:** 28 concise, challenging questions. Each tests one focused distinction or one short program; no combined-program output puzzles.
 
-**Common assumptions:** Solidity 0.8.20, ordinary checked arithmetic, and no upgrade mechanism unless stated. Questions are independent. A later failed transaction does not undo an earlier successful one.
+**Common assumptions:** Solidity 0.8.20, ordinary checked arithmetic, and no upgrade mechanism unless stated. External calls are ordinary calls, not delegatecall. Questions are independent. A later failed transaction does not undo an earlier successful one.
 
 ## Section 1 - Ethereum, Ether, Gas and EVM
 
