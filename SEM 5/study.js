@@ -817,6 +817,14 @@ async function loadReader() {
   }
   const basePath = contentParam.slice(0, contentParam.lastIndexOf('/') + 1);
   if (!isEl) renderNavigation(basePath, type, topic, modular, moduleCount, topicLabel);
+  if (course === 'blc' && (isEl || ['unit-3', 'unit-4'].includes(unit))) {
+    const playgroundLink = document.createElement('a');
+    const number = unit === 'unit-3' ? 3 : 4;
+    playgroundLink.href = `playground.html?unit=${number}${topic === 7 ? `&example=${number}-7${number === 3 ? '-1' : ''}` : ''}`;
+    playgroundLink.textContent = 'EL Playground';
+    if (isEl) { playgroundLink.className = 'button button-primary'; document.querySelector('.reader-heading').after(playgroundLink); }
+    else readerPagination.append(playgroundLink);
+  }
   let source;
   let markdown = false;
   if (markdownBacked) {

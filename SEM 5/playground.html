@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EL Playground | Blockchain</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="playground.css">
+  <script src="playground-engine.js" defer></script>
+  <script src="playground.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#playground">Skip to playground</a>
+  <header class="icon-header"><nav class="icon-nav container" aria-label="Main navigation"><a class="button button-secondary" href="blc.html#el">Back to Blockchain</a><button class="icon-button theme-toggle" aria-label="Use light theme" aria-pressed="false" type="button">☼</button></nav></header>
+  <main class="container playground" id="playground">
+    <h1>EL Playground</h1>
+    <p class="pg-intro">Explore the practicals, try function calls, and trace state changes. These local simulations use the supplied examples; they do not compile Solidity, connect a wallet, or send real transactions. Changes reset when you reload.</p>
+    <nav class="unit-tabs" aria-label="Practical units"><a class="button button-secondary" href="study.html?content=content/blc/isa-1/el/el.html">Unit 2 lab</a><button class="unit-tab" type="button" data-unit="3">Unit 3</button><button class="unit-tab" type="button" data-unit="4">Unit 4</button></nav>
+    <p id="pg-loading" role="status">Loading practicals…</p>
+    <div id="pg-workspace" hidden>
+      <label for="pg-example">Practical</label><select id="pg-example"></select>
+      <div class="pg-heading"><div><h2 id="pg-title"></h2><a id="pg-notes" class="pg-link">Open practical guide</a></div><button id="pg-reset" class="button button-secondary" type="button">Reset this exercise</button></div>
+      <div class="pg-columns">
+        <section class="pg-card" aria-label="Function controls">
+          <div class="pg-toolbar"><label for="pg-account">Simulated caller<select id="pg-account"><option value="A">Account A</option><option value="B">Account B</option><option value="C">Account C</option><option value="D">Account D</option></select></label><span id="pg-owner"></span></div>
+          <form id="pg-deploy"><div id="pg-constructor"></div><button class="button button-primary" type="submit">Deploy simulation</button></form>
+          <p id="pg-status" role="status" aria-live="polite"></p>
+          <div id="pg-functions" hidden></div>
+        </section>
+        <section class="pg-card" aria-label="State and events"><h3>State</h3><p id="pg-block"></p><pre id="pg-state"></pre><h3>Event log</h3><ol id="pg-events"></ol></section>
+      </div>
+      <section class="pg-card pg-source"><div class="pg-heading"><h3>Source files</h3><div class="pg-toolbar"><button class="button button-secondary" id="pg-copy" type="button">Copy file</button><button class="button button-secondary" id="pg-download" type="button">Download file</button><a class="button button-secondary" href="https://remix.ethereum.org/">Open Remix</a></div></div><label for="pg-file">File</label><select id="pg-file"></select><pre><code id="pg-code"></code></pre><p id="pg-copy-status" role="status"></p></section>
+    </div>
+  </main>
+</body>
+</html>

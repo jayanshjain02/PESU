@@ -24,6 +24,14 @@ Open `SEM 5/index.html` with a local web server, such as VS Code Live Server. Th
 
 The site currently provides course pages for Artificial Intelligence, Blockchain dApp Development, Cloud Technologies, Digital Marketing, Software Testing & Automation, and Gaming. AI, STA, BLC, and CT include interactive MCQ practice with skipping and result totals. CT Units 3 and 4 and Blockchain Units 3 and 4 include Markdown-backed notes, questions, cheat sheets, and the original PDFs. Blockchain Units 3 and 4 use the supplied MCQs unchanged, including code and table-based questions. Study links open in the same tab, and the reader links back to the selected subject/unit.
 
+### EL Playground
+
+Open `SEM 5/playground.html` or choose **EL > Open playground** on the Blockchain course page. The playground loads 28 Unit 3 Solidity exercises and both Unit 4 DApps directly from their notes, with downloadable source files. Unit 4 includes the complete Solidity, HTML, CSS, and JavaScript examples. The earlier Unit 2 lab remains linked.
+
+Each exercise has its own temporary local state, caller selection, public function/getter controls, constructor inputs, and event log. These are explicit teaching models, not Solidity compilation or an EVM: they do not use MetaMask, send transactions, model gas, or execute edited source. Amounts use integer precision; payable call value is labelled in wei. Failed calls restore state and events. Reloading clears simulations.
+
+Run the model checks with `node tests/playground.test.cjs`.
+
 ### Adding study material
 
 1. Put a unit's reader files in `SEM 5/content/<course>/isa-<assessment>/unit-<number>/`.
