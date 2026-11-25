@@ -7,8 +7,10 @@ const readerPagination = document.querySelector('#reader-pagination');
 const readerTopicPagination = document.querySelector('#reader-topic-pagination');
 const readerNavigation = document.querySelector('#reader-navigation');
 const typeNames = { notes: 'Notes', questions: 'Questions', 'cheat-sheet': 'Cheat Sheet' };
-const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'blc/unit-1', 'blc/unit-2', 'blc/unit-3', 'blc/unit-4', 'ct/unit-1', 'ct/unit-2', 'ct/unit-3', 'ct/unit-4']);
+const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'sta/unit-3', 'sta/unit-4', 'blc/unit-1', 'blc/unit-2', 'blc/unit-3', 'blc/unit-4', 'ct/unit-1', 'ct/unit-2', 'ct/unit-3', 'ct/unit-4']);
 const markdownModuleCounts = new Map([
+  ['sta/unit-3', 8],
+  ['sta/unit-4', 7],
   ['blc/unit-1', 5],
   ['blc/unit-2', 5],
   ['blc/unit-3', 7],
@@ -219,11 +221,14 @@ function parseCtQuiz(source) {
 }
 
 function parseSectionQuiz(source) {
-  const [body, key = ''] = source.split(/^#{1,6}\s+Answer Key.*$/im);
+  source = source.replace(/^\*\*(\d+)\.\s+\[([^\]]+)\]\s+(.+?)\*\*\s*$/gm, (_, id, difficulty, prompt) => `### Q${id} - ${difficulty}\n\n${prompt}`).replace(/^-\s+\*\*([A-D])\.\*\*\s*/gm, '- $1. ');
+  const [body, key = ''] = source.split(/^#{1,6}\s+(?:MCQ\s+)?Answer Key.*$/im);
   const answers = new Map([...key.matchAll(/^\|\s*(\d+)\s*\|\s*\*?\*?([A-D])\*?\*?\s*\|\s*(.*?)\s*\|$/gm)].map(([, id, answer, explanation]) => [id, { answer, explanation }]));
-  // The supplied Blockchain bank uses a compact key and numbered explanations.
+  // Support compact tables and numbered explanations in the supplied banks.
+  for (const [, id, answer] of key.matchAll(/\|\s*(\d+)\s*\|\s*([A-D])\b/g)) answers.set(id, { answer });
+  for (const [, id, answer] of key.matchAll(/\*\*(\d+)\s*[-\u2013\u2014]\s*([A-D])\*\*/g)) answers.set(id, { answer });
   for (const [, id, answer] of key.matchAll(/\bQ(\d+)\s+\*\*([A-D])\*\*/g)) answers.set(id, { answer });
-  for (const [, id, answer, explanation] of key.matchAll(/^(\d+)\.\s+\*\*([A-D]):\*\*\s*(.+)$/gm)) answers.set(id, { answer, explanation });
+  for (const [, id, answer, explanation] of key.matchAll(/^(\d+)\.\s+\*\*([A-D])[:.]\*\*\s*(.+)$/gm)) answers.set(id, { answer, explanation });
   const starts = [...body.matchAll(/^###\s+Q(\d+)\.?\s*(?:\(([^)]+)\)|[-\u2013\u2014]\s*(.+))\s*$/gm)];
   return starts.map((match, index) => {
     const block = body.slice(match.index + match[0].length, starts[index + 1]?.index).split(/^### Topic coverage map/m)[0];
@@ -242,6 +247,7 @@ function parseSectionQuiz(source) {
 }
 
 function parseUnitQuiz(source) {
+  if (/^\*\*\d+\.\s+\[[^\]]+\]/m.test(source)) return parseSectionQuiz(source);
   if (/^###\s+Q\d+\.?\s*(?:\(|[-\u2013\u2014])/m.test(source)) return parseSectionQuiz(source);
   if (/^#\s+\*\*4-MARK QUESTIONS.*MODULE\s+\d+/im.test(source)) return parseBlcQuiz(source);
   if (/^#{2,6}\s+\*\*4-Mark Questions\*\*/im.test(source)) return parseCtQuiz(source);
@@ -699,11 +705,15 @@ function renderMarkdown(markdown, label) {
 
 function extractMarkdownModule(markdown, moduleNumber) {
   const lines = markdown.replace(/\r/g, '').split(/^### Topic coverage map/m)[0].split('\n');
-  const sectionStarts = lines.map((line, index) => ({ index, match: line.match(/^## Section ([1-7])\b/) })).filter(({ match }) => match);
+  const sectionStarts = lines.map((line, index) => ({ index, match: line.match(/^## (?:Section\s+)?(\d+)(?:\.|\b)/) })).filter(({ match }) => match);
   if (sectionStarts.length) {
     const start = sectionStarts.findIndex(({ match }) => Number(match[1]) === moduleNumber);
     if (start < 0) throw new Error(`Section ${moduleNumber} is not available in this study file.`);
-    return lines.slice(sectionStarts[start].index, sectionStarts[start + 1]?.index).join('\n');
+    const first = sectionStarts[start].index;
+    let end = sectionStarts[start + 1]?.index ?? lines.length;
+    const extra = lines.slice(first + 1, end).findIndex((line) => /^##\s+/.test(line));
+    if (extra >= 0) end = first + 1 + extra;
+    return lines.slice(first, end).join('\n');
   }
   const isBlcQuestionFile = lines.some((line) => /^#{1,6}\s+\*\*4-MARK QUESTIONS.*MODULE\s+\d+/i.test(line));
   if (isBlcQuestionFile) {
@@ -799,9 +809,10 @@ async function loadReader() {
   const sectionName = isEl ? 'Solidity Lab' : typeNames[type];
   const title = `${courseNames[course]} — ${unitName}`;
   const markdownBacked = isEl || markdownUnits.has(`${course}/${unit}`);
-  const sectioned = ['ct', 'blc'].includes(course) && contentParam.includes('/isa-2/');
+  const sectioned = ['ct', 'blc', 'sta'].includes(course) && contentParam.includes('/isa-2/');
   const topicLabel = sectioned ? 'Section' : 'Module';
-  const modular = !isEl && markdownBacked && (type === 'notes' || type === 'questions');
+  const writtenPractice = course === 'sta' && unit === 'unit-3' && type === 'questions' && params.get('practice') === 'written';
+  const modular = !isEl && !writtenPractice && markdownBacked && (type === 'notes' || type === 'questions');
   const moduleCount = markdownModuleCounts.get(`${course}/${unit}`) || 7;
   const topic = modular ? Math.min(moduleCount, Math.max(1, Number.parseInt(params.get('topic'), 10) || 1)) : null;
   document.title = `${typeNames[type]} | ${title}`;
@@ -839,11 +850,11 @@ async function loadReader() {
     if (!response.ok) throw new Error('The requested study file could not be opened.');
     source = await response.text();
   }
-  const visibleSource = isEl ? source : markdown && modular ? extractMarkdownModule(source, topic) : modular ? extractModule(source, topic, typeNames[type]) : source;
+  const visibleSource = writtenPractice ? source.slice(source.indexOf('## Short-answer')).split(/^## MCQ Answer Key/m)[0] : isEl ? source : markdown && modular ? extractMarkdownModule(source, topic) : modular ? extractModule(source, topic, typeNames[type]) : source;
   const quizEnabled = ['ai', 'sta', 'blc', 'ct'].includes(course) && markdownBacked && type === 'questions';
-  const quizMode = quizEnabled && params.get('quiz') === '1';
+  const quizMode = quizEnabled && !writtenPractice && params.get('quiz') === '1';
   const questionSource = markdown && quizEnabled ? markdownToQuestionText(visibleSource) : visibleSource;
-  let quizSource = markdown && quizEnabled ? (['blc', 'ct'].includes(course) ? source : markdownToQuestionText(source)) : source;
+  let quizSource = markdown && quizEnabled ? (['blc', 'ct'].includes(course) || sectioned ? source : markdownToQuestionText(source)) : source;
   if (quizMode && sectioned && course === 'ct') {
     const response = await fetch(`${basePath}answers.md`);
     if (!response.ok) throw new Error('The quiz answer key could not be opened.');
@@ -873,7 +884,7 @@ async function loadReader() {
     readerCard.innerHTML = '';
     addUnitQuiz(quizSource, unitName);
   } else {
-    const markdownQuestions = ['blc', 'ct'].includes(course) && type === 'questions';
+    const markdownQuestions = (['blc', 'ct'].includes(course) || sectioned) && type === 'questions';
     const readerLabel = isEl ? 'Experiential Learning / Solidity Lab' : `${unitName} ${typeNames[type]}`;
     if (isEl) {
       const { labNotes, unitOne, unitTwo } = splitElMaterial(visibleSource);
@@ -895,6 +906,30 @@ async function loadReader() {
       const guide = document.createElement('details');
       guide.className = 'question-assumptions';
       guide.innerHTML = `<summary>Question assumptions</summary><p>${markdownInline(assumptions)}</p>`;
+      (quizMode ? document.querySelector('.quiz-card') : readerCard).before(guide);
+    }
+  }
+  if (course === 'sta' && unit === 'unit-3' && type === 'questions') {
+    const written = document.createElement('a');
+    const url = readerUrl(contentParam);
+    url.searchParams.set('practice', 'written');
+    written.href = url;
+    written.textContent = 'Written practice';
+    if (writtenPractice) {
+      readerPagination.querySelectorAll('a').forEach((link) => { link.classList.remove('is-active'); link.removeAttribute('aria-current'); });
+      written.className = 'is-active'; written.setAttribute('aria-current', 'page');
+      document.querySelector('#reader-title').textContent = 'Written practice';
+      document.querySelector('#reader-status').textContent = 'Short-answer and programming questions';
+      readerNavigation.hidden = true;
+    }
+    readerPagination.append(written);
+  }
+  if (course === 'sta' && unit === 'unit-4' && type === 'questions') {
+    const instructions = source.match(/^\*\*Instructions:\*\*\s*(.+)$/m)?.[1];
+    if (instructions) {
+      const guide = document.createElement('details');
+      guide.className = 'question-assumptions';
+      guide.innerHTML = `<summary>Question assumptions</summary><p>${markdownInline(instructions)}</p>`;
       (quizMode ? document.querySelector('.quiz-card') : readerCard).before(guide);
     }
   }
