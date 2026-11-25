@@ -1,321 +1,333 @@
 # Unit III: Smart Contract Platforms - MCQ Practice
 
 **Source:** `U3-COMBINED.pdf`; section numbering matches `notes.md`.
-**Format:** 28 questions, four per section. Each question focuses on one main concept or one short program.
+**Format:** 28 concise, challenging questions. Each tests one focused distinction or one short program; no combined-program output puzzles.
 
-**Common assumptions:** Solidity 0.8.20 semantics. Each question is independent. A stated successful transaction commits its changes; an uncaught failure reverts only that transaction.
+**Common assumptions:** Solidity 0.8.20, ordinary checked arithmetic, and no upgrade mechanism unless stated. Questions are independent. A later failed transaction does not undo an earlier successful one.
 
 ## Section 1 - Ethereum, Ether, Gas and EVM
 
-### Q1 - Easy
+### Q1 - Challenging
 
-Which component executes a deployed Ethereum smart contract?
+Two calls to the same bytecode return different caller addresses. Why does this not, by itself, contradict EVM determinism?
 
-- A. MetaMask
-- B. Ethereum Virtual Machine (EVM)
-- C. The contract ABI
-- D. The HTML frontend
+- A. Determinism applies only to functions marked pure.
+- B. The calls may have different execution inputs.
+- C. Nodes agree on bytecode but not execution results.
+- D. Determinism guarantees equal gas fees, not equal results.
 
-### Q2 - Moderate
+### Q2 - Challenging
 
-A developer gives a frontend team the ABI of a contract. What can the team use it for?
+A frontend encodes a function call correctly using an ABI. What does that fact alone establish?
 
-- A. Recovering the original private signing key.
-- B. Deploying a contract without its bytecode.
-- C. Changing the code of an existing deployment.
-- D. Encoding calls to the contract's functions.
+- A. The selected address contains the intended deployment.
+- B. The connected wallet is using the intended blockchain.
+- C. The transaction will pass the contract's permission checks.
+- D. The call data matches the function description used.
 
-### Q3 - Moderate
+### Q3 - Challenging
 
-A transaction uses 50,000 gas at an effective gas price of 20 gwei. What is its gas fee, excluding any ETH sent to the recipient?
+A transaction uses 80,000 gas. The base fee is 15 gwei and the priority fee is 3 gwei per gas. Which pair is correct: total execution fee; validator tip?
 
-- A. 0.001 ETH
-- B. 0.01 ETH
-- C. 1 ETH
-- D. 50,000 ETH
+- A. 0.00144 ETH; 0.00024 ETH
+- B. 0.00120 ETH; 0.00024 ETH
+- C. 0.00144 ETH; 0.00120 ETH
+- D. 0.00024 ETH; 0.00144 ETH
 
-### Q4 - Moderate
+### Q4 - Challenging
 
-A transaction has a gas limit of 100,000 but successfully uses only 60,000 gas. Which quantity is multiplied by the effective gas price to calculate the execution fee?
+A transaction updates a record, emits an event, then fails an uncaught require check. Which effect can still remain?
 
-- A. The remaining 40,000 gas.
-- B. The full 100,000 gas limit.
-- C. The actual 60,000 gas used.
-- D. The number of contract functions.
+- A. The updated record, without its event.
+- B. The event, without the updated record.
+- C. A gas charge for the execution attempted.
+- D. The record and event until the next block.
 
 ## Section 2 - Developing Smart Contracts on Ethereum
 
-### Q5 - Easy
+### Q5 - Challenging
 
-Which tool provides a local blockchain with test accounts for contract development?
+A certificate DApp hides its issue button from students, but its contract permits any caller to issue. A student builds a different frontend. Which claim is strongest?
 
-- A. A CSS framework
-- B. A domain registrar
-- C. Ganache
-- D. A text editor alone
+- A. A wallet signature proves that the issuer is an institution.
+- B. The ABI limits calls to functions shown in the official UI.
+- C. The contract still needs an on-chain issuer check.
+- D. A successful deployment proves issuer checks are adequate.
 
-### Q6 - Moderate
+### Q6 - Challenging
 
-A certificate contract compiles successfully but allows anyone to issue a certificate. What should be fixed before deployment?
+A contract contains a deadline check. The deadline passes, but nobody invokes the contract. What follows?
 
-- A. Add and test an issuer permission check in the contract.
-- B. Hide the issue button but leave the contract unchanged.
-- C. Increase the gas limit for all certificate requests.
-- D. Change the HTML title of the certificate page.
+- A. The check does not execute merely because time passed.
+- B. The next validator automatically invokes the function.
+- C. The stored deadline schedules a deployment transaction.
+- D. The ABI invokes the function when its deadline expires.
 
-### Q7 - Moderate
+### Q7 - Challenging
 
-A contract works on Ganache, but the frontend wallet is connected to another network. What should the developer check first?
+The same hexadecimal contract address appears on two separate networks. What can the frontend safely infer?
 
-- A. Whether the contract filename matches the page title.
-- B. Whether the frontend uses a larger font size.
-- C. Whether the test account owns real mainnet ETH.
-- D. Whether the wallet network and deployed address match.
+- A. Both addresses share one persistent storage area.
+- B. The networks contain identical deployed bytecode.
+- C. A write on either network updates both instances.
+- D. The address must be interpreted with its network.
 
-### Q8 - Moderate
+### Q8 - Challenging
 
-A contract stores a future date and contains a function that checks that date. What makes the function execute?
+A developer fixes a bug in local Solidity source and recompiles. The frontend still calls the original ordinary deployed contract. Which behaviour should be expected?
 
-- A. The stored date alone schedules its execution.
-- B. A transaction or another contract call invokes it.
-- C. The Solidity compiler keeps calling it in the background.
-- D. The ABI periodically runs the date check.
+- A. The original instance acquires the recompiled bytecode.
+- B. The original instance continues executing its deployed code.
+- C. The original instance resets its storage on the next call.
+- D. The original instance rejects calls until its ABI is replaced.
 
 ## Section 3 - Solidity Basics, Variables and Data Types
 
-### Q9 - Easy
+### Q9 - Challenging
 
-A contract must remember a student's marks between successful transactions. Where should the marks be declared?
+A mapping stores student marks as uint values. Looking up ID 99 returns zero. What can be concluded without a separate registration marker?
 
-- A. As a contract-level state variable.
-- B. Only as a local variable inside a function.
-- C. Only as a function parameter.
-- D. Only as a JavaScript variable in the browser.
+- A. The ID may be absent or may explicitly store zero.
+- B. The ID must belong to a registered student with zero marks.
+- C. The ID cannot exist because mapping values start at one.
+- D. The lookup has created a persistent student record.
 
-### Q10 - Moderate
+### Q10 - Challenging
 
-Consider this function inside a contract:
+Consider:
 
 ```solidity
-uint public age = 21;
-function calculate(uint age) public pure returns (uint) {
-    return age + 1;
+uint public x = 4;
+function f(uint x) public pure returns (uint) {
+    x++;
+    return x;
 }
 ```
 
-What does calculate(30) return?
+After f(6), what are the return value and stored x?
 
-- A. 21
-- B. 22
-- C. 31
-- D. The call changes stored age to 31.
+- A. 7 and 7
+- B. 5 and 5
+- C. 7 and 4
+- D. 4 and 4
 
-### Q11 - Moderate
+### Q11 - Challenging
 
-A mapping is declared as mapping(uint => string) names. No value has been stored for ID 99. What does names[99] contain?
+A student marks a contract's password variable private. Which conclusion is valid?
 
-- A. The name stored for the nearest ID.
-- B. An empty string.
-- C. A newly generated student name.
-- D. An automatic duplicate-ID error.
+- A. No external observer can inspect the stored value.
+- B. Other contracts cannot access it through an automatic public getter.
+- C. Its value becomes encrypted by the Solidity compiler.
+- D. Only the deployer can read the variable in the defining contract.
 
-### Q12 - Moderate
+### Q12 - Challenging
 
-Account A calls contract B with 2 ETH. B then calls contract C and attaches 0.5 ETH. Inside C, what are msg.sender and msg.value?
+A calls B with 2 ETH. B calls C with 0.5 ETH. Inside C, which pair describes msg.sender and msg.value?
 
-- A. A and 2 ETH in wei.
-- B. B and 2 ETH in wei.
-- C. A and 0.5 ETH in wei.
-- D. B and 0.5 ETH in wei.
+- A. A; 2 x 10^18 wei
+- B. B; 2 x 10^18 wei
+- C. A; 5 x 10^17 wei
+- D. B; 5 x 10^17 wei
 
 ## Section 4 - Control Structures, Functions and Modifiers
 
-### Q13 - Easy
+### Q13 - Challenging
 
-Which function category fits a function that adds two parameters without accessing contract state?
+A function returns msg.sender without assigning any state variable. Which is the most restrictive valid mutability choice?
 
-- A. payable
-- B. view only
-- C. constructor
-- D. pure
+- A. pure, because no storage variable is read.
+- B. payable, because a caller address is involved.
+- C. A state-changing function, because context is accessed.
+- D. view, because execution context is read.
 
-### Q14 - Moderate
+### Q14 - Challenging
 
-Consider this modifier:
+Assume x starts at 1 and the call succeeds:
 
 ```solidity
-modifier onlyOwner() {
-    require(msg.sender == owner, "Not owner");
-    _;
+modifier m() { _; x *= 2; }
+function f() public m returns (uint) {
+    x += 2;
+    return x;
 }
 ```
 
-What does _; represent?
+What are the returned value and final stored x?
 
-- A. A command that deletes the owner address.
-- B. The point where the modified function body executes.
-- C. A command that ends every transaction successfully.
-- D. A declaration of a private variable.
+- A. 3 and 3
+- B. 3 and 6
+- C. 6 and 6
+- D. 2 and 6
 
-### Q15 - Moderate
+### Q15 - Challenging
 
-A base contract has an internal function and a private function. Which can a derived contract call directly by name?
+A calls B.f(). Inside f(), B invokes its own external function using this.g(). What is msg.sender inside g()?
 
-- A. Both functions.
-- B. Only the private function.
-- C. Only the internal function.
-- D. Neither function.
+- A. A, because A started the transaction.
+- B. The account that deployed B.
+- C. B, because this.g() makes an external self-call.
+- D. The zero address, because g() belongs to B.
 
-### Q16 - Moderate
+### Q16 - Challenging
 
-A deposit function must accept ETH attached to its call. Which keyword is needed?
+With Solidity 0.8.20, stored uint n starts at zero:
 
-- A. payable
-- B. pure
-- C. private
-- D. constant
+```solidity
+function dec() public {
+    n--;
+    require(n < 10, "Too large");
+}
+```
+
+Why does dec() fail?
+
+- A. Checked underflow occurs before the require executes.
+- B. The require rejects the negative value stored in n.
+- C. The function cannot modify a public state variable.
+- D. The require receives the wrapped uint maximum first.
 
 ## Section 5 - Events, Logging, Data Locations and Error Handling
 
-### Q17 - Easy
+### Q17 - Challenging
 
-Which data location holds persistent contract state?
-
-- A. memory
-- B. storage
-- C. calldata
-- D. A function parameter by default
-
-### Q18 - Moderate
-
-A stored student initially has 50 marks. This function is called successfully:
-
-```solidity
-function testCopy() public {
-    Student memory copy = students[0];
-    copy.marks = 90;
-}
-```
-
-What are the stored marks afterward?
-
-- A. 90, because every struct variable is a storage reference.
-- B. 0, because a memory copy clears the original.
-- C. The contract cannot read a struct into memory.
-- D. 50, because only the memory copy was changed.
-
-### Q19 - Moderate
-
-A function changes a balance and then fails an uncaught require check in the same transaction. What happens to that balance change?
-
-- A. It is reverted.
-- B. It remains permanently stored.
-- C. It is kept only if an event was emitted.
-- D. It is applied to every earlier transaction too.
-
-### Q20 - Moderate
-
-A registration function declares an event named Registered. Which statement writes that event to the transaction log?
-
-- A. return Registered(id);
-- B. require Registered(id);
-- C. emit Registered(id);
-- D. view Registered(id);
-
-## Section 6 - EL: Basic Solidity Applications
-
-### Q21 - Easy
-
-The GradeCalculator returns A for marks of at least 90, B for at least 75, C for at least 60, D for at least 40, and F otherwise. What does getGrade(74) return?
-
-- A. A
-- B. B
-- C. C
-- D. D
-
-### Q22 - Moderate
-
-Consider this factorial function:
-
-```solidity
-function calculate(uint n) public pure returns (uint) {
-    uint result = 1;
-    for (uint i = 1; i <= n; i++) {
-        result *= i;
-    }
-    return result;
-}
-```
-
-What does calculate(4) return?
-
-- A. 24
-- B. 10
-- C. 4
-- D. 0
-
-### Q23 - Moderate
-
-StudentRecords stores a single name for each ID. After addStudent(7, "Old"), a successful call to addStudent(7, "New") assigns the same mapping key again. What does getStudent(7) return?
-
-- A. Both names as an array.
-- B. Old, because mappings cannot be updated.
-- C. An error because duplicate keys always revert.
-- D. New, because the second assignment replaces the value.
-
-### Q24 - Moderate
-
-In ClassElection, a successful vote sets hasVoted[msg.sender] to true. The vote function first requires that this flag is false. What happens if the same account votes again?
-
-- A. Its previous vote is moved to the new candidate.
-- B. The second vote is rejected.
-- C. Both votes are counted.
-- D. The flag is automatically reset before each call.
-
-## Section 7 - EL: Integrated Practical Programs
-
-### Q25 - Easy
-
-BankAccount has a nonpayable deposit(uint amount) function that only increases a stored balance number. What does deposit(500) do?
-
-- A. Adds 500 to the internal ledger without transferring ETH.
-- B. Transfers 500 ETH automatically.
-- C. Transfers 500 wei automatically.
-- D. Changes the balance only in browser memory.
-
-### Q26 - Moderate
-
-StudentMarksManagement uses this update:
+Stored students[0].marks starts at 50. The call succeeds:
 
 ```solidity
 Student storage s = students[0];
-s.marks = 90;
+Student memory m = s;
+m.marks = 99;
+s.marks = 70;
+return m.marks;
 ```
 
-If the transaction succeeds, what happens to students[0].marks?
+What are the stored marks and returned value?
 
-- A. It stays unchanged because s is local.
-- B. It changes only until the function returns.
-- C. It is permanently updated to 90.
-- D. A second student is added to the array.
+- A. 99 and 99
+- B. 70 and 99
+- C. 70 and 70
+- D. 50 and 99
 
-### Q27 - Moderate
+### Q18 - Challenging
 
-An ATM ledger contains 700 units. withdraw(800) first checks require(amount <= balance). What is the balance after this call fails?
+One transaction successfully emits Saved(1). A later transaction emits Saved(2) and then reverts. Which logs remain?
 
-- A. 0
-- B. 700
-- C. 800
-- D. 1500
+- A. Neither log: the later failure erases earlier events.
+- B. Both logs: events are written before validation.
+- C. Only Saved(2): the newest attempted event replaces the old one.
+- D. Only Saved(1): the failed transaction's log is removed.
 
-### Q28 - Moderate
+### Q19 - Challenging
 
-A library has one available copy of a book. B successfully borrows it, leaving zero copies. C then tries to borrow that book, and the contract requires at least one available copy. What happens?
+A withdrawal function replaces its accounting invariant with assert(balance >= 0), where balance is uint. What is the main weakness?
 
-- A. C borrows it and the copy count becomes negative.
-- B. B's earlier borrowing is undone.
-- C. C's failed call still adds a successful BookIssued event.
-- D. C's call reverts; B's loan and the zero-copy count remain.
+- A. It cannot detect inconsistent deposit and withdrawal totals.
+- B. It rejects every positive balance.
+- C. It changes the unsigned balance into a signed value.
+- D. It makes later require checks stop reverting transactions.
+
+### Q20 - Challenging
+
+A contract emits registration events but stores no registration records. A new getter must return the historical records. Which limitation matters?
+
+- A. Indexed event fields automatically become storage mappings.
+- B. A view getter can scan past logs using an ordinary array index.
+- C. Past logs are not directly readable as contract storage.
+- D. Events can be queried only by the account that emitted them.
+
+## Section 6 - EL: Basic Solidity Applications
+
+### Q21 - Challenging
+
+A grade function uses this order:
+
+```solidity
+if (marks >= 40) return "D";
+if (marks >= 75) return "B";
+if (marks >= 90) return "A";
+return "F";
+```
+
+What does it return for marks = 92?
+
+- A. A
+- B. B
+- C. D
+- D. F
+
+### Q22 - Challenging
+
+Consider this factorial-like function:
+
+```solidity
+uint result = 1;
+for (uint i = 1; i < n; i++) {
+    result *= i;
+}
+return result;
+```
+
+For n = 4, what is returned?
+
+- A. 6
+- B. 24
+- C. 10
+- D. 4
+
+### Q23 - Challenging
+
+Attendance contains [true, false]. Its getter directly returns attendance[index] with no custom check. What happens when index = 2?
+
+- A. It returns false, the default bool value.
+- B. It returns the last element, which is false.
+- C. It appends a third element and returns false.
+- D. It fails because index 2 is outside the stored array.
+
+### Q24 - Challenging
+
+In ClassElection, vote(3) fails as an invalid candidate. The same account then calls vote(2). No earlier vote succeeded. What is the outcome?
+
+- A. The second call fails because the first attempt used the vote.
+- B. The second call succeeds and records one vote for candidate 2.
+- C. Both attempts count because their candidate numbers differ.
+- D. The second call succeeds but leaves hasVoted false.
+
+## Section 7 - EL: Integrated Practical Programs
+
+### Q25 - Challenging
+
+BankAccount.deposit(uint amount) is nonpayable and updates an internal ledger. A caller invokes deposit(500) while attaching 1 wei. What happens?
+
+- A. The call reverts without adding 500 to the ledger.
+- B. The ledger increases by 500 and the contract receives 1 wei.
+- C. The ledger increases by 501 because the amounts are combined.
+- D. The call succeeds but automatically refunds the attached wei.
+
+### Q26 - Challenging
+
+StudentSearch stores Alice. Its searchByName function only checks that a calldata string is nonempty and returns that string. What does searchByName("Nobody") do?
+
+- A. Returns Alice as the nearest stored match.
+- B. Returns an empty string because no stored name matches.
+- C. Returns Nobody without checking the stored records.
+- D. Reverts because Nobody was never registered.
+
+### Q27 - Challenging
+
+A has 700 ledger units and successfully transfers 200 to B, whose balance starts at zero. A then attempts withdraw(600), which fails its balance check. What are the final A/B balances?
+
+- A. 100 / 200
+- B. 500 / 200
+- C. 700 / 0
+- D. 0 / 200
+
+### Q28 - Challenging
+
+LibraryManagement has two available copies. B successfully issues one, then attempts to issue the same book again. Duplicate loans revert. What remain: available copies; successful BookIssued events?
+
+- A. 0 copies; 2 events
+- B. 2 copies; 0 events
+- C. 1 copy; 2 events
+- D. 1 copy; 1 event
 
 ---
 
@@ -345,31 +357,31 @@ A library has one available copy of a book. B successfully borrows it, leaving z
 
 ### Answer explanations
 
-1. **B:** The EVM executes contract bytecode. MetaMask signs requests, while the ABI describes how to interact with the contract.
-2. **D:** The ABI describes function names, parameter types and return types so software can construct calls. It is not executable bytecode.
-3. **A:** 50,000 multiplied by 20 gwei is 1,000,000 gwei, which equals 0.001 ETH.
-4. **C:** The gas limit is the maximum allowance; the execution fee is based on gas actually used.
-5. **C:** Ganache provides a local development blockchain. Its test balances are not real mainnet ETH.
-6. **A:** Authorization must be enforced by contract logic because callers can bypass a frontend. Compilation does not prove that permissions are correct.
-7. **D:** A contract address must be used on the network where that instance was deployed. Another network does not automatically contain the same contract state.
-8. **B:** A date condition does not create a background scheduler. Contract code executes when invoked.
-9. **A:** Contract-level state variables persist. A function's local variables and parameters do not by themselves store a value for future calls.
-10. **C:** The parameter named age is used inside the function, so the result is 30 + 1 = 31. The stored age remains 21.
-11. **B:** An unset mapping entry has the default value of its value type. For string, that is an empty string.
-12. **D:** C sees its immediate caller, B, and the value attached to the B-to-C call: 0.5 ETH, or 5 x 10^17 wei.
-13. **D:** A pure function can calculate from its inputs without reading or changing contract state.
-14. **B:** The placeholder marks where the function body runs after the preceding modifier checks succeed.
-15. **C:** Internal functions are accessible from derived contracts. Private functions are accessible only within the contract that defines them.
-16. **A:** The payable modifier allows a function to receive attached ETH. The function name alone does not provide that ability.
-17. **B:** Storage holds persistent state. Memory and calldata are temporary locations used during execution.
-18. **D:** A memory copy is separate from the stored struct. Updating it does not write the changed marks back to storage.
-19. **A:** An uncaught failure rolls back the current transaction's state changes and logs. Earlier successful transactions are unaffected.
-20. **C:** The emit keyword emits a declared event. Its logs can be observed by external tools and applications.
-21. **C:** 74 is below 75 but at least 60, so it falls in grade C.
-22. **A:** The loop multiplies 1 x 2 x 3 x 4, producing 24.
-23. **D:** A mapping assignment replaces the value at that key unless the contract explicitly rejects the update.
-24. **B:** The second call fails the already-voted check. The earlier successful vote remains counted.
-25. **A:** An amount parameter is a numeric input. Without an actual value transfer, increasing an accounting balance does not deposit Ether.
-26. **C:** The storage variable s refers to the original stored student, so assigning through it updates persistent state.
-27. **B:** The withdrawal is rejected, so no deduction is committed.
-28. **D:** The unavailable-book check rejects C's call. It does not undo B's earlier transaction, and no event from the failed call is retained.
+1. **B:** The caller is part of the execution context. Determinism concerns the same starting state and execution inputs, not every call to the same code.
+2. **D:** Correct ABI encoding does not verify the deployed instance, network, permissions or successful execution. These must be checked separately.
+3. **A:** Total fee = 80,000 x 18 gwei = 0.00144 ETH. The priority portion is 80,000 x 3 gwei = 0.00024 ETH; the base-fee portion is burned.
+4. **C:** The transaction's application-state changes and logs are reverted, but the sender still pays for gas consumed. Reversion does not make attempted execution free.
+5. **C:** Frontend restrictions can be bypassed. Signatures identify an authorizing account; contract logic must decide whether that account may issue certificates.
+6. **A:** A condition involving time is checked when code is invoked. Storing a deadline does not create a scheduler that sends transactions.
+7. **D:** An address is meaningful in the context of its blockchain. The same address on another network does not establish matching code or state.
+8. **B:** Editing or compiling local source does not replace deployed code. With no upgrade mechanism, a new deployment and matching frontend configuration are needed.
+9. **A:** An unset uint mapping entry and an entry assigned zero produce the same value. A separate existence flag or equivalent design is needed to distinguish them.
+10. **C:** The parameter shadows the state field. Incrementing that local parameter returns 7 without changing stored x, which remains 4.
+11. **B:** Private is a Solidity access restriction, not encryption. It does not generate a public getter or make underlying blockchain data secret.
+12. **D:** C sees its immediate caller B and the value attached to the B-to-C call: 0.5 ETH = 5 x 10^17 wei. The original transfer is not automatically forwarded in full.
+13. **D:** Reading msg.sender prevents pure, but it does not require a state change. The function can be view.
+14. **B:** The function prepares return value 3. Execution then continues after the modifier placeholder, doubling stored x to 6. The return does not skip the modifier's remaining code.
+15. **C:** An external self-call creates a new call context whose immediate caller is B. It differs from an ordinary internal function call.
+16. **A:** Ordinary Solidity 0.8 arithmetic is checked. Decrementing zero fails immediately, before the later require; the transaction leaves n unchanged.
+17. **B:** s aliases the stored struct; m is an independent memory copy. Writing s persists 70, while the copy retains and returns 99.
+18. **D:** Rollback applies to the failing transaction. It removes Saved(2), while the earlier successfully committed Saved(1) remains.
+19. **A:** A uint is already nonnegative. That assertion does not verify an accounting relationship such as balance = totalDeposited - totalWithdrawn.
+20. **C:** Logs support external indexing and queries, but are distinct from storage accessible to ordinary Solidity getters. The contract must store the records it needs to read itself.
+21. **C:** The first condition already matches 92 and returns D. Later checks are never reached; returning early makes condition order important.
+22. **A:** The strict i < n condition runs for 1, 2 and 3, producing 6. The loop never multiplies by 4.
+23. **D:** An array of length two has valid indices 0 and 1. Unlike an unset mapping key, an out-of-bounds array read fails.
+24. **B:** The failed call does not retain state changes. Since no successful vote marked the account as having voted, its subsequent valid vote can succeed.
+25. **A:** A nonpayable function rejects attached ETH. The function name and its numeric amount argument do not make it payable.
+26. **C:** The implementation is an input echo, not a search through records. A function name does not supply behaviour absent from its code.
+27. **B:** The transfer commits balances 500 and 200. The later failed withdrawal does not undo that earlier transaction or deduct another amount.
+28. **D:** The first borrowing reduces availability to one and emits one issue event. The duplicate attempt is rejected and retains no additional state change or event.
