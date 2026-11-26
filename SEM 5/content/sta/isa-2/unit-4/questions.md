@@ -1,478 +1,333 @@
-# STA Unit 4 — Section-Wise MCQs
+# STA Unit 4 - Practice Questions
 
-**28 questions: 7 sections × 4 questions. Each section has 1 Easy and 3 Very tough questions.**  
-Based on *STA Unit 4.pdf* and the corrected explanations in `notes.md`. Sections 6 and 7 are EL application questions. The answer key and explanations are at the bottom.
+**Format:** 28 MCQs: 7 Easy (25%) and 21 Tough (75%). Each topic section contains one easy and three tough questions.
 
-**Instructions:** Choose exactly one answer, A–D. Assume Selenium 4 with Python and standard native HTML controls. Unless a question says otherwise, elements have loaded, locators are unique, controls are enabled and test data is isolated. Code using `self.assert...` runs inside `unittest.TestCase`. A failed assertion or uncaught exception stops subsequent statements in that test method. For explicitly independent assertion evaluations, evaluate each one separately.
+**Instructions:** Choose one best answer. Assume Selenium 4 with Python and native HTML controls unless stated otherwise. Code using self.assert methods runs inside unittest.TestCase. Questions are independent; all unspecified preconditions are satisfied.
 
-## 1. Functional Testing, Buttons and Checkboxes
+## Section 1 - Functional Testing, Buttons and Checkboxes
 
-### Q1 — Easy
+### Q1 - Easy
 
-Which Selenium method directly checks whether a checkbox is currently checked?
+Which method reads a checkbox's selected state?
 
-- **A.** `is_enabled()`
-- **B.** `is_selected()`
-- **C.** `is_displayed()`
-- **D.** `get_attribute("name")`
+- A. click()
+- B. is_enabled()
+- C. is_selected()
+- D. is_displayed()
 
-### Q2 — Very tough
+### Q2 - Tough
 
-The page contains this unique button:
+A checkbox starts checked. The test clicks it unconditionally to ensure it is checked, then asserts selection. What is the defect?
 
-```html
-<button id="default_btn" name="dft_btn">
-  <span>Default</span> Button
-</button>
-```
+- A. A checked checkbox cannot be found by its ID.
+- B. is_selected() reads visibility rather than selection.
+- C. click() cannot interact with a native checkbox.
+- D. The action toggles an already correct precondition to false.
 
-A student writes `driver.find_elements(By.XPATH, "//button[contains(text()='Default Button')]").click()`. Which replacement correctly handles the nested text/whitespace, clicks the button and retains its WebElement for a later enabled-state assertion?
+### Q3 - Tough
 
-- **A.** `button = driver.find_elements(By.XPATH, "//button[contains(text(), 'Default Button')]"); button.click()`
-- **B.** `button = driver.find_element(By.XPATH, "//button[normalize-space(text())='Default Button']"); button.click()`
-- **C.** `button = driver.find_element(By.ID, "default_btn").click(); assert button.is_enabled()`
-- **D.** `button = driver.find_element(By.XPATH, "//button[normalize-space(.)='Default Button']"); button.click()`
+button = driver.find_element(By.ID, "save").click() executes the click. What is the main issue with then calling button.is_enabled()?
 
-### Q3 — Very tough
+- A. A click always deletes the original button from the DOM.
+- B. button holds the click return value, not the WebElement.
+- C. The locator automatically becomes a list after clicking.
+- D. is_enabled() is valid only before any click.
 
-Consider a form with an empty text input, no `required` attributes and no JavaScript validation:
+### Q4 - Tough
 
-```html
-<form>
-  <input id="ename" name="ename" type="text">
-  <input id="send" type="submit" value="Submit Button">
-  <input id="img" type="image" src="images/go.jpg" alt="Go">
-</form>
-```
+A submit control is hidden by CSS but remains enabled in the DOM. Which pair is consistent with that fixture?
 
-Which complete statement is correct?
+- A. is_displayed() is False; is_enabled() may be True.
+- B. Both methods must return False because it is hidden.
+- C. is_displayed() is True; is_enabled() must be False.
+- D. Both methods must return True because it is present.
 
-- **A.** The submit caption can be matched with `//input[@value='Submit Button']`; the image control can be matched with `//input[contains(@src, 'go.jpg')]`; neither automatically imposes a nonempty-name rule, and the test must verify the specified submission outcome.
-- **B.** Both controls are automatically disabled until `ename` is filled, so an enabled-state assertion is sufficient proof of successful submission.
-- **C.** The submit caption must be matched using `//input[text()='Submit Button']`, and a successful click guarantees an alert.
-- **D.** The image control cannot submit a form, but replacing it with a plain `<img>` makes it a native submit control.
+## Section 2 - Labels, Lists, Textboxes and Textareas
 
-### Q4 — Very tough
+### Q5 - Easy
 
-Reading starts unchecked and Music starts checked. A separate submit button exists in the current DOM, is not disabled, and is hidden with `display:none`. No scripts change these states. Execute:
+A label's for attribute identifies which attribute of its associated control?
 
-```python
-if not reading.is_selected():
-    reading.click()
-reading.click()
-if music.is_selected():
-    music.click()
-if not music.is_selected():
-    music.click()
-```
+- A. value
+- B. placeholder
+- C. id
+- D. name
 
-What are the final values of **(Reading selected, Music selected, submit present, submit displayed, submit enabled)**?
+### Q6 - Tough
 
-- **A.** `(True, False, True, False, False)`
-- **B.** `(False, False, False, False, True)`
-- **C.** `(False, True, True, False, True)`
-- **D.** `(True, True, True, True, True)`
+A native select has options Choose, BCA, MCA in that order. The requirement is to select MCA even if a placeholder is later inserted. Which approach best expresses that intent?
 
-## 2. Labels, Lists, Textboxes and Textareas
+- A. Select by a stable MCA value or unique visible text.
+- B. Select the first option and assert the list is nonempty.
+- C. Read the select's tag name to infer the selected course.
+- D. Always use select_by_index(2).
 
-### Q5 — Easy
+### Q7 - Tough
 
-In `<label for="student">Name</label>`, what must `student` match to explicitly associate the label with a textbox?
+A text input starts with "Old". Calling send_keys("New") appends text. What does a correct replacement test need?
 
-- **A.** The textbox's `id`.
-- **B.** The textbox's `name`, regardless of its `id`.
-- **C.** The textbox's placeholder text.
-- **D.** The textbox's current entered value.
+- A. Read input.text and assume it equals the entered value.
+- B. Clear or select the existing text, then enter and verify New.
+- C. Check only that the placeholder contains a string.
+- D. Enter New twice to overwrite the previous characters.
 
-### Q6 — Very tough
+### Q8 - Tough
 
-Two native select elements exist. **S** is single-select with options, in order: `Choose Course`, `BCA`, `MCA`, `BSc`, `BCom`. **M** is multi-select with no initially selected options, ordered `BCA`, `MCA`, `BSc`, `BCom`. Course values equal their visible text. Execute:
+A multi-select already contains BCA and MCA selections. A test deselects MCA and checks only that BCA remains selected. What could this assertion miss?
 
-```python
-S.select_by_index(2)
-M.select_by_value("BCom")
-M.select_by_index(1)
-M.select_by_visible_text("BCA")
-M.deselect_by_visible_text("MCA")
-first = M.first_selected_option.text
-selected = [option.text for option in M.all_selected_options]
-S.deselect_all()
-```
+- A. Native multi-selects cannot expose selected options.
+- B. Deselection always resets the complete select element.
+- C. BCA must become unselected whenever MCA is deselected.
+- D. An unrelated third option may still be selected.
 
-Which result is correct?
+## Section 3 - IFrames and Switching Context
 
-- **A.** S selects BSc; `first` is BCom; `selected` is `["BCom", "BCA"]`; all S options are then deselected.
-- **B.** S selects MCA; `first` is BCom because it was selected first; the last call raises `NoSuchElementException`.
-- **C.** S selects MCA; `first` is BCA; `selected` is `["BCA", "BCom"]`; the last call raises `NotImplementedError`.
-- **D.** S selects MCA; `first` is BCA; `selected` is `["BCA", "MCA", "BCom"]`; the last call selects the placeholder.
+### Q9 - Easy
 
-### Q7 — Very tough
+Which call returns directly to the top-level document from a frame?
 
-The page has the following layout:
+- A. driver.switch_to.default_content()
+- B. driver.switch_to.window("parent")
+- C. driver.back()
+- D. driver.switch_to.parent_frame() in every nesting depth
 
-```html
-<div>
-  <span><input type="checkbox" id="agree"></span>
-  <label for="agree">I Agree</label>
-</div>
-<label for="submit">Registration Action:</label>
-<button id="submit" type="button"
-        onclick="alert('Form Submitted Successfully!')">Submit</button>
-```
+### Q10 - Tough
 
-The test must select the checkbox, validate the alert text and then continue interacting with the page. Which approach is fully correct?
+The driver is inside child frame C, nested in frame P. The target button is in the top-level page. Why can one parent_frame() call be insufficient?
 
-- **A.** Locate the checkbox with `//label[@for='agree']/preceding-sibling::input`; click it, click Submit and read `driver.find_element(By.TAG_NAME, "alert").text`.
-- **B.** Locate the checkbox with `By.NAME, "agree"`; click Submit, print “PASS” and leave the dialog open.
-- **C.** Locate the checkbox using `Select(label)`, then verify Submit with `.text`; this verifies the alert without switching to it.
-- **D.** Read the label's `for` value and locate that ID; select the checkbox if needed, click Submit, wait for the alert, assert its exact text and accept it before continuing.
+- A. It closes P while leaving its child frame selected.
+- B. It always switches from C to a sibling frame.
+- C. It preserves C as the active frame until refresh.
+- D. It moves from C to P, not necessarily to the top level.
 
-### Q8 — Very tough
+### Q11 - Tough
 
-A textbox initially contains `Rahul`; its caret is at the end. A textarea is empty with `rows="4" cols="30"` and no length restriction. Execute:
+From the top level, the driver enters frame A. It then tries to locate sibling frame B inside A and fails. Which sequence matches the intended transition?
 
-```python
-name.send_keys(" Kumar")
-address.send_keys("Bangalore\nKarnataka")
-name.clear()
-name.send_keys("Anil")
-```
+- A. Switch windows before looking for the sibling frame.
+- B. Return to the top level, then locate and enter B.
+- C. Rename the locator variable from A to B.
+- D. Wait longer for B inside the unchanged A context.
 
-Which assertion set correctly checks the entered values and interprets the controls?
+### Q12 - Tough
 
-- **A.** `name.text == "Rahul KumarAnil"` and `address.text == "Bangalore Karnataka"`; the textarea rejects every string longer than 30 characters.
-- **B.** `name.get_attribute("value") == "Anil"` and `address.get_attribute("value") == "Bangalore\nKarnataka"`; rows/cols describe visible dimensions, and clicking an otherwise inert button would not establish submission.
-- **C.** `name.get_attribute("value") == "Rahul KumarAnil"`; `clear()` only removes the placeholder, while textarea rows remove newline characters.
-- **D.** `name.text == "Anil"`; reading `value` retrieves only the original HTML default and cannot reflect text entered with Selenium.
+A frame has loaded, but its inner button appears later. A successful frame-availability wait switches into that frame. What still may be required?
 
-## 3. IFrames and Switching Context
+- A. An assumption that every inner control is already ready.
+- B. Another switch to the same frame from inside itself.
+- C. A separate wait for the button's required state inside it.
+- D. A top-level button search before any inner lookup.
 
-### Q9 — Easy
+## Section 4 - Basic and Collection Assertions
 
-Which call returns WebDriver from any nested iframe to the top-level document of its current window?
+### Q13 - Easy
 
-- **A.** `driver.switch_to.frame(0)`
-- **B.** `driver.switch_to.parent_frame()`
-- **C.** `driver.switch_to.default_content()`
-- **D.** `driver.quit()`
+Which unittest assertion checks value equality?
 
-### Q10 — Very tough
+- A. assertTrue(a is b)
+- B. assertEqual(a, b)
+- C. assertIs(a, b)
+- D. assertIsNone(a)
 
-The top document contains **A** at index 0 and **B** at index 1. A contains one nested frame **C**. B contains input `boxB`. Starting in the top document, execute:
+### Q14 - Tough
 
-```python
-driver.switch_to.frame("A")
-driver.switch_to.frame(0)
-driver.switch_to.parent_frame()
-```
+Evaluate independently: assertTrue([1]) and assertIs([1], True). Which result is correct?
 
-Where is WebDriver now, and which next sequence correctly reaches `boxB`?
+- A. Both pass because a nonempty list is truthy.
+- B. Both fail because neither value is the bool True.
+- C. The first fails; the second passes by coercion.
+- D. The first passes; the second fails.
 
-- **A.** Inside A; call `default_content()`, then `frame("B")`, then locate `boxB`.
-- **B.** In the top document; call `frame(1)` immediately, then locate `boxB`.
-- **C.** Inside C; call `frame("B")` directly, then locate `boxB`.
-- **D.** Inside A; call `frame(1)` immediately because frame indexes are always global.
+### Q15 - Tough
 
-### Q11 — Very tough
+a = [1, 2] and b = [1, 2] create two separate lists. Which pair passes?
 
-The top document contains `frame1` and `frame2` as siblings. WebDriver is inside `frame1`. The test waits 60 seconds for input `box2`, which exists only inside the already-loaded `frame2`. Which diagnosis and repair are correct?
+- A. assertEqual(a, b); assertIsNot(a, b)
+- B. assertEqual(a, b); assertIs(a, b)
+- C. assertIs(a, b); assertNotEqual(a, b)
+- D. assertNotEqual(a, b); assertIsNot(a, b)
 
-- **A.** The element is absent from the browser; changing the wait to 120 seconds guarantees success.
-- **B.** The search uses the wrong context; return to the siblings' parent, locate/switch into `frame2`, and then wait for `box2` in that context.
-- **C.** Use `driver.find_elements(By.ID, "box2").click()` because plural lookups search every frame automatically.
-- **D.** Call `switch_to.frame("frame2")` directly from `frame1`; sibling names are always globally accessible.
+### Q16 - Tough
 
-### Q12 — Very tough
+A test uses assertIn("MCA", actual_courses), where actual_courses also contains an unexpected extra course. What does the passing assertion prove?
 
-The top document contains heading `mainText` and one iframe with **title** `Student Form`, but no ID or name. The iframe contains input `name`. Which complete sequence is valid, starting in the top document?
+- A. The collection has exactly one MCA and no extra entries.
+- B. The collection matches the expected order and length.
+- C. MCA is present, but the full collection may still be wrong.
+- D. Every member belongs to the required course list.
 
-- **A.** Call `switch_to.frame("Student Form")`, type into `name`, and read `mainText` without switching out; a frame title is automatically a frame name.
-- **B.** Locate `name` from the top document, then pass that input WebElement to `switch_to.frame()` and read the heading.
-- **C.** Wait for `EC.frame_to_be_available_and_switch_to_it(...)`, call the same frame switch again immediately, type into `name`, then read `mainText` inside the frame.
-- **D.** Locate `iframe[title='Student Form']`, pass its WebElement to `switch_to.frame()`, type into `name`, call `default_content()` and then read `mainText`.
+## Section 5 - Comparison Assertions
 
-## 4. Basic and Collection Assertions
+### Q17 - Easy
 
-### Q13 — Easy
+Which assertion accepts a count equal to the minimum as well as greater counts?
 
-Which unittest assertion directly verifies that `"BCA"` is a member of `courses`?
+- A. assertGreaterEqual(count, minimum)
+- B. assertGreater(count, minimum)
+- C. assertLess(count, minimum)
+- D. assertNotEqual(count, minimum)
 
-- **A.** `self.assertIs(courses, "BCA")`
-- **B.** `self.assertIsNone(courses)`
-- **C.** `self.assertNotEqual(courses, "BCA")`
-- **D.** `self.assertIn("BCA", courses)`
+### Q18 - Tough
 
-### Q14 — Very tough
+Independently evaluate assertLess("100", "20") and assertLess(100, 20). Which result occurs?
 
-Let `a = []`, `b = a`, `c = []` and `missing = None`. Evaluate each assertion independently, so a failure does not prevent evaluating the others:
+- A. Both pass because the first digit is smaller.
+- B. The string comparison raises a type error for two strings.
+- C. The string comparison passes; the numeric one fails.
+- D. Both fail because 100 is larger than 20.
 
-| Label | Assertion |
-|---|---|
-| I | `self.assertTrue(a)` |
-| II | `self.assertFalse(c)` |
-| III | `self.assertIs(a, b)` |
-| IV | `self.assertIsNot(a, c)` |
-| V | `self.assertIsNone(missing)` |
-| VI | `self.assertIsNotNone(a)` |
-| VII | `self.assertIsInstance(a, list)` |
-| VIII | `self.assertNotIsInstance(a, list)` |
+### Q19 - Tough
 
-Which list contains **all and only** the assertions that pass?
+The specification requires exactly three cart items. A test asserts count >= 3 and passes when count is four. Which change closes the gap?
 
-- **A.** II, III, V and VII.
-- **B.** II, III, IV, V, VI and VII.
-- **C.** I, III, IV, V, VI and VIII.
-- **D.** II, IV, V, VII and VIII.
+- A. Assert that count is not two.
+- B. Assert equality with three.
+- C. Assert that count is truthy.
+- D. Assert that count is greater than zero.
 
-### Q15 — Very tough
+### Q20 - Tough
 
-Given:
+A minimum permitted age is 18. Which test/expectation pair directly distinguishes >= 18 from an incorrect > 18 implementation?
 
-```python
-courses = ["BCA", "MCA", "BCA"]
-course_tuple = tuple(courses)
-course_set = set(courses)
-student = {"name": "Rahul", "course": "BCA"}
-```
+- A. Input 25 should be accepted.
+- B. Input 0 should be rejected.
+- C. Input 17 should be rejected.
+- D. Input 18 should be accepted.
 
-Evaluate these independently:
+## Section 6 - EL - SauceDemo Automation
 
-| Label | Assertion |
-|---|---|
-| I | `self.assertEqual(len(courses), 3)` |
-| II | `self.assertIn("MCA", course_tuple)` |
-| III | `self.assertEqual(len(course_set), 3)` |
-| IV | `self.assertIn("Rahul", student)` |
-| V | `self.assertIn("Rahul", student.values())` |
-| VI | `self.assertNotIn("MBA", course_set)` |
-| VII | `self.assertIn("name", student)` |
+### Q21 - Easy
 
-Which list contains all and only the passing assertions?
+What should a successful add-to-cart test verify?
 
-- **A.** I, II, III, V and VI.
-- **B.** I, II, IV, V and VII.
-- **C.** I, II, V, VI and VII.
-- **D.** II, III, IV, VI and VII.
+- A. The intended product appears in the cart.
+- B. Only that the browser session remains open.
+- C. Only that the Add button was clickable.
+- D. Only that the page contains some text.
 
-### Q16 — Very tough
+### Q22 - Tough
 
-`setUp()` has completed successfully, and `tearDown()` calls `driver.quit()`. The name textbox exists but its current value is the empty string. The element with ID `missing` does not exist. A test method contains:
+A cart badge shows 1 after adding product A. A defect actually added product B instead. What must the assertion include to catch this?
 
-```python
-name = driver.find_element(By.ID, "name")
-self.assertIsNotNone(name)
-self.assertTrue(name.get_attribute("value"))
-self.assertIsNone(driver.find_element(By.ID, "missing"))
-```
+- A. A larger implicit wait for the badge element.
+- B. The identity of the cart product, not just its count.
+- C. The fact that the Add button click returned None.
+- D. The existence of any Remove button anywhere.
 
-Which execution description is correct?
+### Q23 - Tough
 
-- **A.** The second assertion fails because `""` is falsey; the missing-element line is not reached; `tearDown()` still runs and the runner can continue other tests. If evaluated separately, that missing-element lookup would raise an exception rather than return `None`.
-- **B.** All assertions pass because an empty string is not `None`, and a missing lookup always returns `None`.
-- **C.** The first passing assertion returns `True`, so the test ends successfully before checking the field value.
-- **D.** The second assertion fails, automatically suppresses `tearDown()` and necessarily stops the entire test suite.
+Prices shown after a low-to-high sort are "$10.00", "$2.00", "$9.00". Comparing the strings with sorted(strings) passes. What is wrong with the oracle?
 
-## 5. Comparison Assertions
+- A. A currency symbol makes any assertion necessarily fail.
+- B. A sort assertion must compare object identities instead.
+- C. Lexicographic order is being mistaken for numeric order.
+- D. sorted cannot accept a list of price strings.
 
-### Q17 — Easy
+### Q24 - Tough
 
-The rule is “the applicant must be **at least 18**.” Which assertion accepts the boundary value 18 and rejects 17?
+Checkout shows subtotal 20.00, tax 2.00 and total 22.00, but one required item is missing. Which conclusion is justified?
 
-- **A.** `self.assertGreater(age, 18)`
-- **B.** `self.assertGreaterEqual(age, 18)`
-- **C.** `self.assertLessEqual(age, 18)`
-- **D.** `self.assertNotEqual(age, 17)`
+- A. The tax assertion makes product checks redundant.
+- B. The test must accept any cart whose totals add up.
+- C. A correct total implies all required items are present.
+- D. Arithmetic consistency alone does not prove the cart is correct.
 
-### Q18 — Very tough
+## Section 7 - EL - ParaBank Automation
 
-The browser returns `amount = "100"`, `limit = "20"` and `quantity = "4"`. Evaluate the assertions independently:
+### Q25 - Easy
 
-| Label | Assertion |
-|---|---|
-| I | `self.assertLess(amount, limit)` |
-| II | `self.assertGreater(int(amount), int(limit))` |
-| III | `self.assertLessEqual(int(quantity), 4)` |
-| IV | `self.assertGreater(int(quantity), 4)` |
-| V | `self.assertEqual(quantity, 4)` |
+Which verification best checks a successful transfer between two distinct accounts?
 
-Which result is correct?
+- A. Check only that a source-account dropdown has options.
+- B. Check only that a transfer button exists.
+- C. Check the expected changes to both account balances.
+- D. Check only that the confirmation text is nonempty.
 
-- **A.** Only II and III pass; Python automatically treats all numeric-looking strings as numbers in comparisons.
-- **B.** I, II, III and V pass because equality automatically converts `"4"` to `4`.
-- **C.** I and IV pass, while III fails because an inclusive comparison rejects equality.
-- **D.** I, II and III pass; I uses lexicographic string order, IV rejects equality and V compares different value types.
+### Q26 - Tough
 
-### Q19 — Very tough
+Source/destination balances are 1000/200. A transfer of 125 has no fees or concurrent changes. Which observed result preserves their sum but still proves the direction is wrong?
 
-A dropdown contains one empty-value placeholder followed by BCA, MCA, BSc and BCom. A textbox contains exactly 20 characters. The requirements are **exactly four real courses**, **at least four real courses**, **fewer than six total options**, and **at most 20 name characters**. Which set expresses all four requirements correctly?
+- A. 875 / 200
+- B. 1125 / 75
+- C. 875 / 325
+- D. 1000 / 325
 
-- **A.** Filter the placeholder, then use `assertEqual(real_count, 4)`, `assertGreaterEqual(real_count, 4)`, `assertLess(total_count, 6)` and `assertLessEqual(name_length, 20)`.
-- **B.** Include the placeholder in `real_count`, then use `assertEqual(real_count, 4)`, `assertGreater(real_count, 4)`, `assertLessEqual(total_count, 6)` and `assertLess(name_length, 20)`.
-- **C.** Filter the placeholder, then use `assertNotEqual(real_count, 3)`, `assertGreater(real_count, 4)`, `assertLess(total_count, 6)` and `assertLess(name_length, 20)`.
-- **D.** Filter the placeholder, then use `assertEqual(real_count, 4)`, `assertGreaterEqual(real_count, 4)`, `assertLessEqual(total_count, 6)` and `assertGreaterEqual(name_length, 20)`.
+### Q27 - Tough
 
-### Q20 — Very tough
+A profile-update test sees the new address immediately after typing it. Which extra observation best checks server-side persistence?
 
-After a failed login attempt caused by a server error, the page title becomes `"Error Page"`. Two separately created lists, `expected = ["BCA", "MCA"]` and `actual = ["BCA", "MCA"]`, contain the same values. Which statement is correct?
+- A. Open a fresh browser and assume the server was reset.
+- B. Assert the input has a nonempty id attribute.
+- C. Check the field's placeholder without saving.
+- D. Reload or revisit the profile and verify the saved address.
 
-- **A.** `assertNotEqual(title, "Login Page")` proves successful login, and `assertIs(actual, expected)` proves list-content equality.
-- **B.** The title inequality assertion fails because Error Page is not an authenticated page; unittest understands that application meaning automatically.
-- **C.** The title inequality assertion passes but does not prove login success; `assertEqual(actual, expected)` passes while `assertIs(actual, expected)` fails. Verify the expected authenticated state explicitly.
-- **D.** Both list assertions fail because separately created lists can never be equal, and title assertions cannot compare strings.
+### Q28 - Tough
 
-## 6. EL — SauceDemo Automation
+An account-creation test sees the account count rise from two to three. What stronger check establishes that the intended new account was added?
 
-### Q21 — Easy
-
-Which best describes the purpose of the SauceDemo EL activity in this unit?
-
-- **A.** Automate an e-commerce workflow and assert that its observable results match expectations.
-- **B.** Treat successful browser launch as proof that every checkout feature works.
-- **C.** Replace application testing with counting the number of Selenium commands.
-- **D.** Verify only the source code without interacting with the browser.
-
-### Q22 — Very tough
-
-A test intends to add **one Backpack and one Bike Light**, then remove Backpack. The first actual cart contains **one Backpack and one Fleece Jacket**. The current assertions only check that the cart has two rows and contains Backpack, so they both pass. Which improvement establishes the intended behaviour most completely?
-
-- **A.** Keep the count assertion and additionally check that the Add button was enabled before clicking.
-- **B.** Assert that Backpack is present before removal and absent after removal; the identity and quantity of the other product are irrelevant.
-- **C.** Compare the complete cart's product identities and quantities with the expected two-item contents, then remove Backpack and assert that only one Bike Light remains with quantity one.
-- **D.** Convert all product names into a set and assert that its size is two, then check only that the cart remains visible after removal.
-
-### Q23 — Very tough
-
-In a hypothetical SauceDemo test, one unit each of three products is displayed in this order: `["$9.99", "$15.99", "$29.99"]`. The subtotal is `$55.97`, tax is `$4.48` and total is `$60.45`. Evaluate independently:
-
-| Label | Check |
-|---|---|
-| I | The original price-string list equals its lexicographically sorted version |
-| II | After stripping `$` and converting each value to `Decimal`, the price list equals its numerically sorted version |
-| III | The displayed subtotal equals the exact sum of the three decimal prices |
-| IV | The displayed total equals the displayed subtotal plus displayed tax, using decimal arithmetic |
-
-Which result is correct?
-
-- **A.** All four checks pass; string sorting and numeric sorting are equivalent for these values.
-- **B.** Only I and III pass; Decimal changes the numerical order of positive values.
-- **C.** II and IV pass, but III fails because the correct subtotal is 54.97.
-- **D.** II, III and IV pass; I fails because lexicographic order would place `$15.99` and `$29.99` before `$9.99`.
-
-### Q24 — Very tough
-
-Four isolated tests have clearly defined expected outcomes. Their checks are:
-
-| Test | Expected outcome | What the test actually verifies |
-|---|---|---|
-| I — Invalid login | Error displayed; inventory inaccessible | Waits for the specified error and verifies that authenticated inventory cannot be accessed |
-| II — Missing checkout name | Validation error; no progression | Only checks that the name input's value is still empty |
-| III — Finish valid checkout | Order-completion state | Only checks that the title differs from `Checkout`; an Error Page would pass |
-| IV — Logout | Return to login; protected inventory inaccessible | Waits for the login form and verifies that protected inventory cannot be accessed |
-
-Which tests can produce the described false positives because their checks do not establish the required result?
-
-- **A.** I and IV only.
-- **B.** II and III only.
-- **C.** I, II and III only.
-- **D.** All four, because Selenium can never verify application outcomes.
-
-## 7. EL — ParaBank Automation
-
-### Q25 — Easy
-
-What is the best precondition for a repeatable ParaBank positive-login test?
-
-- **A.** Assume every arbitrary username already has an account.
-- **B.** Assume creating a fresh browser automatically creates a new bank account.
-- **C.** Prepare a known valid demo account and know the expected authenticated result.
-- **D.** Mark the test PASS if the login button is visible, without entering credentials.
-
-### Q26 — Very tough
-
-A negative registration test uses a unique username and deliberately mismatching password/confirmation values. The expected rule is that registration must be rejected. The application displays the expected error but nevertheless creates the account. Separately, a profile-update test checks the new textbox value immediately after typing, before clicking Update. Which assessment is correct?
-
-- **A.** Both checks can falsely suggest success: registration must also verify that the account was not created, and the profile test must save, revisit/reload, and compare persisted values.
-- **B.** Both tests are sufficient because a visible error guarantees rollback and typed text guarantees persistence.
-- **C.** Only registration is insufficient; `send_keys()` automatically saves server-side profile changes.
-- **D.** Only the profile test is insufficient; checking for an error is always enough for a negative test regardless of the account state.
-
-### Q27 — Very tough
-
-Two distinct ParaBank demo accounts initially contain **1,000.00** and **200.00**. The requested transfer is **125.00**, with no fees or concurrent transactions. The application displays a success message, but refreshed balances are **900.00** and **300.00**. Evaluate these checks independently using exact decimal values:
-
-| Label | Check |
-|---|---|
-| I | New source balance equals old source balance minus 125.00 |
-| II | New destination balance equals old destination balance plus 125.00 |
-| III | Combined balance remains 1,200.00 |
-
-Which conclusion is correct?
-
-- **A.** All checks pass because a success message is authoritative.
-- **B.** Only III passes; the observed changes are 100.00, so the transfer fails the specified amount checks despite preserving the combined balance.
-- **C.** I and II pass, but III fails because transfers always change the combined balance.
-- **D.** Only I passes; source and destination balances should be compared as strings to avoid numerical assumptions.
-
-### Q28 — Very tough
-
-Before an account-opening operation, IDs are `["1001", "1002"]`. The success view reports new account `"1003"`, but the refreshed overview contains `["1001", "1002", "1004"]`. A later transfer's dropdown order is different from its earlier order. Which strategy correctly detects the account-list defect and avoids transferring from the wrong account?
-
-- **A.** Assert only that the account count increased, then select source account index 0 because it always identifies the same account.
-- **B.** Assert that the returned ID is not `None`, then choose the first visible account; both checks prove account identity.
-- **C.** Assert that every old ID remains in the new list, then select any displayed account because all account options are interchangeable.
-- **D.** Assert that returned ID `1003` was absent before and is present after creation, and select the intended source/destination by their actual stable account values; a new browser alone does not reset the server's account state.
+- A. Check the returned new ID is new and present in the refreshed list.
+- B. Assert only that some old account remains visible.
+- C. Check the count is greater than zero after creation.
+- D. Select dropdown index zero and assume it is the new account.
 
 ### Topic coverage map
 
-| Section | Coverage across its four questions |
+| Section | Focus |
 |---|---|
-| 1 | Button types and locators; corrected XPath; singular/plural results; click return value; submission rules; checkbox transitions; presence/visibility/enabled/selected states |
-| 2 | Label association and sibling relationships; alert verification; native Select methods; index/placeholder differences; multi-selection/deselection; entered values, clearing and textarea dimensions |
-| 3 | Three frame-selection approaches; local frame indexes; nested/sibling contexts; parent versus top-level return; waits and wrong-context failures |
-| 4 | All eight basic assertion methods; truthiness/None/type/identity; list/tuple/set/dictionary membership; duplicates; unittest failure and cleanup behaviour |
-| 5 | All six comparison methods; strict/inclusive boundaries; exact counts; placeholders; string-to-number conversion; equality versus identity; strength of expected-result checks |
-| 6 — EL | Test purpose; login/logout; product/cart identity and quantity; removal; numeric sorting; checkout validation; subtotal/tax/total; completion checks |
-| 7 — EL | Account preconditions; registration validation; profile persistence; transfer verification; account creation/list membership; stable dropdown selection; browser versus server state |
+| 1 | Functional Testing, Buttons and Checkboxes |
+| 2 | Labels, Lists, Textboxes and Textareas |
+| 3 | IFrames and Switching Context |
+| 4 | Basic and Collection Assertions |
+| 5 | Comparison Assertions |
+| 6 | EL - SauceDemo Automation |
+| 7 | EL - ParaBank Automation |
 
-### Answer key
+## MCQ Answer Key
 
-| Section | Easy | Very tough | Very tough | Very tough |
+| Section | Q1 | Q2 | Q3 | Q4 |
 |---|---|---|---|---|
-| 1 | **1 — B** | **2 — D** | **3 — A** | **4 — C** |
-| 2 | **5 — A** | **6 — C** | **7 — D** | **8 — B** |
-| 3 | **9 — C** | **10 — A** | **11 — B** | **12 — D** |
-| 4 | **13 — D** | **14 — B** | **15 — C** | **16 — A** |
-| 5 | **17 — B** | **18 — D** | **19 — A** | **20 — C** |
-| 6 — EL | **21 — A** | **22 — C** | **23 — D** | **24 — B** |
-| 7 — EL | **25 — C** | **26 — A** | **27 — B** | **28 — D** |
+| 1 | Q1 **C** | Q2 **D** | Q3 **B** | Q4 **A** |
+| 2 | Q5 **C** | Q6 **A** | Q7 **B** | Q8 **D** |
+| 3 | Q9 **A** | Q10 **D** | Q11 **B** | Q12 **C** |
+| 4 | Q13 **B** | Q14 **D** | Q15 **A** | Q16 **C** |
+| 5 | Q17 **A** | Q18 **C** | Q19 **B** | Q20 **D** |
+| 6 | Q21 **A** | Q22 **B** | Q23 **C** | Q24 **D** |
+| 7 | Q25 **C** | Q26 **B** | Q27 **D** | Q28 **A** |
 
 ### Answer explanations
 
-1. **B.** `is_selected()` reads checked/selected state. Enabled and displayed are separate properties, while `name` is a locator-related HTML attribute.
-2. **D.** `normalize-space(.)` handles the button's combined descendant text and whitespace; singular `find_element()` returns the element and a separate click retains it. A returns a list; B examines a direct text node rather than the combined text; C stores the click's `None` result.
-3. **A.** An input submit caption is its `value`; `contains()` needs two arguments. Both submit and image-submit controls initiate form submission, but there is no automatic nonempty-name requirement in this fixture. A click alone does not verify the outcome.
-4. **C.** Reading changes false → true → false. Music changes true → false → true. The hidden submit remains in the DOM and enabled, but it is not displayed.
-5. **A.** A label's `for` associates it with a control's `id`. Name, placeholder and entered value serve different purposes.
-6. **C.** S's placeholder shifts MCA to index 2. M has no placeholder, so index 1 selects MCA, which is then deselected. Remaining selected options are BCA and BCom in document order. Single-select deselection raises `NotImplementedError`.
-7. **D.** The input is inside a span, so it is not a preceding sibling of the label. The valid label association still identifies its ID. The JavaScript alert must be handled as a dialog, its message asserted, and the dialog accepted before further page work.
-8. **B.** The first entry temporarily produces Rahul Kumar; `clear()` removes it and the final value is Anil. The textarea preserves the newline. Dimensions do not impose a length limit, and input values are read using `value` rather than ordinary element text.
-9. **C.** `default_content()` returns to the top-level document. `parent_frame()` moves up only one level, which is insufficient from arbitrary nesting.
-10. **A.** Enter A, enter its first child C, then move up one level to A. B is A's sibling in the top document, so return to Top before entering B. Frame indexes are context-relative.
-11. **B.** Waiting longer does not change the search context. Return to the shared parent, enter frame2, and search there. Ordinary singular and plural element lookups do not automatically traverse every frame.
-12. **D.** Locate the iframe using its title attribute, then pass the actual frame WebElement to the switch. A title is not automatically a frame ID/name. The frame-availability expected condition already performs the switch, and reading the outside heading requires returning to the top document.
-13. **D.** `assertIn(item, collection)` directly expresses membership. Identity and None checks answer different questions; inequality between a list and a string proves very little.
-14. **B.** Empty lists are falsey but are not None. `b` aliases `a`, while `c` is a separate list. `a` is a list, so the positive instance assertion passes and its negative counterpart fails. Exactly II–VII pass.
-15. **C.** The list retains three entries and the tuple contains MCA. The set removes the repeated BCA and has two members, so III fails. Dictionary membership checks keys, so IV fails while V and VII pass. MBA is absent from the set.
-16. **A.** The located element is not None, but its empty value is falsey. Failure stops this method before the missing-element lookup. A normally completed setup allows teardown after test failure; other tests may continue. A missing singular lookup would raise `NoSuchElementException`.
-17. **B.** “At least” includes equality. `>= 18` accepts 18 and rejects 17. Merely excluding 17 would incorrectly accept values such as 16.
-18. **D.** Character `1` sorts before `2`, so the string comparison in I passes. Converted 100 is greater than 20. Four is less than or equal to four but not strictly greater; string `"4"` is not equal to integer `4`.
-19. **A.** Separate four real courses from five total options. Exactly requires equality; at least and at most require inclusive comparisons; fewer than six requires strict `< 6`. Some weaker alternatives happen to pass this input while expressing the wrong requirement.
-20. **C.** Error Page differs from Login Page, so that inequality passes despite login failure. Equal list contents satisfy equality, but separately created lists do not share identity. Assertions evaluate their conditions, not unstated business meaning.
-21. **A.** The exercise applies Selenium actions and assertions to a functional workflow. Browser launch, command count or source inspection alone cannot establish that checkout works.
-22. **C.** Count plus one expected member can miss a substituted second product. Verify the entire intended contents and quantities, then verify the exact remaining cart after removal. Set size alone also ignores identity and can lose duplicate information.
-23. **D.** Numeric order is 9.99 < 15.99 < 29.99, but string order begins with the `$1...` and `$2...` values. The subtotal is 55.97 and 55.97 + 4.48 = 60.45. Decimal arithmetic preserves these exact decimal amounts.
-24. **B.** An empty field does not prove the application blocked progression, and a different title can be an error page. I and IV explicitly check the required message/form and forbidden authenticated access under the stated conditions.
-25. **C.** Positive login needs known valid credentials and an expected authenticated state. A fresh browser does not create a server-side user account.
-26. **A.** Visible validation can coexist with an unintended account creation, and typed text can remain unsaved. Verify the registration outcome and check profile values after saving and revisiting.
-27. **B.** Expected balances are 875.00 and 325.00. Actual balances instead reflect a 100.00 transfer. Their sum remains 1,200.00, showing why total-balance conservation and a success message cannot replace checking both exact changes.
-28. **D.** A larger list containing 1004 does not prove that reported ID 1003 was added. Verify that exact ID. Indexes represent current positions, so stable account values are needed when ordering changes; browser cleanup does not reset server data.
+1. **C:** Selection is distinct from visibility and enabled state.
+2. **D:** A click toggles a checkbox. Check the current state and click only when a change is needed.
+3. **B:** The click method returns None. Retain the WebElement separately, then call click on it.
+4. **A:** Presence, display and enabled state are separate. Hidden does not by itself mean disabled.
+5. **C:** The label's for value refers to the control ID.
+6. **A:** An index depends on option order. Stable values or unique visible text express which course is intended.
+7. **B:** Typing normally appends. Replace existing contents explicitly and verify the input's value, not merely its placeholder or element text.
+8. **D:** Checking membership proves BCA is included, not that it is the only selected value. Compare the complete expected selection when exclusivity matters.
+9. **A:** default_content returns to the top-level browsing context. parent_frame moves up one level.
+10. **D:** One parent_frame call moves up one frame level. Use the correct context transition for the target.
+11. **B:** Element searches operate in the current frame context. A sibling in the top-level page is not a child of A.
+12. **C:** Frame availability and readiness of later content inside the frame are separate conditions.
+13. **B:** assertEqual checks equality; assertIs checks object identity.
+14. **D:** assertTrue uses truthiness. assertIs requires the identical object, and a list is not the True singleton.
+15. **A:** The lists have equal contents but distinct identities. Equality and identity answer different questions.
+16. **C:** Membership is weaker than complete collection equality. It does not exclude extras or establish order, length or duplicate counts.
+17. **A:** GreaterEqual includes the equality boundary; Greater does not.
+18. **C:** Strings compare lexicographically; numbers compare numerically. Convert extracted numeric text before numeric assertions.
+19. **B:** A lower-bound check accepts extra items. An exact count requirement needs an equality check.
+20. **D:** Both implementations reject 17 and accept 25. The boundary value 18 distinguishes inclusive from exclusive comparison.
+21. **A:** The expected business outcome is that the intended product was added.
+22. **B:** A correct quantity does not prove correct product identity. Verify which item appears in the cart.
+23. **C:** Text sorting can place 10 before 2. Parse currency strings to numeric amounts before checking numeric ordering.
+24. **D:** An internally consistent total can still describe the wrong cart. Verify item identity/quantity as well as the calculation.
+25. **C:** The test should verify the intended financial outcome, including the appropriate debit and credit.
+26. **B:** 1125 + 75 preserves 1200 but credits the source and debits the destination. Conservation alone does not prove transfer direction.
+27. **D:** A local field change is not proof of a committed update. Revisit the saved record under the same intended account and verify it.
+28. **A:** A count increase does not identify the new account. Check its returned identity against the before/after account lists.
+
+### Verification references
+
+- [Selenium waiting strategies](https://www.selenium.dev/documentation/webdriver/waits/)
+- [Selenium element finders](https://www.selenium.dev/documentation/webdriver/elements/finders/)
+- [Selenium frame contexts](https://www.selenium.dev/documentation/webdriver/interactions/frames/)
+- [Python unittest assertions](https://docs.python.org/3/library/unittest.html)
