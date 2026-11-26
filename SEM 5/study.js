@@ -7,8 +7,10 @@ const readerPagination = document.querySelector('#reader-pagination');
 const readerTopicPagination = document.querySelector('#reader-topic-pagination');
 const readerNavigation = document.querySelector('#reader-navigation');
 const typeNames = { notes: 'Notes', questions: 'Questions', 'cheat-sheet': 'Cheat Sheet' };
-const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'sta/unit-1', 'sta/unit-2', 'sta/unit-3', 'sta/unit-4', 'blc/unit-1', 'blc/unit-2', 'blc/unit-3', 'blc/unit-4', 'ct/unit-1', 'ct/unit-2', 'ct/unit-3', 'ct/unit-4']);
+const markdownUnits = new Set(['ai/unit-1', 'ai/unit-2', 'ai/unit-3', 'ai/unit-4', 'sta/unit-1', 'sta/unit-2', 'sta/unit-3', 'sta/unit-4', 'blc/unit-1', 'blc/unit-2', 'blc/unit-3', 'blc/unit-4', 'ct/unit-1', 'ct/unit-2', 'ct/unit-3', 'ct/unit-4']);
 const markdownModuleCounts = new Map([
+  ['ai/unit-3', 7],
+  ['ai/unit-4', 7],
   ['sta/unit-3', 8],
   ['sta/unit-4', 7],
   ['blc/unit-1', 5],
@@ -229,6 +231,7 @@ function parseSectionQuiz(source) {
   for (const [, id, answer] of key.matchAll(/\*\*(\d+)\s*[-\u2013\u2014]\s*([A-D])\*\*/g)) answers.set(id, { answer });
   for (const [, id, answer] of key.matchAll(/\bQ(\d+)\s+\*\*([A-D])\*\*/g)) answers.set(id, { answer });
   for (const [, id, answer, explanation] of key.matchAll(/^(\d+)\.\s+\*\*([A-D])[:.]\*\*\s*(.+)$/gm)) answers.set(id, { answer, explanation });
+  for (const [, id, answer, label, explanation] of key.matchAll(/^(\d+)\.\s+\*\*([A-D])\s*[-\u2013\u2014]\s*(.+?)\*\*\s*(.+)$/gm)) answers.set(id, { answer, explanation: `${label} ${explanation}` });
   const starts = [...body.matchAll(/^###\s+Q(\d+)\.?\s*(?:\(([^)]+)\)|[-\u2013\u2014]\s*(.+))\s*$/gm)];
   return starts.map((match, index) => {
     const block = body.slice(match.index + match[0].length, starts[index + 1]?.index).split(/^### Topic coverage map/m)[0];
@@ -312,6 +315,7 @@ function addUnitQuiz(source, unitName) {
   const renderQuestion = () => {
     const question = questions[index];
     quiz.innerHTML = `<p class="note-label">Question ${index + 1} of ${questions.length}</p><p class="quiz-mark">${question.marks}-mark MCQ</p>${question.richPrompt ? `<h2>Choose the best answer</h2><div class="quiz-prompt">${renderMarkdown(question.prompt, 'Scenario')}</div>` : `<h2>${escapeHtml(question.prompt)}</h2>`}<div class="quiz-options">${question.options.map(({ key, text }) => `<button class="quiz-option" type="button" data-answer="${key}"><strong>${key}</strong><span>${question.richPrompt ? markdownInline(text) : escapeHtml(text)}</span></button>`).join('')}</div><p class="quiz-feedback" aria-live="polite"></p><button class="button button-secondary quiz-skip" type="button">Skip question</button>`;
+    renderStudyMath(quiz);
     quiz.querySelector('.quiz-skip').addEventListener('click', () => { skipped += 1; advance(); });
     quiz.querySelector('h2').tabIndex = -1;
     quiz.querySelector('h2').focus();
@@ -331,6 +335,7 @@ function addUnitQuiz(source, unitName) {
       feedback.textContent = correct ? 'Correct!' : `Not quite — the correct answer is ${question.answer}.`;
       if (question.explanation) feedback.textContent += ` ${question.explanation}`;
       feedback.classList.add(correct ? 'is-correct' : 'is-wrong');
+      renderStudyMath(feedback);
       const next = document.createElement('button');
       next.className = 'button button-primary';
       next.type = 'button';
@@ -648,6 +653,18 @@ function renderMarkdown(markdown, label) {
       index += 1;
       continue;
     }
+    if (trimmed.startsWith('$$')) {
+      const formula = [line];
+      index += 1;
+      if (!(trimmed.length > 2 && trimmed.endsWith('$$'))) {
+        while (index < lines.length) {
+          const next = lines[index++]; formula.push(next);
+          if (next.trim().endsWith('$$')) break;
+        }
+      }
+      output.push(`<div class="math-block">${escapeHtml(formula.join('\n'))}</div>`);
+      continue;
+    }
     if (/^```/.test(trimmed)) {
       const code = [];
       index += 1;
@@ -809,8 +826,9 @@ async function loadReader() {
   const sectionName = isEl ? 'Solidity Lab' : typeNames[type];
   const title = `${courseNames[course]} — ${unitName}`;
   const markdownBacked = isEl || markdownUnits.has(`${course}/${unit}`);
-  const sectioned = ['ct', 'blc', 'sta'].includes(course) && contentParam.includes('/isa-2/');
+  const sectioned = ['ct', 'blc', 'sta', 'ai'].includes(course) && contentParam.includes('/isa-2/');
   const topicLabel = sectioned ? 'Section' : 'Module';
+  if (course === 'ai' && sectioned) await loadStudyMath();
   const writtenPractice = course === 'sta' && unit === 'unit-3' && type === 'questions' && params.get('practice') === 'written';
   const modular = !isEl && !writtenPractice && markdownBacked && (type === 'notes' || type === 'questions');
   const moduleCount = markdownModuleCounts.get(`${course}/${unit}`) || 7;
@@ -909,6 +927,7 @@ async function loadReader() {
       (quizMode ? document.querySelector('.quiz-card') : readerCard).before(guide);
     }
   }
+  renderStudyMath(readerCard);
   if (course === 'sta' && unit === 'unit-3' && type === 'questions') {
     const written = document.createElement('a');
     const url = readerUrl(contentParam);
@@ -924,7 +943,7 @@ async function loadReader() {
     }
     readerPagination.append(written);
   }
-  if (course === 'sta' && unit === 'unit-4' && type === 'questions') {
+  if ((course === 'sta' && unit === 'unit-4' || course === 'ai' && sectioned) && type === 'questions') {
     const instructions = source.match(/^\*\*Instructions:\*\*\s*(.+)$/m)?.[1];
     if (instructions) {
       const guide = document.createElement('details');
