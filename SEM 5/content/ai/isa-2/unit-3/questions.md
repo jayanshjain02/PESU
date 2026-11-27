@@ -11,10 +11,10 @@ Based on *Ai Unit 3.pdf* and the checked explanations in `notes.md`. The final t
 
 Which characteristic best identifies unsupervised learning?
 
-- **A.** Every training record has a correct target label supplied to the algorithm.
-- **B.** The dataset contains no measured features.
-- **C.** The algorithm discovers structure without predefined target outputs for the records.
-- **D.** The algorithm requires no human decisions about features or parameters.
+- **A.** Every record has a supplied target label.
+- **B.** The records contain no measured features.
+- **C.** Structure is learned without target labels.
+- **D.** Features and parameters require no human choices.
 
 ### Q2 - Very tough
 
@@ -27,10 +27,10 @@ Consider these four operations:
 
 Which operations contain an unsupervised step as described?
 
-- **A.** 2, 3 and 4; the PCA step in 3 is unsupervised even though its downstream classifier is supervised.
-- **B.** 1 and 2 only; assigning names after clustering makes 2 supervised as well.
-- **C.** 2 only; a rule consequent always acts as a supervised class label.
-- **D.** All four; any model that uses customer features is unsupervised.
+- **A.** 2, 3 and 4 only.
+- **B.** 1 and 2 only.
+- **C.** 2 and 4 only.
+- **D.** 1, 2, 3 and 4.
 
 ### Q3 - Very tough
 
@@ -52,10 +52,10 @@ Which statements are valid?
 
 A dataset contains **1,000 customers and 10 features**, with shopping-basket records also available. Three independent tasks are proposed: create three customer groups, produce a two-feature representation, and find products frequently bought together from the baskets. Which output description is internally consistent?
 
-- **A.** K-Means reduces the dataset to three customer observations; PCA produces two observations with 1,000 features; Apriori predicts predefined customer labels.
-- **B.** K-Means assigns the 1,000 customers to three groups with 10-coordinate centroids; PCA produces a 1,000 × 2 representation; Apriori produces item relationships. Human interpretation is still needed.
-- **C.** K-Means must receive the three group names as target labels; PCA selects exactly two unchanged original columns; Apriori always produces exactly two rules.
-- **D.** All three tasks are classification tasks because their outputs can be given human-readable names.
+- **A.** K-Means: 3 observations; PCA: 2 x 1000; Apriori: class labels.
+- **B.** K-Means: 1000 assignments, 10-D centroids; PCA: 1000 x 2; Apriori: item relationships.
+- **C.** K-Means: supplied target labels, 10-D centroids; PCA: 1000 x 2; Apriori: item relationships.
+- **D.** K-Means: 1000 assignments, 3-D centroids; PCA: 2 x 1000; Apriori: item relationships.
 
 ## 2. K-Means Clustering
 
@@ -63,28 +63,28 @@ A dataset contains **1,000 customers and 10 features**, with shopping-basket rec
 
 What is the updated centroid of a K-Means cluster?
 
-- **A.** The coordinate-wise arithmetic mean of its assigned observations.
-- **B.** The member with the highest numerical value in any feature.
-- **C.** A new random member selected after every distance calculation.
-- **D.** The median distance between all pairs of observations.
+- **A.** The coordinate-wise mean of assigned members.
+- **B.** The coordinate-wise median of assigned members.
+- **C.** The assigned member nearest the previous center.
+- **D.** The assigned member with the largest feature sum.
 
 ### Q6 - Very tough
 
 For the marks dataset `{92,89,85,58,55,52,18,22,25}`, K = 3 starts with centers 92, 55 and 22. After convergence, the groups are `{92,89,85}`, `{58,55,52}` and `{18,22,25}`. A new mark 60 is assigned using the fixed final centers. Which full statement is correct?
 
-- **A.** The final centers are still 92, 55 and 22, because centroids must be existing student marks.
-- **B.** Mark 60 joins the high group because the final high center is closest; numerical cluster IDs determine the ranking.
-- **C.** Mark 60 joins the middle group and automatically changes its center to 56.25 even when only a fixed-center assignment is requested.
-- **D.** The centers are 88.67, 55 and 21.67; 60 joins the middle group at distance 5. Its center stays 55 during fixed-model assignment, but would become 56.25 if that group's mean were recomputed including 60.
+- **A.** Centers: (92.00,55.00,22.00); 60 joins middle; fixed center 55; recomputed center 56.25.
+- **B.** Centers: (88.67,55.00,21.67); 60 joins high; fixed center 88.67; recomputed center 81.50.
+- **C.** Centers: (88.67,55.00,21.67); 60 joins middle; fixed center 56.25; recomputed center 56.25.
+- **D.** Centers: (88.67,55.00,21.67); 60 joins middle; fixed center 55; recomputed center 56.25.
 
 ### Q7 - Very tough
 
 The customer dataset is `(20,25)`, `(22,30)`, `(25,28)`, `(60,65)`, `(62,68)`, `(65,70)`. Initial centers are A = `(20,25)` and B = `(60,65)`. After one assignment step, the first three customers join A and the last three join B. Which set of results is correct?
 
-- **A.** New A = `(22,30)`, new B = `(62,68)`; the centroid must be one of the assigned customers.
-- **B.** New A = `(67/3,83/3)`, new B = `(187/3,203/3)`; C3's initial distance to B is `sqrt(2594) ≈ 50.93`; unchanged memberships in the next iteration establish stability of this run.
-- **C.** New A = `(67/6,83/6)`, new B = `(187/6,203/6)`; each cluster sum is divided by all six customers.
-- **D.** New A = `(22.33,27.67)`, new B = `(62.33,67.67)`; once stable, these centers prove the unique globally optimal clustering for every initialization and feature scaling.
+- **A.** A=(66/3,90/3), B=(186/3,204/3); distance sqrt(2594); unchanged membership means stability.
+- **B.** A=(67/3,83/3), B=(187/3,203/3); distance sqrt(2594); unchanged membership means stability.
+- **C.** A=(67/6,83/6), B=(187/6,203/6); distance sqrt(2594); unchanged membership means stability.
+- **D.** A=(67/3,83/3), B=(187/3,203/3); distance sqrt(2594); stability proves a unique global optimum.
 
 ### Q8 - Very tough
 
@@ -108,37 +108,37 @@ Which statements are correct?
 
 What does the first principal component seek to capture?
 
-- **A.** The direction with the smallest possible variance.
-- **B.** The original feature with the longest name.
-- **C.** The direction guaranteed to predict every class label correctly.
-- **D.** The direction of maximum variance in the prepared data.
+- **A.** The direction with minimum data variance.
+- **B.** The original feature with maximum variance.
+- **C.** The direction that best separates known labels.
+- **D.** The direction with maximum prepared-data variance.
 
 ### Q10 - Very tough
 
 A collection of 100 × 100 grayscale images is represented by 10,000 pixel features per image. A learned PCA representation retains 500 components. Which conclusion is justified?
 
-- **A.** PCA has selected 500 unchanged original pixels and guarantees that 95% of the image information was removed.
-- **B.** Feature count fell by 95%; the 500 components are weighted features, and the retained variance/reconstruction quality cannot be inferred from the feature-count ratio alone.
-- **C.** Only 500 of the original images remain; the number of features per remaining image is unchanged.
-- **D.** Retaining 5% of the feature dimensions guarantees exactly 5% of the variance is retained and guarantees improved recognition accuracy.
+- **A.** 95% fewer features; unchanged original pixels; retained variance must be 5%.
+- **B.** 95% fewer features; weighted combinations; retained variance is not specified.
+- **C.** 95% fewer observations; original features retained; image count becomes 500.
+- **D.** 95% fewer features; weighted combinations; recognition accuracy must improve.
 
 ### Q11 - Very tough
 
 Which set of statements about PCA and the techniques listed with dimensionality reduction is fully correct?
 
-- **A.** PC2 is parallel to PC1, uncorrelated always means independent, and LDA never uses labels.
-- **B.** PCA standardization and centering are identical operations; a high-variance direction must always contain the best class-discriminating information.
-- **C.** PC2 is orthogonal to PC1; uncorrelated does not generally imply independent; centering does not equal unit scaling; LDA is normally supervised even though it is a dimensionality-reduction technique.
-- **D.** PCA is feature selection, so its components must be original columns; t-SNE, UMAP and autoencoders are alternative names for the same PCA algorithm.
+- **A.** PC2 parallel; uncorrelated need not mean independent; centering differs from scaling; LDA uses labels.
+- **B.** PC2 orthogonal; uncorrelated means independent; centering differs from scaling; LDA uses labels.
+- **C.** PC2 orthogonal; uncorrelated need not mean independent; centering differs from scaling; LDA uses labels.
+- **D.** PC2 orthogonal; uncorrelated need not mean independent; centering equals unit scaling; LDA ignores labels.
 
 ### Q12 - Very tough
 
 The slide supplies points `(2,3)`, `(3,4)`, `(5,7)`, `(6,8)` and the formula `z = (x+y)/sqrt(2)`. A student instead subtracts the dataset means `(4,5.5)` before applying the same direction. Which comparison is correct?
 
-- **A.** The supplied raw formula gives approximately `[3.54,4.95,8.49,9.90]`; centering subtracts the common offset `9.5/sqrt(2)` from every score, preserving pairwise differences but changing the requested raw answers. Neither procedure alone derives a new PCA direction.
-- **B.** Both procedures give the same numbers because subtracting feature means never changes projections.
-- **C.** The raw formula reduces four observations to one observation, whereas the centered formula retains all four.
-- **D.** Centering changes only the first score, and equal weights are the exact fitted PCA weights for every two-feature dataset.
+- **A.** Raw: [3.54,4.95,8.49,9.90]; centered: subtract 9.5/sqrt(2) from each; pairwise differences stay equal.
+- **B.** Raw: [3.54,4.95,8.49,9.90]; centered: subtract zero from each; pairwise differences stay equal.
+- **C.** Raw: [3.54,4.95,8.49,9.90]; centered: subtract 9.5 from each; pairwise differences stay equal.
+- **D.** Raw: [3.54,4.95,8.49,9.90]; centered: subtract 9.5/sqrt(2) from each; pairwise differences change.
 
 ## 4. Association Rule Mining
 
@@ -146,10 +146,10 @@ The slide supplies points `(2,3)`, `(3,4)`, `(5,7)`, `(6,8)` and the formula `z 
 
 What does confidence of X → Y measure?
 
-- **A.** The fraction of all transactions containing either X or Y.
-- **B.** The fraction of X-containing transactions that also contain Y.
-- **C.** The ratio of the total number of different items to the number of transactions.
-- **D.** The probability that purchasing X causally forces a purchase of Y.
+- **A.** Joint transactions divided by all transactions.
+- **B.** Joint transactions divided by X transactions.
+- **C.** Y transactions divided by joint transactions.
+- **D.** X transactions divided by all transactions.
 
 ### Q14 - Very tough
 
@@ -174,19 +174,19 @@ What are **support, confidence and lift**, respectively, for Milk → Bread?
 
 In 100 transactions, X appears in 20, Y appears in 80, and both appear together in 18. Which complete interpretation is correct?
 
-- **A.** X → Y has support 18%, confidence 90% and lift 1.125; Y → X has confidence 22.5% and the same lift. The observed positive association does not establish causation.
-- **B.** X → Y has confidence 22.5% and Y → X has confidence 90%; reversing a rule swaps its support from 20% to 80%.
-- **C.** X → Y has lift 90/0.80 = 112.5, proving that X causes Y in 90% of future transactions.
-- **D.** The rules must have equal confidence because the count of transactions containing both is the same in either direction.
+- **A.** Support 18%; forward/reverse confidence 90%/22.5%; both lifts 1.125; causation unproved.
+- **B.** Support 18%; forward/reverse confidence 22.5%/90%; both lifts 1.125; causation unproved.
+- **C.** Support 18%; forward/reverse confidence 90%/22.5%; both lifts 112.5; causation unproved.
+- **D.** Support 20%; forward/reverse confidence 90%/22.5%; both lifts 1.125; causation unproved.
 
 ### Q16 - Very tough
 
 There are 50 transactions. A appears in 5, B in 40 and both together in 4. The required minimum support is **10%** and minimum confidence is **70%**. Which decision about A → B is correct?
 
-- **A.** Accept: confidence is 80%, and any rule meeting confidence automatically meets support.
-- **B.** Accept: the rule has support 80%, confidence 8% and lift greater than 1.
-- **C.** Reject because lift is below 1: B occurs in only 80% of A transactions, although its overall frequency is also 80%.
-- **D.** Reject under the support filter: support is 8%, confidence is 80% and lift is 1. The confidence meets its threshold but gives no improvement over B's baseline rate.
+- **A.** Accept; support 8%, confidence 80%, lift 1; confidence alone is sufficient.
+- **B.** Accept; support 80%, confidence 8%, lift 1; both required thresholds are met.
+- **C.** Reject; support 8%, confidence 80%, lift 0.8; only the lift filter is decisive.
+- **D.** Reject; support 8%, confidence 80%, lift 1; the required support filter fails.
 
 ## 5. Apriori Algorithm
 
@@ -194,10 +194,10 @@ There are 50 transactions. A appears in 5, B in 40 and both together in 4. The r
 
 Which statement expresses the Apriori pruning principle?
 
-- **A.** If an itemset is infrequent, every superset containing it is also infrequent.
-- **B.** If two individual items are frequent, their pair is necessarily frequent.
-- **C.** If a pair is frequent, every triple containing it is frequent.
-- **D.** If a rule has high confidence, all of its supersets must also have high confidence.
+- **A.** Infrequent subsets imply infrequent containing supersets.
+- **B.** Frequent single items imply their pairs are frequent too.
+- **C.** Frequent pairs imply their containing triples are frequent.
+- **D.** High-confidence rules imply high-confidence larger rules.
 
 ### Q18 - Very tough
 
@@ -213,28 +213,28 @@ Use the **Apriori supermarket** dataset:
 
 For this question, minimum support is **40%** and minimum confidence is **60%**. Which answer gives all accepted rule directions from the frequent pairs and correctly describes the triple?
 
-- **A.** Only Bread → Butter and Butter → Bread qualify; 40% support pairs fail because equality is excluded. The triple is frequent because all three individual items are frequent.
-- **B.** All six pair directions qualify because every pair is frequent; the triple is also frequent because all its pairs are frequent.
-- **C.** Milk → Bread, Milk → Butter, Bread → Butter and Butter → Bread qualify. The reverse rules to Milk fail confidence; the triple has support 20% and is infrequent.
-- **D.** Only Bread → Milk and Butter → Milk qualify, each with 66.67% confidence; the triple has support 40%.
+- **A.** Only Bread->Butter and Butter->Bread pass; the triple is infrequent at 20% support.
+- **B.** All six pair directions pass; the triple is infrequent at 20% support.
+- **C.** Milk->Bread, Milk->Butter and both Bread/Butter directions pass; the triple is infrequent at 20%.
+- **D.** Milk->Bread, Milk->Butter and both Bread/Butter directions pass; the triple is frequent at 40%.
 
 ### Q19 - Very tough
 
 An Apriori run has **7 transactions** and minimum support **35%**. Counts are `n({A,B}) = 3`, `n({A,C}) = 3`, and `n({B,C}) = 2`. The triple's count has not been scanned. Which conclusion is sound?
 
-- **A.** The minimum count is 2 after rounding 2.45 down, so all three pairs are frequent and the triple must be frequent.
-- **B.** The minimum count is 3, but the triple must still be counted because an infrequent subset says nothing about its supersets.
-- **C.** The minimum count is 3, so `{A,B,C}` has count exactly 3 because it combines two frequent pairs.
-- **D.** The minimum count is 3; `{B,C}` is infrequent, so `{A,B,C}` can be pruned without scanning its count. Its count cannot exceed 2.
+- **A.** Minimum count 2; BC is frequent; the triple must also be frequent.
+- **B.** Minimum count 3; BC is infrequent; the triple still requires counting.
+- **C.** Minimum count 3; AB and AC are frequent; the triple count must be 3.
+- **D.** Minimum count 3; BC is infrequent; prune the triple, whose count is at most 2.
 
 ### Q20 - Very tough
 
 In the supermarket example, Bread and Butter each occur in 4 of 5 transactions, and their pair occurs in 3. A report calls Bread → Butter the “uniquely best positive recommendation” because confidence is 75%. Which correction is most accurate?
 
-- **A.** Its lift is 0.75 × 0.80 = 0.60; confidence and lift must always be multiplied.
-- **B.** Its support is 60%, confidence 75% and lift 0.9375; the reverse direction ties on these metrics. It has relatively high support/confidence among the listed rules but does not improve on Butter's 80% baseline frequency.
-- **C.** Its confidence is 80% because Butter's support is 80%; reverse confidence must be 20%.
-- **D.** Its high confidence proves that Bread causes Butter purchases, so thresholds and domain usefulness no longer matter.
+- **A.** Support 60%; confidence 75%; lift 0.60; reverse metrics tie; positive lift improvement.
+- **B.** Support 60%; confidence 75%; lift 0.9375; reverse metrics tie; no baseline improvement.
+- **C.** Support 60%; confidence 80%; lift 1.00; reverse confidence differs; baseline matched.
+- **D.** Support 60%; confidence 75%; lift 1.25; reverse metrics tie; causation established.
 
 ## 6. EL - PCA Customer Projection
 
@@ -260,10 +260,10 @@ Use the supplied EL formula `PC1 = (Income + Spending + Savings)/sqrt(3)`. The r
 
 Consider C2 = `(35,25,12)` and another customer P = `(40,20,12)`, using the EL's equal-weight projection. Also consider reversing the signs of all three projection weights. Which statement is correct?
 
-- **A.** Different input triples must have different PC1 scores, so P cannot share C2's score.
-- **B.** Both original triples map to `72/sqrt(3)`; their distinction is lost in this representation. Reversing all weights changes every score's sign while preserving the represented axis and pairwise score distances.
-- **C.** Reversing the weights changes the representation back from one dimension to three and uniquely reconstructs both original triples.
-- **D.** Equal scores prove that the two original customers have identical Income, Spending and Savings.
+- **A.** Same score; distinct inputs remain recoverable; reversing weights changes only the sign.
+- **B.** Same score; input distinction is lost; reversing weights preserves absolute score differences.
+- **C.** Different scores; input distinction is preserved; reversing weights preserves absolute differences.
+- **D.** Different scores; input distinction is lost; reversing weights restores the three original features.
 
 ### Q24 - Very tough
 
@@ -308,28 +308,28 @@ For the original five transactions, what minimum support count is required?
 
 Which statement lists the correct frequent itemsets and explains the absence/presence of larger sets?
 
-- **A.** L1 consists of {Mobile}, {Phone Case}, {Laptop}, {Mouse}; L2 consists of {Mobile, Phone Case} and {Laptop, Mouse}; L3 is empty because no triple has all pairs frequent. The occasional triples containing Screen Guard or Keyboard have support only 20%.
-- **B.** Only Mobile is frequent because 40% support excludes equality; L2 and L3 are therefore empty.
-- **C.** `{Mobile, Phone Case, Laptop, Mouse}` is one frequent 4-itemset because each of its individual items is frequent.
-- **D.** All seven individual items are frequent; the two three-product transactions are frequent triples because appearing once is sufficient.
+- **A.** L1: Mobile, Phone Case, Laptop, Mouse. L2: Mobile-Phone Case and Laptop-Mouse. No triple has all pairs frequent.
+- **B.** L1: Mobile, Phone Case, Laptop, Mouse. L2: Mobile-Phone Case only. No triple has all pairs frequent.
+- **C.** L1: Mobile, Phone Case, Laptop, Mouse. L2: Mobile-Phone Case and Laptop-Mouse. Their combined four-itemset is frequent.
+- **D.** L1: Mobile, Phone Case, Laptop, Mouse. L2: Mobile-Laptop and Phone Case-Mouse. No triple has all pairs frequent.
 
 ### Q27 - Very tough
 
 Which statement about **Mobile → Phone Case** is fully correct for the original dataset?
 
-- **A.** Support is 66.67% and confidence is 40%, so the rule fails the minimum-confidence requirement.
-- **B.** Confidence is 100% because every Phone Case transaction contains Mobile; this is necessarily also the confidence in the opposite direction.
-- **C.** Support is 40%, confidence is 66.67% and lift is approximately 1.67. The rule qualifies and can support suggesting a compatible phone case; reverse confidence is 100%, but causation is not established.
-- **D.** Support and confidence are both 100%, so every future Mobile buyer is guaranteed to buy a Phone Case.
+- **A.** Support 66.67%; forward/reverse confidence 40%/100%; lift 1.67; forward rule fails.
+- **B.** Support 40%; forward/reverse confidence 100%/66.67%; lift 1.67; forward rule passes.
+- **C.** Support 40%; forward/reverse confidence 66.67%/100%; lift 1.67; passes without proving causation.
+- **D.** Support 40%; forward/reverse confidence 66.67%/100%; lift 0.67; fails the confidence threshold.
 
 ### Q28 - Very tough
 
 Add a sixth transaction containing **only Mobile**. Keep minimum support at 40% and minimum confidence at 60%. Which complete result is correct?
 
-- **A.** Minimum count remains 2; Mobile → Phone Case retains 40% support because old transactions are never included in the denominator again.
-- **B.** Minimum count becomes 3; Laptop → Mouse is still accepted under both thresholds solely because its confidence remains 100%.
-- **C.** Minimum count becomes 3; Mobile → Phone Case has confidence 66.67% because its antecedent count stays 3.
-- **D.** Minimum count becomes 3; only Mobile is a frequent singleton. Mobile → Phone Case has support 2/6 and confidence 2/4, failing both thresholds. Laptop → Mouse keeps 100% confidence but fails support at 2/6.
+- **A.** Minimum count 2; only Mobile frequent; Mobile->Case support 2/6, confidence 2/4; Laptop->Mouse rejected.
+- **B.** Minimum count 3; only Mobile frequent; Mobile->Case support 2/6, confidence 2/4; Laptop->Mouse accepted.
+- **C.** Minimum count 3; only Mobile frequent; Mobile->Case support 2/6, confidence 2/3; Laptop->Mouse rejected.
+- **D.** Minimum count 3; only Mobile frequent; Mobile->Case support 2/6, confidence 2/4; Laptop->Mouse rejected.
 
 ### Topic coverage map
 

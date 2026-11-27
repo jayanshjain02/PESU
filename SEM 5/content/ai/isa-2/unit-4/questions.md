@@ -20,10 +20,10 @@ The questions follow *Ai Unit 4.pdf* and the worked clarifications in `notes.md`
 
 A shopping bot interprets “Can I send this item back?” as a return-policy enquiry and then expresses the selected policy as a natural-language sentence. Which pair names these two language functions, in order?
 
-A. NLG, followed by NER  
-B. NLU, followed by NLG  
-C. Tokenization, followed by image classification  
-D. NLG, followed by NLU
+- **A.** NLG, then NER.
+- **B.** NLU, then NLG.
+- **C.** NLU, then NER.
+- **D.** NLG, then NLU.
 
 ### Q2 — Very Tough
 
@@ -37,10 +37,10 @@ Consider a system processing: “Ravi bought a laptop in Bengaluru. He likes it.
 
 Which mapping and additional claim are all correct?
 
-A. 1 lexical; 2 semantic; 3 syntactic; 4 pragmatic; 5 discourse. NER identifies the request's intent.  
-B. 1 syntactic; 2 lexical; 3 semantic; 4 discourse; 5 pragmatic. NER creates the final response.  
-C. 1 lexical; 2 syntactic; 3 semantic; 4 pragmatic; 5 discourse. NER is the same as sentiment classification.  
-D. 1 lexical; 2 syntactic; 3 semantic; 4 discourse; 5 pragmatic. NER can separately label Ravi as a person and Bengaluru as a location.
+- **A.** Lexical, semantic, syntactic, discourse, pragmatic; NER labels Ravi/person and Bengaluru/location.
+- **B.** Syntactic, lexical, semantic, discourse, pragmatic; NER labels Ravi/person and Bengaluru/location.
+- **C.** Lexical, syntactic, semantic, pragmatic, discourse; NER labels Ravi/person and Bengaluru/location.
+- **D.** Lexical, syntactic, semantic, discourse, pragmatic; NER labels Ravi/person and Bengaluru/location.
 
 ### Q3 — Very Tough
 
@@ -83,10 +83,10 @@ D. 3, 4 and 5
 
 What does a basic unigram Bag-of-Words representation store?
 
-A. Counts of vocabulary words, without preserving their order  
-B. The grammatical relationship between every word pair  
-C. Only the final positive/negative/neutral label  
-D. A complete understanding of sarcasm
+- **A.** Vocabulary word counts without sequence order.
+- **B.** Vocabulary word order without frequency counts.
+- **C.** Word dependencies without frequency counts.
+- **D.** Contextual word meaning and sarcasm labels.
 
 ### Q6 — Very Tough
 
@@ -94,10 +94,10 @@ Use only this lexicon: `love:+3, excellent:+3, good:+1, boring:−2, bad:−2, h
 
 For **“I love it, but it is not good and is boring”**, which conclusion is correct?
 
-A. Score 0; VADER and TextBlob must also return exactly 0 because they use this same six-word algorithm.  
-B. Score +2, hence positive under the toy rule; this does not prove the actual opinion is wholly positive, and the output cannot be assumed to equal VADER/TextBlob.  
-C. Score −2, hence negative; the toy algorithm automatically negates `good` and doubles the effect of `boring`.  
-D. Score +4, hence positive; `boring` is a stop word and must always be discarded.
+- **A.** Score 0; neutral under the toy rule; VADER/TextBlob need not agree.
+- **B.** Score +2; positive under the toy rule; VADER/TextBlob need not agree.
+- **C.** Score -2; negative under the toy rule; VADER/TextBlob need not agree.
+- **D.** Score +4; positive under the toy rule; VADER/TextBlob need not agree.
 
 ### Q7 — Very Tough
 
@@ -110,10 +110,10 @@ Use these four documents, with vocabulary order **[good, movie, boring]**:
 
 For this question, define TF-IDF as **raw term count × ln(N/df)**, with no smoothing, offset or normalization. Which complete statement is correct?
 
-A. D1's BoW vector is [1,1,0]; its `good` TF-IDF is ln(4/3), because `good` occurs three times in the corpus.  
-B. D1's BoW vector is [2,1,0]; its `movie` TF-IDF is 1, because every present token receives a minimum weight of 1 under the stated formula.  
-C. D1's BoW vector is [2,0,1]; its `good` TF-IDF is 2 ln 4; TF-IDF itself learns the positive label without a classifier.  
-D. D1's BoW vector is [2,1,0]; `good` has df = 2 and weight 2 ln 2; `movie` has weight 0. A classifier such as Naive Bayes, Logistic Regression or SVM is a separate component.
+- **A.** BoW [1,1,0]; good df=2, weight ln(2); movie weight 0; a classifier is separate.
+- **B.** BoW [2,1,0]; good df=2, weight 2 ln(2); movie weight 1; a classifier is separate.
+- **C.** BoW [2,1,0]; good df=3, weight 2 ln(4/3); movie weight 0; a classifier is separate.
+- **D.** BoW [2,1,0]; good df=2, weight 2 ln(2); movie weight 0; a classifier is separate.
 
 ### Q8 — Very Tough
 
@@ -139,10 +139,10 @@ D. 1, 4, 5 and 6
 
 A chatbot identifies a library-timing enquiry and selects the most suitable answer from a stored response set. What response mechanism does this illustrate?
 
-A. Image segmentation  
-B. Purely generative response creation  
-C. Retrieval-based response selection  
-D. Minimax search
+- **A.** Image classification from input pixels.
+- **B.** Generative creation of new reply wording.
+- **C.** Retrieval-based selection of a stored reply.
+- **D.** Game-tree search for the optimal move.
 
 ### Q10 — Very Tough
 
@@ -156,10 +156,10 @@ An unsmoothed bigram model is trained on exactly:
 
 Ignore sentence-start/end probabilities. What are **P(is | Today)** and the model's conditional probability of the two-word continuation **“is sunny” after “Today”**? Also select the valid explanation.
 
-A. 1 and 0.4; after `Today` the next word is `is`, and a bigram then uses P(sunny | is) = 2/5, forgetting the earlier word `Today`.  
-B. 1 and 0.25; the bigram must condition `sunny` on both `Today` and `is`.  
-C. 0.8 and 0.4; the denominator of P(is | Today) is the total number of sentences.  
-D. 1 and 0.8; the correct denominator for P(sunny | is) is the count of `Today`.
+- **A.** 1 and 0.4; the second factor uses is, not the entire earlier history.
+- **B.** 1 and 0.25; the second factor uses Today is as its conditioning history.
+- **C.** 0.8 and 0.4; the first denominator is all five training sentences.
+- **D.** 1 and 0.8; the second denominator is the count of the word Today.
 
 ### Q11 — Very Tough
 
@@ -171,10 +171,10 @@ A bot handles this conversation:
 
 It extracts `book_ticket`, retains that intent across turns, stores `Mysore` as the destination and selects a reply template. Later, a user marks one reply incorrect. Which interpretation is fully correct?
 
-A. `Mysore` is the intent; `book_ticket` is the entity; feedback automatically rewrites model weights immediately.  
-B. Asking for missing information is NER alone; dialogue management is unnecessary because each message has independent meaning. Template selection proves that the backend booking has succeeded.  
-C. Because the bot handles context, it must be an LLM that invents every reply. Rasa/Dialogflow cannot support this kind of application.  
-D. Input processing identifies intent/entities; dialogue management retains context and asks for missing information; response selection uses the template. Feedback may inform later data/rule/model updates, but does not itself prove retraining or a completed booking.
+- **A.** Mysore is the intent; book_ticket is an entity; feedback proves immediate retraining.
+- **B.** Entities handle the dialogue without retained context; a template proves the booking succeeded.
+- **C.** A contextual reply requires an LLM; template-based systems cannot support this dialogue.
+- **D.** Intent/entities plus dialogue state; template reply; feedback may guide updates, not prove booking.
 
 ### Q12 — Very Tough
 
@@ -200,28 +200,28 @@ D. 1, 3, 5 and 6
 
 An image-classification system receives a photograph containing a cat, dog and rabbit and returns the three labels without predicting any object locations. This is:
 
-A. Single-label classification  
-B. Multi-label classification  
-C. Object detection with bounding boxes  
-D. Pixel-level segmentation
+- **A.** Single-label classification.
+- **B.** Multi-label classification.
+- **C.** Bounding-box object detection.
+- **D.** Pixel-level image segmentation.
 
 ### Q14 — Very Tough
 
 A color image is **1920 pixels wide and 1080 pixels high**, with three 8-bit RGB channels. Assume no alpha channel, no metadata, no padding and no compression; use a **channels-last** array layout. Which complete set is correct?
 
-A. 6,220,800 spatial pixels; shape (1920,1080,3); 2,073,600 bytes; 255³ possible tuples.  
-B. 2,073,600 spatial pixels; shape (1080,1920); 2,073,600 bytes; three possible pixel colors.  
-C. 2,073,600 spatial pixels; shape (1080,1920,3); 6,220,800 bytes; (255,255,255) is black and (0,0,0) is white.  
-D. 2,073,600 spatial pixels; shape (1080,1920,3); 6,220,800 channel values and bytes; 256³ possible RGB tuples; each separate color plane has shape (1080,1920).
+- **A.** 2,073,600 pixels; shape (1920,1080,3); 6,220,800 values/bytes; 256^3 RGB tuples; planes (1080,1920).
+- **B.** 2,073,600 pixels; shape (1080,1920,3); 2,073,600 values/bytes; 256^3 RGB tuples; planes (1080,1920).
+- **C.** 2,073,600 pixels; shape (1080,1920,3); 6,220,800 values/bytes; 255^3 RGB tuples; planes (1080,1920).
+- **D.** 2,073,600 pixels; shape (1080,1920,3); 6,220,800 values/bytes; 256^3 RGB tuples; planes (1080,1920).
 
 ### Q15 — Very Tough
 
 A student collects labeled cat/dog photos, resizes them to 128×128, denoises them, adjusts contrast, optionally isolates the animal, extracts shape/texture/color information, trains a classifier and evaluates on held-out images. Another version uses a CNN. Which assessment is correct?
 
-A. The labels make the task supervised; each resized image has 16,384 pixels, or 49,152 values if RGB. Preprocessing/enhancement prepare data, segmentation identifies a region, and classification predicts a label. A CNN can learn features jointly with classification, so separate hand-designed features and segmentation are not universally mandatory.  
-B. Resizing itself predicts Cat/Dog, making the classifier redundant. Every 128×128 RGB image contains 49,152 spatial pixels, and a CNN requires manual extraction of all features.  
-C. Labeled data makes this unsupervised learning. Adjusting contrast is the same as identifying the animal, and training-set accuracy alone measures generalization.  
-D. Segmentation gives only an image-level label and never a region. The Kaggle link in the slides proves that the student's model has already been trained and has perfect accuracy.
+- **A.** Supervised; 16,384 pixels, 49,152 RGB values; segmentation optional; a CNN can learn features.
+- **B.** Supervised; 49,152 pixels, 16,384 RGB values; segmentation optional; a CNN can learn features.
+- **C.** Unsupervised; 16,384 pixels, 49,152 RGB values; segmentation optional; a CNN can learn features.
+- **D.** Supervised; 16,384 pixels, 49,152 RGB values; segmentation mandatory; a CNN needs hand-designed features.
 
 ### Q16 — Very Tough
 
@@ -255,10 +255,10 @@ D. 2, 4, 5 and 6
 
 At a MIN node in basic minimax, what value is selected?
 
-A. The smallest child value, using the same fixed utility perspective throughout the tree  
-B. The largest child value  
-C. The negative value, even if no negative child exists  
-D. The average child value
+- **A.** Minimum child utility, using a fixed perspective.
+- **B.** Maximum child utility, using a fixed perspective.
+- **C.** Only negative child utilities, ignoring positive ones.
+- **D.** Mean child utility, weighting all outcomes equally.
 
 ### Q18 — Very Tough
 
@@ -280,10 +280,10 @@ D. (7,2,3,8); (2,3); 3; right
 
 Use the same tree as Q18, searched left-to-right with correct alpha-beta pruning. The left root branch has already returned 2. The first bottom MAX node in the right branch, with leaves (−7,−3), now returns −3. What follows?
 
-A. Nothing can be pruned because the unseen sibling contains 8, the largest leaf in the tree; the root must eventually return 8.  
-B. The sibling subtree with leaves (8,4) can be pruned: the right MIN node can already choose −3, so this branch cannot improve MAX's existing 2. The root value remains 2.  
-C. MAX must replace −3 with +3 because a maximizing player cannot return a negative value; the root becomes 3.  
-D. The entire previously explored left branch is invalidated because MIN is permitted to choose only negative values.
+- **A.** Explore (8,4); right MIN must take 8; root returns 8.
+- **B.** Prune (8,4); right MIN can take -3; root remains 2.
+- **C.** Prune (8,4); MAX changes -3 into +3; root returns 3.
+- **D.** Prune the explored left branch; MIN rejects positive 2.
 
 ### Q20 — Very Tough
 
@@ -309,10 +309,10 @@ D. 1, 3, 5 and 6
 
 “The phone looks great, but the battery is terrible” contains:
 
-A. Only positive sentiment, because the first clause is positive  
-B. Only neutral information, because opposing opinions always cancel  
-C. No sentiment, because it describes a product  
-D. Mixed aspect-level opinions; the slides assign an overall negative label
+- **A.** Positive aspects only; overall label positive.
+- **B.** Neutral aspects only; overall label neutral.
+- **C.** Factual aspects only; no sentiment label.
+- **D.** Mixed aspects; course overall label negative.
 
 ### Q22 — Very Tough
 
@@ -361,10 +361,10 @@ Classify these texts:
 
 Which score vector and interpretation are valid?
 
-A. (0,0,+1,+1). The first two zeros can reflect missing vocabulary; the third is mixed but positive under the sum; the fourth exposes missing negation handling. Context, multilingual/slang coverage and aspect analysis address different limitations.  
-B. (+3,+1,−2,−1). The dictionary automatically recognizes sarcasm, Kannada and the word `not`, even though none is implemented.  
-C. (0,0,0,0). Every sentence containing either mixed language or mixed opinion must be neutral.  
-D. (0,0,+1,+1). These numerical outputs prove the first two texts have no sentiment and the final sentence expresses a favorable opinion.
+- **A.** (0,0,+1,+1); missing terms can give zeros; summed signs can misrepresent opinion.
+- **B.** (+3,+1,-2,-1); the six-word rule handles sarcasm, code-mixing and negation.
+- **C.** (0,0,0,0); mixed language or mixed aspects force a zero dictionary score.
+- **D.** (0,0,+1,+1); zeros prove no sentiment, and positive scores prove favorable opinion.
 
 ## 7. EL — Tic-Tac-Toe Using Minimax
 
@@ -372,10 +372,10 @@ D. (0,0,+1,+1). These numerical outputs prove the first two texts have no sentim
 
 In the included implementation, a nine-element Python list represents positions 1–9. Human X moves first; computer O is MAX. Which statement is correct?
 
-A. Displayed position 5 uses list index 5, and moving first always makes X MAX.  
-B. Displayed position 5 uses index 4, but an O win must score −1.  
-C. Displayed position 5 uses index 4; O can be MAX even though X moves first.  
-D. The board needs ten elements because displayed positions start at 1.
+- **A.** Position 5 -> index 5; O maximizes the stated utility.
+- **B.** Position 5 -> index 4; O minimizes the stated utility.
+- **C.** Position 5 -> index 4; O maximizes the stated utility.
+- **D.** Position 5 -> index 5; O minimizes the stated utility.
 
 ### Q26 — Very Tough
 
@@ -383,10 +383,10 @@ Positions are numbered row-wise from 1 to 9. X occupies **3 and 5**, O occupies 
 
 Which move is uniquely able to avoid a forced loss, and why?
 
-A. Position 7, with value 0: it blocks X's diagonal 3–5–7; each other legal move permits X to win immediately at 7.  
-B. Position 9, with value +1: a corner always guarantees an immediate win.  
-C. Position 4, with value +1: O has a column threat, so X must ignore its own immediate win.  
-D. Position 2, with value 0: minimax averages all replies and assumes X might miss the win.
+- **A.** 7, value 0; blocks diagonal 3-5-7 and avoids a forced loss.
+- **B.** 7, value +1; blocking the diagonal forces an eventual O win.
+- **C.** 9, value +1; a corner wins regardless of the remaining replies.
+- **D.** 2, value 0; X cannot exploit the available diagonal threat.
 
 ### Q27 — Very Tough
 
@@ -394,10 +394,10 @@ X occupies **4, 5 and 9**, O occupies **1 and 2**, and O is to move. Full minima
 
 Which choice and explanation are correct?
 
-A. Play 6; blocking an opponent's threat always has priority over taking an immediate win.  
-B. Play 7; because X started, the computer must minimize and choose −1.  
-C. Play 3, but the game must continue until all nine cells are filled before declaring the winner.  
-D. Play 3; O completes row 1–2–3 immediately, so the game ends before X can complete row 4–5–6.
+- **A.** Move 6; value 0; blocking X takes priority over O winning.
+- **B.** Move 7; value -1; the second player must minimize utility.
+- **C.** Move 3; value +1; play must continue until the board is full.
+- **D.** Move 3; value +1; O wins now, before X can reply.
 
 ### Q28 — Very Tough
 
